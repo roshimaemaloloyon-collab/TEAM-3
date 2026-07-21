@@ -1,0 +1,182 @@
+@extends('admin.layouts.admin')
+
+@section('title', 'TripWise — Training Schedule')
+
+@section('content')
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+    <a href="{{ route('admin.dashboard') }}">Home</a>
+    <span>/</span>
+    <a href="{{ route('admin.training.index') }}">Training Management</a>
+    <span>/</span>
+    <span>Training Schedule</span>
+</div>
+
+<!-- Page Header -->
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+    <div>
+        <h1 style="font-size:1.75rem;color:var(--primary);margin:0 0 0.25rem;">Training Schedule</h1>
+        <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">Create, organize, and manage all driver training schedules.</p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal('addTrainingModal')"><i class="fas fa-plus"></i> Add Training</button>
+</div>
+
+<!-- Dashboard Stats Cards -->
+<div class="summary-grid">
+    <div class="summary-card">
+        <div class="card-icon blue"><i class="fas fa-calendar-alt"></i></div>
+        <div class="card-info">
+            <h3>{{ $stats['upcoming'] }}</h3>
+            <p>Upcoming Trainings</p>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="card-icon green"><i class="fas fa-spinner"></i></div>
+        <div class="card-info">
+            <h3>{{ $stats['ongoing'] }}</h3>
+            <p>Ongoing Trainings</p>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="card-icon orange"><i class="fas fa-check-circle"></i></div>
+        <div class="card-info">
+            <h3>{{ $stats['completed'] }}</h3>
+            <p>Completed Trainings</p>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="card-icon purple"><i class="fas fa-layer-group"></i></div>
+        <div class="card-info">
+            <h3>{{ $stats['total'] }}</h3>
+            <p>Total Training Sessions</p>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="table-card" style="margin-bottom:1rem;">
+    <form method="GET" action="{{ route('admin.training.schedule') }}" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;">
+            <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Search</label>
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search trainings..." style="width:100%;padding:0.6rem 1rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;background:var(--white);color:var(--text-dark);font-family:'Inter',sans-serif;">
+        </div>
+        <div style="min-width:180px;">
+            <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Category</label>
+            <select name="category" style="width:100%;padding:0.6rem 1rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;background:var(--white);color:var(--text-dark);font-family:'Inter',sans-serif;">
+                <option value="">All Categories</option>
+                <option value="safety" {{ request('category') === 'safety' ? 'selected' : '' }}>Safety</option>
+                <option value="technical" {{ request('category') === 'technical' ? 'selected' : '' }}>Technical</option>
+                <option value="soft_skills" {{ request('category') === 'soft_skills' ? 'selected' : '' }}>Soft Skills</option>
+                <option value="compliance" {{ request('category') === 'compliance' ? 'selected' : '' }}>Compliance</option>
+            </select>
+        </div>
+        <div style="min-width:180px;">
+            <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Status</label>
+            <select name="status" style="width:100%;padding:0.6rem 1rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;background:var(--white);color:var(--text-dark);font-family:'Inter',sans-serif;">
+                <option value="">All Statuses</option>
+                <option value="upcoming" {{ request('status') === 'upcoming' ? 'selected' : '' }}>Upcoming</option>
+                <option value="ongoing" {{ request('status') === 'ongoing' ? 'selected' : '' }}>Ongoing</option>
+                <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completed</option>
+                <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-secondary"><i class="fas fa-search"></i> Filter</button>
+    </form>
+</div>
+
+<!-- Training Schedule Table -->
+<div class="table-card">
+    <h3 style="margin:0 0 1rem;"><i class="fas fa-calendar-alt"></i> Training Schedule</h3>
+    <div style="overflow-x:auto;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Training ID</th>
+                    <th>Training Title</th>
+                    <th>Category</th>
+                    <th>Trainer</th>
+                    <th>Venue</th>
+                    <th>Schedule</th>
+                    <th>Available Slots</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($trainings as $training)
+                    <tr>
+                        <td>#TRN-{{ str_pad($training->id, 5, '0', STR_PAD_LEFT) }}</td>
+                        <td><strong>{{ $training->title }}</strong></td>
+                        <td style="text-transform:capitalize;">{{ $training->category }}</td>
+                        <td>{{ $training->instructor }}</td>
+                        <td>{{ $training->venue ?? 'N/A' }}</td>
+                        <td>{{ $training->start_datetime->format('M d, Y h:i A') }}</td>
+                        <td>{{ $training->capacity }}</td>
+                        <td>
+                            <span class="item-badge {{ $training->status === 'upcoming' ? 'badge-info' : ($training->status === 'ongoing' ? 'badge-success' : ($training->status === 'completed' ? 'badge-success' : 'badge-danger')) }}">
+                                {{ ucfirst($training->status) }}
+                            </span>
+                        </td>
+                        <td style="text-align:right;">
+                            <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
+                                <button class="btn btn-sm btn-secondary" title="View"><i class="fas fa-eye"></i></button>
+                                <button class="btn btn-sm btn-primary" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger" title="Cancel"><i class="fas fa-times"></i></button>
+                                <button class="btn btn-sm btn-danger" title="Archive"><i class="fas fa-archive"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:2rem;">No trainings found.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    <div style="margin-top:1rem;">
+        {{ $trainings->links() }}
+    </div>
+</div>
+
+<!-- Calendar View -->
+<div class="table-card" style="margin-top:1.5rem;">
+    <h3 style="margin:0 0 1rem;"><i class="fas fa-calendar"></i> Training Calendar</h3>
+    <div style="overflow-x:auto;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Week</th>
+                    <th>Day</th>
+                    <th>Training</th>
+                    <th>Time</th>
+                    <th>Instructor</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $calendarData = [
+                        ['month'=>'July 2026','week'=>'Week 3','day'=>'15','training'=>'Defensive Driving Workshop','time'=>'9:00 AM','instructor'=>'Internal SecOps','status'=>'upcoming'],
+                        ['month'=>'July 2026','week'=>'Week 4','day'=>'22','training'=>'First Aid Certification','time'=>'1:00 PM','instructor'=>'Red Cross','status'=>'upcoming'],
+                        ['month'=>'August 2026','week'=>'Week 1','day'=>'05','training'=>'Eco-Driving Techniques','time'=>'10:00 AM','instructor'=>'Fleet Mgmt','status'=>'upcoming'],
+                    ];
+                @endphp
+                @foreach($calendarData as $event)
+                <tr>
+                    <td>{{ $event['month'] }}</td>
+                    <td>{{ $event['week'] }}</td>
+                    <td><strong>{{ $event['day'] }}</strong></td>
+                    <td><strong>{{ $event['training'] }}</strong></td>
+                    <td>{{ $event['time'] }}</td>
+                    <td>{{ $event['instructor'] }}</td>
+                    <td>
+                        <span class="item-badge badge-info">{{ ucfirst($event['status']) }}</span>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@endsection

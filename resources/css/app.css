@@ -1,0 +1,110 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-outfit: 'Outfit', sans-serif;
+
+    --color-brand: #F44336;
+    --color-brand-dark: #D32F2F;
+    --color-brand-light: #EF5350;
+    --color-brand-soft: #fff5f5;
+
+    --color-forest: #1c1c1e;
+    --color-forest-dark: #111112;
+    --color-forest-light: #2c2c2e;
+    --color-forest-soft: #fff5f5;
+
+    --color-gold: #F44336;
+    --color-gold-dark: #D32F2F;
+    --color-gold-light: #EF5350;
+    --color-gold-soft: #fff5f5;
+
+    --color-cream: #faf9f6;
+    --color-cream-dark: #f1efe9;
+}
+
+/* Custom Scrollbar styling for a cleaner dashboard */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.25);
+    border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.15);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.45);
+}
+
+/* Custom animations for premium transitions */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Glassmorphism card utility */
+.glass-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.dark .glass-card {
+    background: rgba(22, 22, 21, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* Soft pulse glow effect */
+@keyframes pulseGlow {
+    0%, 100% {
+        opacity: 0.2;
+    }
+    50% {
+        opacity: 0.4;
+    }
+}
+
+.glow-effect {
+    position: relative;
+}
+
+.glow-effect::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 25px 5px rgba(99, 102, 241, 0.15);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.glow-effect:hover::after {
+    opacity: 1;
+}
