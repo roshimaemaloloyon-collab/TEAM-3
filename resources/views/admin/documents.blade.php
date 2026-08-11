@@ -156,11 +156,10 @@
     </div>
 </div>
 
-@push('scripts')
 <!-- Upload New Document Modal -->
 <div class="modal-overlay" id="uploadDocModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;padding:2rem;">
     <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:550px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
-        <form id="uploadDocForm" onsubmit="event.preventDefault(); showToast('Document uploaded successfully!'); closeModal('uploadDocModal');">
+        <form id="uploadDocForm" onsubmit="event.preventDefault(); alert('Document uploaded successfully!'); closeModal('uploadDocModal');">
             <div class="modal-header" style="padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
                 <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Upload New Document</h2>
                 <button type="button" onclick="closeModal('uploadDocModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
@@ -205,11 +204,12 @@
 
 <script>
 function openModal(id) {
-    document.getElementById(id).style.display = 'flex';
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'flex';
 }
 function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
 }
 </script>
-@endpush
 @endsection
