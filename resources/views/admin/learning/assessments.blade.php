@@ -160,10 +160,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('quizPerformanceChart'), {
         type: 'bar',
         data: {
-            labels: ['Road Safety', 'Defensive Driving', 'Customer Service', 'Company Policies', 'Traffic Rules'],
+            labels: {!! json_encode($quizPerformance->pluck('module.title')->toArray()) !!},
             datasets: [{
                 label: 'Average Score',
-                data: [85, 78, 82, 90, 75],
+                data: {!! json_encode($quizPerformance->pluck('avg_score')->toArray()) !!},
                 backgroundColor: '#F44336',
                 borderRadius: 8
             }]
@@ -174,8 +174,8 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('passFailChart'), {
         type: 'doughnut',
         data: {
-            labels: ['Passed', 'Failed'],
-            datasets: [{ data: [75, 25], backgroundColor: ['#10b981', '#ef4444'] }]
+            labels: {!! json_encode(array_keys($passFailData)) !!},
+            datasets: [{ data: {!! json_encode(array_values($passFailData)) !!}, backgroundColor: ['#10b981', '#ef4444'] }]
         },
         options: { ...chartDefaults, plugins: { legend: { position: 'bottom', labels: { font: { family: "'Poppins', sans-serif" } } } } }
     });

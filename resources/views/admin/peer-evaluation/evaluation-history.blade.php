@@ -97,19 +97,19 @@
             <tbody>
                 @forelse($history as $entry)
                 <tr>
-                    <td><span style="font-size:0.8rem;color:var(--text-muted);font-family:monospace;">#PE-{{ str_pad($entry->peer_evaluation_id ?? 0, 6, '0', STR_PAD_LEFT) }}</span></td>
-                    <td><strong>{{ $entry->peerEvaluation->evaluator->name ?? 'N/A' }}</strong></td>
-                    <td><strong>{{ $entry->peerEvaluation->evaluatedDriver->name ?? 'N/A' }}</strong></td>
+                    <td><span style="font-size:0.8rem;color:var(--text-muted);font-family:monospace;">#PE-{{ str_pad($entry->id ?? 0, 6, '0', STR_PAD_LEFT) }}</span></td>
+                    <td><strong>{{ $entry->evaluator->name ?? 'N/A' }}</strong></td>
+                    <td><strong>{{ $entry->evaluatedDriver->name ?? 'N/A' }}</strong></td>
                     <td>
-                        @if($entry->peerEvaluation && $entry->peerEvaluation->overall_score)
-                            <strong style="color:{{ $entry->peerEvaluation->overall_score >= 4 ? '#10b981' : ($entry->peerEvaluation->overall_score >= 3 ? '#f59e0b' : '#ef4444') }};">{{ number_format($entry->peerEvaluation->overall_score, 2) }}</strong>
+                        @if($entry->overall_score)
+                            <strong style="color:{{ $entry->overall_score >= 4 ? '#10b981' : ($entry->overall_score >= 3 ? '#f59e0b' : '#ef4444') }};">{{ number_format($entry->overall_score, 2) }}</strong>
                         @else
                             <span style="color:var(--text-muted);">-</span>
                         @endif
                     </td>
                     <td>
                         @php
-                            $status = $entry->peerEvaluation->status ?? 'unknown';
+                            $status = $entry->status ?? 'unknown';
                             $statusClass = match($status) {
                                 'approved' => 'status-success',
                                 'rejected' => 'status-inactive',
@@ -121,25 +121,11 @@
                         <span class="status-badge {{ $statusClass }}">{{ ucfirst(str_replace('_', ' ', $status)) }}</span>
                     </td>
                     <td>
-                        @php
-                            $actionColors = [
-                                'created' => 'status-review',
-                                'updated' => 'status-warning',
-                                'submitted' => 'status-pending',
-                                'approved' => 'status-success',
-                                'rejected' => 'status-inactive',
-                                'archived' => 'status-pending',
-                                'restored' => 'status-success',
-                            ];
-                        @endphp
-                        <span class="status-badge {{ $actionColors[$entry->action] ?? 'status-pending' }}">{{ ucfirst($entry->action) }}</span>
+                        <span class="status-badge status-success">Logged</span>
                     </td>
-                    <td>{{ $entry->performed_at->format('M d, Y H:i') }}</td>
+                    <td>{{ $entry->evaluation_date ? \Carbon\Carbon::parse($entry->evaluation_date)->format('M d, Y') : 'N/A' }}</td>
                     <td style="text-align:center;">
                         <button class="icon-btn" title="View" onclick="viewHistory({{ $entry->id }})"><i class="fas fa-eye"></i></button>
-                        @if($entry->action === 'archived')
-                            <button class="icon-btn" title="Restore" onclick="restoreEvaluation({{ $entry->peer_evaluation_id }})" style="color:var(--success);"><i class="fas fa-undo"></i></button>
-                        @endif
                     </td>
                 </tr>
                 @empty

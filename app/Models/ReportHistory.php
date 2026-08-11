@@ -11,6 +11,8 @@ class ReportHistory extends Model
 {
     use HasFactory;
 
+    protected $table = 'report_history';
+
     protected $fillable = [
         'report_id',
         'action',

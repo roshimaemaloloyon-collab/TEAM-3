@@ -11,6 +11,8 @@ class LearningHistory extends Model
 {
     use HasFactory;
 
+    protected $table = 'learning_history';
+
     protected $fillable = [
         'driver_id',
         'learning_module_id',

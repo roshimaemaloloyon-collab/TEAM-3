@@ -46,6 +46,64 @@ class LearningAnalyticsController extends Controller
         $modules = \App\Models\LearningModule::all();
         $drivers = \App\Models\User::where('role', 'driver')->get();
 
-        return view('admin.learning.learning-analytics', compact('assignments', 'assessments', 'stats', 'modules', 'drivers'));
+        $progressAnalytics = LearningAssignment::with('module')
+            ->selectRaw('learning_module_id, AVG(progress_percentage) as avg_progress')
+            ->groupBy('learning_module_id')
+            ->get();
+
+        $moduleDist = LearningAssignment::with('module')
+            ->selectRaw('learning_module_id, COUNT(*) as total')
+            ->groupBy('learning_module_id')
+            ->get();
+
+        if (config('database.default') === 'pgsql') {
+            $completionTrend = LearningAssignment::selectRaw("TO_CHAR(assigned_date, 'MM') as month_num, COUNT(*) as total")
+                ->whereNotNull('assigned_date')
+                ->when($year, fn($q) => $q->whereYear('assigned_date', $year))
+                ->groupByRaw("TO_CHAR(assigned_date, 'MM')")
+                ->orderBy('month_num')
+                ->limit(6)
+                ->get();
+
+            $effectiveness = LearningAssignment::selectRaw("TO_CHAR(assigned_date, 'MM') as month_num, AVG(progress_percentage) as avg_progress")
+                ->whereNotNull('assigned_date')
+                ->when($year, fn($q) => $q->whereYear('assigned_date', $year))
+                ->groupByRaw("TO_CHAR(assigned_date, 'MM')")
+                ->orderBy('month_num')
+                ->get();
+        } else {
+            $completionTrend = LearningAssignment::selectRaw('strftime("%m", assigned_date) as month_num, COUNT(*) as total')
+                ->whereNotNull('assigned_date')
+                ->when($year, fn($q) => $q->whereYear('assigned_date', $year))
+                ->groupBy('month_num')
+                ->orderBy('month_num')
+                ->limit(6)
+                ->get();
+
+            $effectiveness = LearningAssignment::selectRaw('strftime("%m", assigned_date) as month_num, AVG(progress_percentage) as avg_progress')
+                ->whereNotNull('assigned_date')
+                ->when($year, fn($q) => $q->whereYear('assigned_date', $year))
+                ->groupBy('month_num')
+                ->orderBy('month_num')
+                ->get();
+        }
+
+        $comparative = $assignments->groupBy('driver_id')->map(fn($items) => [
+            'completion' => $items->avg('progress_percentage') ?? 0,
+            'quiz' => $assessments->where('driver_id', $items->first()->driver_id ?? 0)->avg('score') ?? 0,
+        ]);
+
+        return view('admin.learning.learning-analytics', compact(
+            'assignments',
+            'assessments',
+            'stats',
+            'modules',
+            'drivers',
+            'progressAnalytics',
+            'moduleDist',
+            'completionTrend',
+            'effectiveness',
+            'comparative'
+        ));
     }
 }

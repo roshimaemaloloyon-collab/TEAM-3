@@ -35,6 +35,26 @@ class TrainingAttendanceController extends Controller
             'attendance_rate' => Attendance::count() > 0 ? number_format((Attendance::where('status', 'present')->count() / Attendance::count()) * 100, 1) . '%' : '0%',
         ];
 
-        return view('admin.training.attendance', compact('attendance', 'stats'));
+        if (config('database.default') === 'pgsql') {
+            $attendanceTrend = Attendance::selectRaw("TO_CHAR(created_at, 'MM') as month_num, COUNT(*) as total")
+                ->whereNotNull('created_at')
+                ->groupByRaw("TO_CHAR(created_at, 'MM')")
+                ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        } else {
+            $attendanceTrend = Attendance::selectRaw('strftime("%m", created_at) as month_num, COUNT(*) as total')
+                ->whereNotNull('created_at')
+                ->groupBy('month_num')
+                ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        }
+
+        $attendanceDist = Attendance::selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->get();
+
+        return view('admin.training.attendance', compact('attendance', 'stats', 'attendanceTrend', 'attendanceDist'));
     }
 }

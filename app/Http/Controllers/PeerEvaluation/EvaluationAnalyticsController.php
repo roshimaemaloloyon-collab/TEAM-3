@@ -13,7 +13,11 @@ class EvaluationAnalyticsController extends Controller
     {
         $period = $request->query('period', 'monthly');
 
-        $monthlyTrend = PeerEvaluation::selectRaw("strftime('%Y', evaluation_date) as year, strftime('%m', evaluation_date) as month, COUNT(*) as count, AVG(overall_score) as avg_score")
+        if (config('database.default') === 'pgsql') {
+            $monthlyTrend = PeerEvaluation::selectRaw("TO_CHAR(evaluation_date, 'MM') as month_num, AVG(overall_score) as avg_score");
+        } else {
+            $monthlyTrend = PeerEvaluation::selectRaw('strftime("%m", evaluation_date) as month_num, AVG(overall_score) as avg_score');
+        }
             ->groupBy('year', 'month')
             ->orderByDesc('year')
             ->orderByDesc('month')

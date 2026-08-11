@@ -35,6 +35,16 @@ class AssessmentsController extends Controller
             'failed' => LearningAssessment::where('status', 'failed')->count(),
         ];
 
-        return view('admin.learning.assessments', compact('assessments', 'stats'));
+        $quizPerformance = LearningAssessment::with('module')
+            ->selectRaw('learning_module_id, AVG(score) as avg_score')
+            ->groupBy('learning_module_id')
+            ->get();
+
+        $passFailData = [
+            'Passed' => LearningAssessment::where('status', 'passed')->count(),
+            'Failed' => LearningAssessment::where('status', 'failed')->count(),
+        ];
+
+        return view('admin.learning.assessments', compact('assessments', 'stats', 'quizPerformance', 'passFailData'));
     }
 }

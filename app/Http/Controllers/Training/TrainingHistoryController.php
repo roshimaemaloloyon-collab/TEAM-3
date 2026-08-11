@@ -34,6 +34,38 @@ class TrainingHistoryController extends Controller
             'completed_programs' => Training::where('status', 'completed')->count(),
         ];
 
-        return view('admin.training.history', compact('history', 'stats'));
+        if (config('database.default') === 'pgsql') {
+            $timelineData = Training::selectRaw("TO_CHAR(start_datetime, 'MM') as month_num, COUNT(*) as total")->where('status', 'completed')
+            ->whereNotNull('start_datetime')
+            ->groupByRaw("TO_CHAR(start_datetime, 'MM')")
+            ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        } else {
+            $timelineData = Training::selectRaw('strftime("%m", start_datetime) as month_num, COUNT(*) as total')->where('status', 'completed')
+            ->whereNotNull('start_datetime')
+            ->groupBy('month_num')
+            ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        }
+
+        if (config('database.default') === 'pgsql') {
+            $trendData = Training::selectRaw("TO_CHAR(start_datetime, 'MM') as month_num, COUNT(*) as total")->where('status', 'completed')
+            ->whereNotNull('start_datetime')
+            ->groupByRaw("TO_CHAR(start_datetime, 'MM')")
+            ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        } else {
+            $trendData = Training::selectRaw('strftime("%m", start_datetime) as month_num, COUNT(*) as total')->where('status', 'completed')
+            ->whereNotNull('start_datetime')
+            ->groupBy('month_num')
+            ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        }
+
+        return view('admin.training.history', compact('history', 'stats', 'timelineData', 'trendData'));
     }
 }

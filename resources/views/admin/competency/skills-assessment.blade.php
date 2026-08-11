@@ -172,7 +172,12 @@ document.addEventListener('DOMContentLoaded', function() {
         data: {
             labels: ['Excellent', 'Proficient', 'Developing', 'Needs Coaching'],
             datasets: [{
-                data: [3, 2, 1, 1],
+                data: [
+                    {{ $assessments->where('score', '>=', 90)->count() }},
+                    {{ $assessments->whereBetween('score', [75, 89.99])->count() }},
+                    {{ $assessments->whereBetween('score', [60, 74.99])->count() }},
+                    {{ $assessments->where('score', '<', 60)->count() }}
+                ],
                 backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444']
             }]
         },
@@ -182,10 +187,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('skillsCompChart'), {
         type: 'bar',
         data: {
-            labels: ['Safe Driving', 'Customer Service', 'Communication', 'Navigation', 'Professionalism', 'Time Mgmt', 'Vehicle Care'],
+            labels: {!! json_encode($competencies->pluck('name')->toArray()) !!},
             datasets: [{
                 label: 'Average Score',
-                data: [90, 86, 80, 84, 88, 78, 82],
+                data: {!! json_encode($competencies->map(fn($c) => $assessments->where('competency_id', $c->id)->avg('score') ?? 0)->toArray()) !!},
                 backgroundColor: '#F44336',
                 borderRadius: 8
             }]

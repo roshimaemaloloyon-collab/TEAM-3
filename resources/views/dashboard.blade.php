@@ -99,8 +99,8 @@
             </div>
             <div class="flex-1 overflow-y-auto space-y-4">
                 <div class="flex items-start gap-4 p-4 bg-slate-50 dark:bg-zinc-800/40 rounded-xl border border-slate-100 dark:border-zinc-800/50">
-                    <img class="w-9 h-9 rounded-full object-cover ring-2 ring-white dark:ring-zinc-900 shrink-0"
-                         src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=80&h=80&q=80" alt="Emily">
+                         <img class="w-9 h-9 rounded-full object-cover ring-2 ring-white dark:ring-zinc-900 shrink-0"
+                              src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><rect width='80' height='80' fill='%23EC4899'/><circle cx='40' cy='32' r='18' fill='white'/><text x='40' y='38' text-anchor='middle' fill='%23334155' font-size='14' font-family='sans-serif' font-weight='bold'>EW</text></svg>" alt="Emily">
                     <div>
                         <p class="text-sm font-semibold text-slate-800 dark:text-zinc-200">Emily Watson <span class="font-normal text-slate-400">recognized</span> David Miller</p>
                         <p class="text-xs text-slate-500 dark:text-zinc-400 mt-1 italic">"David worked late Friday to deploy critical fixes for the payment system. Pure customer focus!"</p>
@@ -111,8 +111,8 @@
                     </div>
                 </div>
                 <div class="flex items-start gap-4 p-4 bg-slate-50 dark:bg-zinc-800/40 rounded-xl border border-slate-100 dark:border-zinc-800/50">
-                    <img class="w-9 h-9 rounded-full object-cover ring-2 ring-white dark:ring-zinc-900 shrink-0"
-                         src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=80&h=80&q=80" alt="Marcus">
+                         <img class="w-9 h-9 rounded-full object-cover ring-2 ring-white dark:ring-zinc-900 shrink-0"
+                              src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><rect width='80' height='80' fill='%231E40AF'/><circle cx='40' cy='32' r='18' fill='white'/><text x='40' y='38' text-anchor='middle' fill='%23334155' font-size='14' font-family='sans-serif' font-weight='bold'>MV</text></svg>" alt="Marcus">
                     <div>
                         <p class="text-sm font-semibold text-slate-800 dark:text-zinc-200">Marcus Vance <span class="font-normal text-slate-400">recognized</span> Sarah Connor</p>
                         <p class="text-xs text-slate-500 dark:text-zinc-400 mt-1 italic">"Awesome planning session for Succession Pools. The visual matrices were exactly what the board wanted!"</p>
@@ -483,7 +483,7 @@
                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Identified Successors</span>
                 <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-zinc-800/40">
                     <div class="flex items-center gap-2.5">
-                        <img class="w-8 h-8 rounded-full object-cover" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=80&h=80&q=80" alt="Emily">
+                         <img class="w-8 h-8 rounded-full object-cover" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><rect width='80' height='80' fill='%231E40AF'/><circle cx='40' cy='32' r='18' fill='white'/><text x='40' y='38' text-anchor='middle' fill='%23334155' font-size='14' font-family='sans-serif' font-weight='bold'>EW</text></svg>" alt="Emily">
                         <div>
                             <p class="text-xs font-bold text-slate-800 dark:text-zinc-200">Emily Watson</p>
                             <p class="text-[10px] text-slate-400">Engineering Manager</p>
@@ -493,7 +493,7 @@
                 </div>
                 <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-zinc-800/40">
                     <div class="flex items-center gap-2.5">
-                        <img class="w-8 h-8 rounded-full object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&h=80&q=80" alt="David">
+                         <img class="w-8 h-8 rounded-full object-cover" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><rect width='80' height='80' fill='%231E40AF'/><circle cx='40' cy='32' r='18' fill='white'/><text x='40' y='38' text-anchor='middle' fill='%23334155' font-size='14' font-family='sans-serif' font-weight='bold'>DM</text></svg>" alt="David">
                         <div>
                             <p class="text-xs font-bold text-slate-800 dark:text-zinc-200">David Miller</p>
                             <p class="text-[10px] text-slate-400">Principal Architect</p>
@@ -517,7 +517,7 @@
                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Identified Successors</span>
                 <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-zinc-800/40">
                     <div class="flex items-center gap-2.5">
-                        <img class="w-8 h-8 rounded-full object-cover" src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=80&h=80&q=80" alt="Alex">
+                        <img class="w-8 h-8 rounded-full object-cover" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><rect width='80' height='80' fill='%231E40AF'/><circle cx='40' cy='32' r='18' fill='white'/><text x='40' y='38' text-anchor='middle' fill='%23334155' font-size='14' font-family='sans-serif' font-weight='bold'>AR</text></svg>" alt="Alex">
                         <div>
                             <p class="text-xs font-bold text-slate-800 dark:text-zinc-200">Alex River</p>
                             <p class="text-[10px] text-slate-400">Senior Infrastructure Lead</p>
@@ -553,7 +553,7 @@
         <div class="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-6 space-y-4 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <img class="w-10 h-10 rounded-full object-cover" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&h=100&q=80" alt="Emily">
+                    <img class="w-10 h-10 rounded-full object-cover" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%23EC4899'/><circle cx='50' cy='40' r='22' fill='white'/><text x='50' y='48' text-anchor='middle' fill='%23334155' font-size='16' font-family='sans-serif' font-weight='bold'>EW</text></svg>" alt="Emily">
                     <div>
                         <h4 class="font-bold text-slate-900 dark:text-white text-sm">Emily Watson</h4>
                         <p class="text-xs text-slate-400">Engineering Manager</p>
@@ -577,7 +577,7 @@
         <div class="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-6 space-y-4 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <img class="w-10 h-10 rounded-full object-cover" src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=100&h=100&q=80" alt="Marcus">
+                    <img class="w-10 h-10 rounded-full object-cover" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%231E40AF'/><circle cx='50' cy='40' r='22' fill='white'/><text x='50' y='48' text-anchor='middle' fill='%23334155' font-size='16' font-family='sans-serif' font-weight='bold'>MV</text></svg>" alt="Marcus">
                     <div>
                         <h4 class="font-bold text-slate-900 dark:text-white text-sm">Marcus Vance</h4>
                         <p class="text-xs text-slate-400">Operations Specialist</p>
@@ -601,7 +601,7 @@
         <div class="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-6 space-y-4 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <img class="w-10 h-10 rounded-full object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100&q=80" alt="David">
+                    <img class="w-10 h-10 rounded-full object-cover" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%231E40AF'/><circle cx='50' cy='40' r='22' fill='white'/><text x='50' y='48' text-anchor='middle' fill='%23334155' font-size='16' font-family='sans-serif' font-weight='bold'>DM</text></svg>" alt="David">
                     <div>
                         <h4 class="font-bold text-slate-900 dark:text-white text-sm">David Miller</h4>
                         <p class="text-xs text-slate-400">Principal Architect</p>

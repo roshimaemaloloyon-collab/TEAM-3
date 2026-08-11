@@ -107,10 +107,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('perfTrendAnalyticsChart'), {
         type: 'line',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {!! json_encode($perfTrend->pluck('month')->toArray()) !!},
             datasets: [{
                 label: 'Performance Score',
-                data: [4.2, 4.3, 4.4, 4.3, 4.5, 4.6],
+                data: {!! json_encode($perfTrend->pluck('avg_score')->toArray()) !!},
                 borderColor: '#F44336',
                 backgroundColor: 'rgba(244,67,54,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#F44336'
@@ -122,22 +122,22 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('kpiAnalyticsChart'), {
         type: 'bar',
         data: {
-            labels: ['Safety', 'Attendance', 'Customer Service', 'Efficiency'],
+            labels: {!! json_encode($kpiByCategory->pluck('kpi_category')->toArray()) !!},
             datasets: [{
                 label: 'KPI Score',
-                data: [4.8, 4.6, 4.7, 4.5],
+                data: {!! json_encode($kpiByCategory->pluck('avg_achievement')->toArray()) !!},
                 backgroundColor: '#3b82f6',
                 borderRadius: 8
             }]
         },
-        options: { ...chartDefaults, scales: { y: { beginAtZero: true, max: 5.0 } } }
+        options: { ...chartDefaults, scales: { y: { beginAtZero: true, max: 100 } } }
     });
 
     new Chart(document.getElementById('safetyAnalyticsChart'), {
         type: 'pie',
         data: {
-            labels: ['Excellent', 'Good', 'Average', 'Poor'],
-            datasets: [{ data: [60, 25, 10, 5], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'] }]
+            labels: {!! json_encode(array_keys($safetyDistribution)) !!},
+            datasets: [{ data: {!! json_encode(array_values($safetyDistribution)) !!}, backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'] }]
         },
         options: { ...chartDefaults, plugins: { legend: { position: 'bottom', labels: { font: { family: "'Poppins', sans-serif" } } } } }
     });
@@ -145,10 +145,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('attendanceAnalyticsChart'), {
         type: 'line',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {!! json_encode($attendanceTrend->pluck('month')->toArray()) !!},
             datasets: [{
                 label: 'Attendance %',
-                data: [95, 96, 94, 97, 95, 96],
+                data: {!! json_encode($attendanceTrend->pluck('avg_attendance')->toArray()) !!},
                 borderColor: '#10b981',
                 backgroundColor: 'rgba(16,185,129,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#10b981'
@@ -160,10 +160,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('ratingAnalyticsChart'), {
         type: 'bar',
         data: {
-            labels: ['Juan Dela Cruz', 'Maria Santos', 'Pedro Reyes', 'Ana Lim', 'Rosa Garcia'],
+            labels: {!! json_encode($driverLabels) !!},
             datasets: [{
                 label: 'Customer Rating',
-                data: [5.0, 4.8, 4.5, 4.9, 4.3],
+                data: {!! json_encode($customerByDriver->values()->toArray()) !!},
                 backgroundColor: '#f59e0b',
                 borderRadius: 8
             }]
@@ -174,10 +174,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('peerAnalyticsChart'), {
         type: 'bar',
         data: {
-            labels: ['Juan Dela Cruz', 'Maria Santos', 'Pedro Reyes', 'Ana Lim', 'Rosa Garcia'],
+            labels: {!! json_encode($driverLabels) !!},
             datasets: [{
                 label: 'Peer Score',
-                data: [4.8, 4.7, 4.6, 4.5, 4.3],
+                data: {!! json_encode($peerByDriver->values()->toArray()) !!},
                 backgroundColor: '#6366f1',
                 borderRadius: 8
             }]
@@ -188,13 +188,13 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('comparativeChart'), {
         type: 'bar',
         data: {
-            labels: ['Juan Dela Cruz', 'Maria Santos', 'Pedro Reyes', 'Ana Lim', 'Rosa Garcia'],
+            labels: {!! json_encode($comparative->keys()->map(fn($id) => $driverLabels[$id] ?? 'Driver')->toArray()) !!},
             datasets: [
-                { label: 'Performance', data: [4.9, 4.8, 4.6, 4.5, 4.3], backgroundColor: '#F44336', borderRadius: 8 },
-                { label: 'KPI', data: [4.8, 4.7, 4.5, 4.4, 4.2], backgroundColor: '#3b82f6', borderRadius: 8 }
+                { label: 'Performance', data: {!! json_encode($comparative->pluck('performance')->toArray()) !!}, backgroundColor: '#F44336', borderRadius: 8 },
+                { label: 'KPI', data: {!! json_encode($comparative->pluck('kpi')->toArray()) !!}, backgroundColor: '#3b82f6', borderRadius: 8 }
             ]
         },
-        options: { ...chartDefaults, scales: { y: { beginAtZero: true, max: 5.0 } } }
+        options: { ...chartDefaults, scales: { y: { beginAtZero: true, max: 100 } } }
     });
 });
 </script>

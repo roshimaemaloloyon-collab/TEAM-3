@@ -155,10 +155,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('certsPerMonthChart'), {
         type: 'bar',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {!! json_encode($certsPerMonth->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Certificates Issued',
-                data: [12, 18, 15, 22, 19, 25],
+                data: {!! json_encode($certsPerMonth->pluck('total')->toArray()) !!},
                 backgroundColor: '#10b981',
                 borderRadius: 8
             }]
@@ -169,8 +169,8 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('certDistChart'), {
         type: 'pie',
         data: {
-            labels: ['Road Safety', 'Defensive Driving', 'Customer Service', 'Vehicle Maintenance'],
-            datasets: [{ data: [30, 25, 20, 25], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#6366f1'] }]
+            labels: {!! json_encode($certDist->pluck('status')->toArray()) !!},
+            datasets: [{ data: {!! json_encode($certDist->pluck('total')->toArray()) !!}, backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#6366f1'] }]
         },
         options: { ...chartDefaults, plugins: { legend: { position: 'bottom', labels: { font: { family: "'Poppins', sans-serif" } } } } }
     });

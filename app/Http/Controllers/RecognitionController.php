@@ -8,31 +8,31 @@ class RecognitionController extends Controller
 {
     public function awards(Request $request)
     {
-        return view('admin.recognition.awards');
+        return view('admin.recognition');
     }
 
     public function badges(Request $request)
     {
-        return view('admin.recognition.badges');
+        return view('admin.recognition');
     }
 
     public function leaderboard(Request $request)
     {
-        return view('admin.recognition.leaderboard');
+        return view('admin.recognition');
     }
 
     public function history(Request $request)
     {
-        return view('admin.recognition.history');
+        return view('admin.recognition');
     }
 
     public function certificates(Request $request)
     {
-        return view('admin.recognition.certificates');
+        return view('admin.recognition');
     }
 
     public function analytics(Request $request)
     {
-        return view('admin.recognition.analytics');
+        return view('admin.recognition');
     }
 }

@@ -35,6 +35,26 @@ class CertificatesController extends Controller
             'expired' => Certificate::where('status', 'expired')->count(),
         ];
 
-        return view('admin.learning.certificates', compact('certificates', 'stats'));
+        if (config('database.default') === 'pgsql') {
+            $certsPerMonth = Certificate::selectRaw("TO_CHAR(issue_date, 'MM') as month_num, COUNT(*) as total")
+                ->whereNotNull('issue_date')
+                ->groupByRaw("TO_CHAR(issue_date, 'MM')")
+                ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        } else {
+            $certsPerMonth = Certificate::selectRaw('strftime("%m", issue_date) as month_num, COUNT(*) as total')
+                ->whereNotNull('issue_date')
+                ->groupBy('month_num')
+                ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        }
+
+        $certDist = Certificate::selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->get();
+
+        return view('admin.learning.certificates', compact('certificates', 'stats', 'certsPerMonth', 'certDist'));
     }
 }

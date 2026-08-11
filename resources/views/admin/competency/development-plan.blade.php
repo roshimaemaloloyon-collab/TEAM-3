@@ -38,17 +38,17 @@
         </div>
     </div>
     <div class="summary-card">
-        <div class="card-icon orange"><i class="fas fa-graduation-cap"></i></div>
+        <div class="card-icon orange"><i class="fas fa-pause-circle"></i></div>
         <div class="card-info">
-            <h3>{{ $stats['trainings'] }}</h3>
-            <p>Assigned Trainings</p>
+            <h3>{{ $stats['on_hold'] }}</h3>
+            <p>On Hold</p>
         </div>
     </div>
     <div class="summary-card">
-        <div class="card-icon purple"><i class="fas fa-book"></i></div>
+        <div class="card-icon purple"><i class="fas fa-chart-line"></i></div>
         <div class="card-info">
-            <h3>{{ $stats['learning_completed'] }}</h3>
-            <p>Learning Modules Completed</p>
+            <h3>{{ $stats['avg_progress'] }}</h3>
+            <p>Average Progress</p>
         </div>
     </div>
 </div>
@@ -179,10 +179,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('devProgressChart'), {
         type: 'line',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {!! json_encode($progressData->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Completion %',
-                data: [20, 35, 50, 65, 80, 95],
+                data: {!! json_encode($progressData->pluck('avg_progress')->toArray()) !!},
                 borderColor: '#10b981',
                 backgroundColor: 'rgba(16,185,129,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#10b981'
@@ -194,10 +194,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('trainingCompChart'), {
         type: 'bar',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {!! json_encode($trainingData->pluck('status')->toArray()) !!},
             datasets: [{
-                label: 'Completed',
-                data: [3, 5, 4, 7, 6, 8],
+                label: 'Plans',
+                data: {!! json_encode($trainingData->pluck('total')->toArray()) !!},
                 backgroundColor: '#3b82f6',
                 borderRadius: 8
             }]

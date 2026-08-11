@@ -87,7 +87,7 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--charcoal-light);
             min-height: 70px;
         }
 
@@ -115,7 +115,7 @@
         .nav-item {
             display: flex;
             align-items: center;
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem 1.25rem;
             margin: 0.15rem 0.75rem;
             border-radius: 0.75rem;
             color: #94a3b8;
@@ -148,7 +148,7 @@
 
         .user-area {
             padding: 1rem 1.25rem;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid var(--charcoal-light);
             display: flex;
             align-items: center;
             gap: 0.75rem;
@@ -352,7 +352,7 @@
 
         .welcome-text p {
             opacity: 0.9;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         .welcome-avatar {
@@ -689,27 +689,39 @@
     </div>
 
     <nav class="nav-menu">
-        <a href="#" class="nav-item active"><i class="fas fa-th-large"></i><span class="nav-text">Dashboard</span></a>
-        <a href="#" class="nav-item"><i class="fas fa-chart-line"></i><span class="nav-text">My Performance</span></a>
-        <a href="#" class="nav-item"><i class="fas fa-brain"></i><span class="nav-text">My Competencies</span></a>
-        <a href="#" class="nav-item"><i class="fas fa-book-open"></i><span class="nav-text">Learning Modules</span></a>
-        <a href="#" class="nav-item"><i class="fas fa-chalkboard-teacher"></i><span class="nav-text">My Trainings</span></a>
-        <a href="#" class="nav-item"><i class="fas fa-rocket"></i><span class="nav-text">Career Growth</span></a>
-        <a href="#" class="nav-item"><i class="fas fa-trophy"></i><span class="nav-text">Recognition & Achievements</span></a>
-        <a href="#" class="nav-item"><i class="fas fa-users"></i><span class="nav-text">Peer-to-Peer Evaluation</span></a>
-        <a href="#" class="nav-item"><i class="fas fa-file-alt"></i><span class="nav-text">Reports</span></a>
-        <a href="#" class="nav-item"><i class="fas fa-bell"></i><span class="nav-text">Notifications</span></a>
-        <a href="#" class="nav-item"><i class="fas fa-user"></i><span class="nav-text">My Profile</span></a>
-        <a href="#" class="nav-item"><i class="fas fa-cog"></i><span class="nav-text">Settings</span></a>
-        <a href="#" class="nav-item" style="color: #ef4444;"><i class="fas fa-sign-out-alt"></i><span class="nav-text">Logout</span></a>
+        <a href="{{ route('driver.dashboard') }}" class="nav-item active"><i class="fas fa-th-large"></i><span class="nav-text">Dashboard</span></a>
+
+        <div class="nav-section-header">My Work</div>
+        <a href="{{ route('driver.performance') }}" class="nav-item"><i class="fas fa-chart-line"></i><span class="nav-text">My Performance</span></a>
+        <a href="{{ route('driver.competencies') }}" class="nav-item"><i class="fas fa-brain"></i><span class="nav-text">My Competencies</span></a>
+        <a href="{{ route('driver.learning') }}" class="nav-item"><i class="fas fa-book-open"></i><span class="nav-text">Learning Modules</span></a>
+        <a href="{{ route('driver.trainings') }}" class="nav-item"><i class="fas fa-chalkboard-teacher"></i><span class="nav-text">My Trainings</span></a>
+
+        <div class="nav-section-header">Growth & Career</div>
+        <a href="{{ route('driver.career') }}" class="nav-item"><i class="fas fa-rocket"></i><span class="nav-text">Career Growth</span></a>
+        <a href="{{ route('driver.recognition') }}" class="nav-item"><i class="fas fa-trophy"></i><span class="nav-text">Recognition & Achievements</span></a>
+
+        <div class="nav-section-header">Community</div>
+        <a href="{{ route('driver.evaluations') }}" class="nav-item"><i class="fas fa-users"></i><span class="nav-text">Peer-to-Peer Evaluation</span></a>
+
+        <div class="nav-section-header">Account</div>
+        <a href="{{ route('driver.reports') }}" class="nav-item"><i class="fas fa-file-alt"></i><span class="nav-text">Reports</span></a>
+        <a href="{{ route('driver.notifications') }}" class="nav-item"><i class="fas fa-bell"></i><span class="nav-text">Notifications</span></a>
+        <a href="{{ route('driver.settings') }}" class="nav-item"><i class="fas fa-cog"></i><span class="nav-text">Settings</span></a>
+        <a href="{{ route('logout') }}" class="nav-item" style="color: #ef4444;" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <i class="fas fa-sign-out-alt"></i><span class="nav-text">Logout</span>
+        </a>
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none;">@csrf</form>
     </nav>
 
     <div class="user-area">
-        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100&q=80" alt="Driver" class="user-avatar">
-        <div class="user-info">
-            <div class="user-name">Juan Dela Cruz</div>
-            <div class="user-role">Professional Driver</div>
-        </div>
+        <a href="{{ url('driver/profile') }}" style="display:flex;align-items:center;gap:0.75rem;text-decoration:none;color:inherit;">
+            <img src="{{ $driver->photo ?: asset('drivers/photo/' . ($driver->id ?? 1)) }}" alt="Driver" class="user-avatar">
+            <div class="user-info">
+                <div class="user-name">{{ $driver->full_name ?? 'Driver' }}</div>
+                <div class="user-role">{{ $driver->vehicle_type ?? 'Professional Driver' }}</div>
+            </div>
+        </a>
     </div>
 </aside>
 
@@ -733,7 +745,7 @@
                 <i class="fas fa-bell"></i>
                 <span class="badge"></span>
             </button>
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100&q=80" alt="Profile" class="profile-img">
+            <img src="{{ $driver->photo ?: asset('drivers/photo/' . ($driver->id ?? 1)) }}" alt="Profile" class="profile-img">
         </div>
     </header>
 
@@ -742,10 +754,10 @@
         <!-- Welcome Card -->
         <div class="welcome-card">
             <div class="welcome-text">
-                <h2>Welcome back, Juan! 👋</h2>
+                <h2>Welcome back, {{ $driver->full_name ?? 'Driver' }}! 🚗</h2>
                 <p>Here's your driving performance summary for today.</p>
             </div>
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&h=200&q=80" alt="Juan Dela Cruz" class="welcome-avatar">
+            <img src="{{ $driver->photo ?: asset('drivers/photo/' . ($driver->id ?? 1)) }}" alt="{{ $driver->full_name ?? 'Driver' }}" class="welcome-avatar">
         </div>
 
         <!-- Summary Cards -->
@@ -753,43 +765,43 @@
             <div class="summary-card">
                 <div class="card-icon blue"><i class="fas fa-star"></i></div>
                 <div class="card-info">
-                    <h3>4.8</h3>
+                    <h3>{{ number_format($myOverallScore ?? $driver->performance_score ?? 0, 1) }}</h3>
                     <p>Overall Performance Score</p>
                 </div>
             </div>
             <div class="summary-card">
                 <div class="card-icon green"><i class="fas fa-smile"></i></div>
                 <div class="card-info">
-                    <h3>4.9</h3>
+                    <h3>{{ number_format($myPerformance?->customer_rating ?? 4.9, 1) }}</h3>
                     <p>Customer Rating</p>
                 </div>
             </div>
             <div class="summary-card">
                 <div class="card-icon purple"><i class="fas fa-handshake"></i></div>
                 <div class="card-info">
-                    <h3>4.6</h3>
+                    <h3>{{ number_format($myAvgScore ?? 4.6, 1) }}</h3>
                     <p>Peer Evaluation Score</p>
                 </div>
             </div>
             <div class="summary-card">
                 <div class="card-icon orange"><i class="fas fa-certificate"></i></div>
                 <div class="card-info">
-                    <h3>12</h3>
+                    <h3>{{ $myCertificates ?? 12 }}</h3>
                     <p>Trainings Completed</p>
                 </div>
             </div>
             <div class="summary-card">
                 <div class="card-icon teal"><i class="fas fa-book-reader"></i></div>
                 <div class="card-info">
-                    <h3>85%</h3>
+                    <h3>{{ $myAttendanceRate ?? 85 }}%</h3>
                     <p>Learning Progress</p>
                 </div>
             </div>
             <div class="summary-card">
                 <div class="card-icon gold"><i class="fas fa-medal"></i></div>
                 <div class="card-info">
-                    <h3>8</h3>
-                    <p>Achievement Badges</p>
+                    <h3>{{ $myEvaluations ?? 8 }}</h3>
+                    <p>Peer Evaluations</p>
                 </div>
             </div>
         </div>
@@ -821,141 +833,115 @@
             <!-- Recent Performance -->
             <div class="section-card">
                 <h3><i class="fas fa-clipboard-check"></i> Recent Performance Summary</h3>
-                <div class="list-item">
-                    <div class="item-icon blue"><i class="fas fa-route"></i></div>
-                    <div class="item-content">
-                        <div class="item-title">Safe Driving Assessment</div>
-                        <div class="item-subtitle">July 2026 • Score: 96%</div>
-                        <div class="progress-bar"><div class="progress-fill" style="width: 96%"></div></div>
+                @forelse($recentPerformances ?? [] as $perf)
+                    <div class="list-item">
+                        <div class="item-icon blue"><i class="fas fa-route"></i></div>
+                        <div class="item-content">
+                            <div class="item-title">Performance Review</div>
+                            <div class="item-subtitle">{{ $perf->recorded_at ? \Carbon\Carbon::parse($perf->recorded_at)->format('F Y') : 'N/A' }} • Score: {{ number_format($perf->overall_score ?? 0, 0) }}%</div>
+                            <div class="progress-bar"><div class="progress-fill" style="width: {{ min(100, $perf->overall_score ?? 0) }}%"></div></div>
+                        </div>
                     </div>
-                </div>
-                <div class="list-item">
-                    <div class="item-icon green"><i class="fas fa-gas-pump"></i></div>
-                    <div class="item-content">
-                        <div class="item-title">Fuel Efficiency Check</div>
-                        <div class="item-subtitle">June 2026 • Score: 92%</div>
-                        <div class="progress-bar"><div class="progress-fill" style="width: 92%"></div></div>
+                @empty
+                    <div class="list-item">
+                        <div class="item-icon blue"><i class="fas fa-route"></i></div>
+                        <div class="item-content">
+                            <div class="item-title">No performance records yet</div>
+                            <div class="item-subtitle">Start completing trips to build your performance history.</div>
+                        </div>
                     </div>
-                </div>
-                <div class="list-item">
-                    <div class="item-icon purple"><i class="fas fa-user-check"></i></div>
-                    <div class="item-content">
-                        <div class="item-title">Customer Service Review</div>
-                        <div class="item-subtitle">June 2026 • Score: 98%</div>
-                        <div class="progress-bar"><div class="progress-fill" style="width: 98%"></div></div>
-                    </div>
-                </div>
+                @endforelse
             </div>
 
             <!-- Upcoming Training -->
             <div class="section-card">
                 <h3><i class="fas fa-calendar-alt"></i> Upcoming Training Schedule</h3>
-                <div class="list-item">
-                    <div class="item-icon orange"><i class="fas fa-shield-alt"></i></div>
-                    <div class="item-content">
-                        <div class="item-title">Defensive Driving Workshop</div>
-                        <div class="item-subtitle">July 15, 2026 • 9:00 AM</div>
+                @forelse($upcomingTrainingList ?? [] as $training)
+                    <div class="list-item">
+                        <div class="item-icon orange"><i class="fas fa-shield-alt"></i></div>
+                        <div class="item-content">
+                            <div class="item-title">{{ $training->title }}</div>
+                            <div class="item-subtitle">{{ $training->start_datetime ? \Carbon\Carbon::parse($training->start_datetime)->format('F d, Y • h:i A') : 'TBA' }}</div>
+                        </div>
+                        <span class="item-badge badge-warning">{{ ucfirst($training->status) }}</span>
                     </div>
-                    <span class="item-badge badge-warning">Upcoming</span>
-                </div>
-                <div class="list-item">
-                    <div class="item-icon blue"><i class="fas fa-first-aid"></i></div>
-                    <div class="item-content">
-                        <div class="item-title">First Aid Certification</div>
-                        <div class="item-subtitle">July 22, 2026 • 1:00 PM</div>
+                @empty
+                    <div class="list-item">
+                        <div class="item-icon orange"><i class="fas fa-calendar"></i></div>
+                        <div class="item-content">
+                            <div class="item-title">No upcoming trainings</div>
+                            <div class="item-subtitle">New training schedules will appear here.</div>
+                        </div>
                     </div>
-                    <span class="item-badge badge-info">Scheduled</span>
-                </div>
-                <div class="list-item">
-                    <div class="item-icon green"><i class="fas fa-leaf"></i></div>
-                    <div class="item-content">
-                        <div class="item-title">Eco-Driving Techniques</div>
-                        <div class="item-subtitle">August 5, 2026 • 10:00 AM</div>
-                    </div>
-                    <span class="item-badge badge-success">Enrolled</span>
-                </div>
+                @endforelse
             </div>
 
             <!-- Peer Evaluation -->
             <div class="section-card">
                 <h3><i class="fas fa-comments"></i> Recent Peer Evaluation Feedback</h3>
-                <div class="list-item">
-                    <div class="item-icon purple"><i class="fas fa-quote-left"></i></div>
-                    <div class="item-content">
-                        <div class="item-title">"Excellent teamwork on the north route"</div>
-                        <div class="item-subtitle">From: Maria Santos • July 10, 2026</div>
+                @forelse($recentEvaluations ?? [] as $evaluation)
+                    <div class="list-item">
+                        <div class="item-icon purple"><i class="fas fa-quote-left"></i></div>
+                        <div class="item-content">
+                            <div class="item-title">"{{ \Illuminate\Support\Str::limit($evaluation->recommendations ?? $evaluation->driver_feedback ?? 'No feedback provided', 60) }}"</div>
+                            <div class="item-subtitle">Score: {{ number_format($evaluation->overall_rating ?? 0, 1) }}/5 • {{ $evaluation->created_at ? \Carbon\Carbon::parse($evaluation->created_at)->format('M d, Y') : 'N/A' }}</div>
+                        </div>
                     </div>
-                </div>
-                <div class="list-item">
-                    <div class="item-icon blue"><i class="fas fa-quote-left"></i></div>
-                    <div class="item-content">
-                        <div class="item-title">"Always punctual and reliable"</div>
-                        <div class="item-subtitle">From: Pedro Reyes • July 8, 2026</div>
+                @empty
+                    <div class="list-item">
+                        <div class="item-icon purple"><i class="fas fa-users"></i></div>
+                        <div class="item-content">
+                            <div class="item-title">No evaluations yet</div>
+                            <div class="item-subtitle">Peer feedback will appear here once available.</div>
+                        </div>
                     </div>
-                </div>
-                <div class="list-item">
-                    <div class="item-icon green"><i class="fas fa-quote-left"></i></div>
-                    <div class="item-content">
-                        <div class="item-title">"Great help during peak hours"</div>
-                        <div class="item-subtitle">From: Ana Lim • July 5, 2026</div>
-                    </div>
-                </div>
+                @endforelse
             </div>
 
             <!-- Recognition -->
             <div class="section-card">
                 <h3><i class="fas fa-award"></i> Latest Recognition & Achievements</h3>
-                <div class="list-item">
-                    <div class="item-icon gold"><i class="fas fa-medal"></i></div>
-                    <div class="item-content">
-                        <div class="item-title">Safe Driver of the Month</div>
-                        <div class="item-subtitle">June 2026 • 100% safety record</div>
+                @forelse($topPerformers->take(3) as $perf)
+                    <div class="list-item">
+                        <div class="item-icon gold"><i class="fas fa-medal"></i></div>
+                        <div class="item-content">
+                            <div class="item-title">{{ $perf['driver']->name ?? 'Top Performer' }}</div>
+                            <div class="item-subtitle">Score: {{ number_format($perf['performance_score'] ?? 0, 1) }} • {{ $perf['rating'] ?? '' }}</div>
+                        </div>
+                        <span class="item-badge badge-purple">Top Performer</span>
                     </div>
-                    <span class="item-badge badge-purple">Badge</span>
-                </div>
-                <div class="list-item">
-                    <div class="item-icon orange"><i class="fas fa-star"></i></div>
-                    <div class="item-content">
-                        <div class="item-title">Customer Satisfaction Award</div>
-                        <div class="item-subtitle">Q2 2026 • 4.9/5 rating</div>
+                @empty
+                    <div class="list-item">
+                        <div class="item-icon gold"><i class="fas fa-medal"></i></div>
+                        <div class="item-content">
+                            <div class="item-title">Keep up the good work</div>
+                            <div class="item-subtitle">Achievements and badges will appear here.</div>
+                        </div>
                     </div>
-                    <span class="item-badge badge-warning">Award</span>
-                </div>
-                <div class="list-item">
-                    <div class="item-icon blue"><i class="fas fa-clock"></i></div>
-                    <div class="item-content">
-                        <div class="item-title">Perfect Attendance Streak</div>
-                        <div class="item-subtitle">6 consecutive months</div>
-                    </div>
-                    <span class="item-badge badge-info">Streak</span>
-                </div>
+                @endforelse
             </div>
         </div>
 
         <!-- Notifications -->
         <div class="section-card" style="margin-bottom: 2rem;">
             <h3><i class="fas fa-bullhorn"></i> Notifications and Announcements</h3>
-            <div class="list-item">
-                <div class="item-icon blue"><i class="fas fa-info-circle"></i></div>
-                <div class="item-content">
-                    <div class="item-title">New safety protocol effective July 20, 2026</div>
-                    <div class="item-subtitle">HR Department • 2 hours ago</div>
+            @forelse($notifications ?? [] as $notification)
+                <div class="list-item">
+                    <div class="item-icon {{ $notification->priority === 'urgent' || $notification->priority === 'high' ? 'orange' : 'blue' }}"><i class="fas fa-{{ $notification->type === 'announcement' ? 'bullhorn' : 'info-circle' }}"></i></div>
+                    <div class="item-content">
+                        <div class="item-title">{{ $notification->title }}</div>
+                        <div class="item-subtitle">{{ $notification->created_at ? \Carbon\Carbon::parse($notification->created_at)->diffForHumans() : 'N/A' }}</div>
+                    </div>
                 </div>
-            </div>
-            <div class="list-item">
-                <div class="item-icon green"><i class="fas fa-check-circle"></i></div>
-                <div class="item-content">
-                    <div class="item-title">Your "Defensive Driving" training has been approved</div>
-                    <div class="item-subtitle">Training Dept • 1 day ago</div>
+            @empty
+                <div class="list-item">
+                    <div class="item-icon blue"><i class="fas fa-check-circle"></i></div>
+                    <div class="item-content">
+                        <div class="item-title">No new notifications</div>
+                        <div class="item-subtitle">You're all caught up!</div>
+                    </div>
                 </div>
-            </div>
-            <div class="list-item">
-                <div class="item-icon orange"><i class="fas fa-exclamation-triangle"></i></div>
-                <div class="item-content">
-                    <div class="item-title">Vehicle maintenance scheduled for July 18, 2026</div>
-                    <div class="item-subtitle">Fleet Management • 3 days ago</div>
-                </div>
-            </div>
+            @endforelse
         </div>
 
         <!-- Quick Actions -->
@@ -1021,13 +1007,15 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Performance Trend Chart
         const perfCtx = document.getElementById('performanceChart').getContext('2d');
+        const perfLabels = {!! json_encode($performanceTrend->pluck('month')) !!};
+        const perfData = {!! json_encode($performanceTrend->pluck('avg_score')) !!};
         new Chart(perfCtx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                labels: perfLabels.length > 0 ? perfLabels : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
                 datasets: [{
                     label: 'Performance Score',
-                    data: [4.2, 4.4, 4.3, 4.5, 4.6, 4.7, 4.8],
+                    data: perfData.length > 0 ? perfData : [4.2, 4.4, 4.3, 4.5, 4.6, 4.7, 4.8],
                     borderColor: '#F44336',
                     backgroundColor: 'rgba(244, 67, 54, 0.1)',
                     fill: true,
@@ -1058,13 +1046,15 @@
 
         // Competency Progress Chart
         const compCtx = document.getElementById('competencyChart').getContext('2d');
+        const competencyLabels = {!! json_encode($competencyScores->map(fn($c) => $c->competency->name ?? 'Competency')->toArray()) !!};
+        const competencyData = {!! json_encode($competencyScores->pluck('score')->toArray()) !!};
         new Chart(compCtx, {
             type: 'bar',
             data: {
-                labels: ['Safety', 'Customer Service', 'Navigation', 'Vehicle Maintenance', 'Time Management'],
+                labels: competencyLabels.length > 0 ? competencyLabels : ['Safety', 'Customer Service', 'Navigation', 'Vehicle Maintenance', 'Time Management'],
                 datasets: [{
                     label: 'Competency Level',
-                    data: [95, 92, 88, 85, 90],
+                    data: competencyData.length > 0 ? competencyData : [95, 92, 88, 85, 90],
                     backgroundColor: [
                         '#F44336',
                         '#EF5350',
@@ -1101,7 +1091,7 @@
             data: {
                 labels: ['Completed', 'In Progress', 'Pending'],
                 datasets: [{
-                    data: [12, 3, 2],
+                    data: [{{ $myCompletedTrainings ?? 12 }}, {{ ($myTrainings ?? 15) - ($myCompletedTrainings ?? 12) }}, {{ max(0, ($upcomingTrainings ?? 2)) }}],
                     backgroundColor: ['#F44336', '#f1f5f9', '#cbd5e1'],
                     borderWidth: 0,
                     hoverOffset: 8

@@ -126,65 +126,35 @@
                     <th>Driver Name</th>
                     <th>Leadership Score</th>
                     <th>Leadership Competency</th>
-                    <th>Strengths</th>
-                    <th>Areas for Improvement</th>
-                    <th>Assessment Date</th>
+                    <th>Recommended Role</th>
+                    <th>Readiness Level</th>
                     <th>Status</th>
                     <th style="text-align: center;">Actions</th>
                 </tr>
             </thead>
             <tbody>
+                @forelse($candidates as $c)
                 <tr>
-                    <td><strong>#DRV-2026-0001</strong></td>
-                    <td><strong>Juan Dela Cruz</strong></td>
-                    <td><strong>4.8/5</strong></td>
-                    <td>Decision Making, Communication</td>
-                    <td>Decision Making, Communication</td>
-                    <td>Delegation, Time Management</td>
-                    <td>July 10, 2026</td>
-                    <td><span class="status-badge status-active">Ready Now</span></td>
+                    <td><strong>#DRV-2026-{{ sprintf('%04d', $c['driver']->id ?? 1) }}</strong></td>
+                    <td><strong>{{ $c['driver']->full_name ?? 'Driver' }}</strong></td>
+                    <td><strong>{{ $c['performance_score'] }}/5</strong></td>
+                    <td>{{ $c['competency_score'] }}% Average</td>
+                    <td>{{ $c['recommended_role'] }}</td>
+                    <td><span class="status-badge {{ $c['readiness'] === 'High Potential' ? 'badge-success' : 'status-pending' }}">{{ $c['readiness'] }}</span></td>
+                    <td><span class="status-badge status-active">Active</span></td>
                     <td style="text-align: center;">
                         <div style="display: flex; gap: 0.4rem; justify-content: center;">
-                            <button class="icon-btn" title="View" onclick="showToast('View assessment')"><i class="fas fa-eye"></i></button>
+                            <button class="icon-btn" title="View" onclick="showToast('View leadership assessment for {{ $c['driver']->full_name }}')"><i class="fas fa-eye"></i></button>
                             <button class="icon-btn" title="Edit" onclick="showToast('Edit assessment')"><i class="fas fa-edit"></i></button>
                             <button class="icon-btn" title="Archive" onclick="showToast('Archive assessment')"><i class="fas fa-archive"></i></button>
                         </div>
                     </td>
                 </tr>
+                @empty
                 <tr>
-                    <td><strong>#DRV-2026-0002</strong></td>
-                    <td><strong>Maria Santos</strong></td>
-                    <td><strong>4.5/5</strong></td>
-                    <td>Team Building, Coaching</td>
-                    <td>Team Building, Coaching</td>
-                    <td>Strategic Planning</td>
-                    <td>July 12, 2026</td>
-                    <td><span class="status-badge status-pending">1-2 Years</span></td>
-                    <td style="text-align: center;">
-                        <div style="display: flex; gap: 0.4rem; justify-content: center;">
-                            <button class="icon-btn" title="View" onclick="showToast('View assessment')"><i class="fas fa-eye"></i></button>
-                            <button class="icon-btn" title="Edit" onclick="showToast('Edit assessment')"><i class="fas fa-edit"></i></button>
-                            <button class="icon-btn" title="Archive" onclick="showToast('Archive assessment')"><i class="fas fa-archive"></i></button>
-                        </div>
-                    </td>
+                    <td colspan="8" style="text-align:center; padding:2rem; color:var(--text-muted);">No leadership potential candidates found.</td>
                 </tr>
-                <tr>
-                    <td><strong>#DRV-2026-0003</strong></td>
-                    <td><strong>Pedro Reyes</strong></td>
-                    <td><strong>3.9/5</strong></td>
-                    <td>Problem Solving</td>
-                    <td>Problem Solving</td>
-                    <td>Communication, Delegation</td>
-                    <td>July 8, 2026</td>
-                    <td><span class="status-badge status-review">2-3 Years</span></td>
-                    <td style="text-align: center;">
-                        <div style="display: flex; gap: 0.4rem; justify-content: center;">
-                            <button class="icon-btn" title="View" onclick="showToast('View assessment')"><i class="fas fa-eye"></i></button>
-                            <button class="icon-btn" title="Edit" onclick="showToast('Edit assessment')"><i class="fas fa-edit"></i></button>
-                            <button class="icon-btn" title="Archive" onclick="showToast('Archive assessment')"><i class="fas fa-archive"></i></button>
-                        </div>
-                    </td>
-                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

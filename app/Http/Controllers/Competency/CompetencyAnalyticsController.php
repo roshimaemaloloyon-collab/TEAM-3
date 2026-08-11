@@ -27,15 +27,70 @@ class CompetencyAnalyticsController extends Controller
 
         $assessments = $query->get();
 
+        $avgScore = $assessments->avg('score') ?? 0;
+        $highest = $assessments->max('score') ?? 0;
+        $lowest = $assessments->min('score') ?? 0;
+
         $stats = [
-            'avg_score' => $assessments->avg('score') ? number_format($assessments->avg('score'), 2) : '0.00',
-            'highest' => $assessments->max('score') ?: 'N/A',
-            'lowest' => $assessments->min('score') ?: 'N/A',
+            'avg_score' => number_format($avgScore, 2),
+            'highest' => number_format($highest, 2),
+            'lowest' => number_format($lowest, 2),
             'growth_rate' => '+2.4%',
         ];
 
         $competencies = \App\Models\Competency::all();
 
-        return view('admin.competency.competency-analytics', compact('assessments', 'stats', 'competencies'));
+        $compDist = CompetencyAssessment::selectRaw('competency_id, AVG(score) as avg_score')
+            ->groupBy('competency_id')
+            ->get();
+
+        $skillDist = CompetencyAssessment::selectRaw('competency_id, COUNT(*) as total')
+            ->groupBy('competency_id')
+            ->get();
+
+        if (config('database.default') === 'pgsql') {
+            $trend = CompetencyAssessment::selectRaw("TO_CHAR(assessed_at, 'MM') as month_num, AVG(score) as avg_score")
+                ->whereNotNull('assessed_at')
+                ->when($year, fn($q) => $q->whereYear('assessed_at', $year))
+                ->groupByRaw("TO_CHAR(assessed_at, 'MM')")
+                ->orderBy('month_num')
+                ->limit(6)
+                ->get();
+
+            $growth = CompetencyAssessment::selectRaw("TO_CHAR(assessed_at, 'MM') as month_num, AVG(score) as avg_score")
+                ->whereNotNull('assessed_at')
+                ->when($year, fn($q) => $q->whereYear('assessed_at', $year))
+                ->groupByRaw("TO_CHAR(assessed_at, 'MM')")
+                ->orderBy('month_num')
+                ->get();
+        } else {
+            $trend = CompetencyAssessment::selectRaw('strftime("%m", assessed_at) as month_num, AVG(score) as avg_score')
+                ->whereNotNull('assessed_at')
+                ->when($year, fn($q) => $q->whereYear('assessed_at', $year))
+                ->groupBy('month_num')
+                ->orderBy('month_num')
+                ->limit(6)
+                ->get();
+
+            $growth = CompetencyAssessment::selectRaw('strftime("%m", assessed_at) as month_num, AVG(score) as avg_score')
+                ->whereNotNull('assessed_at')
+                ->when($year, fn($q) => $q->whereYear('assessed_at', $year))
+                ->groupBy('month_num')
+                ->orderBy('month_num')
+                ->get();
+        }
+
+        $comparative = $assessments->groupBy('driver_id')->map(fn($items) => $items->avg('score') ?? 0);
+
+        return view('admin.competency.competency-analytics', compact(
+            'assessments',
+            'stats',
+            'competencies',
+            'compDist',
+            'skillDist',
+            'trend',
+            'growth',
+            'comparative'
+        ));
     }
 }

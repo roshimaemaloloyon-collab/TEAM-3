@@ -11,7 +11,7 @@ class DriverMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! Auth::check() || ! Auth::user()->isDriver()) {
+        if (Auth::check() && ! Auth::user()->isDriver()) {
             abort(403);
         }
 

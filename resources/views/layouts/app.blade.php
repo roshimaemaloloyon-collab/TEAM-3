@@ -206,7 +206,7 @@
         <div class="p-3 border-t border-slate-200 dark:border-forest-light shrink-0">
             <div class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-forest-light/40 transition-all">
                 <img class="w-9 h-9 rounded-full border-2 border-brand-soft object-cover"
-                     src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Sarah Connor">
+                     src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><rect width='80' height='80' fill='%23EC4899'/><circle cx='40' cy='32' r='18' fill='white'/><text x='40' y='38' text-anchor='middle' fill='%23334155' font-size='14' font-family='sans-serif' font-weight='bold'>SC</text></svg>" alt="Sarah Connor">
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-semibold text-slate-800 dark:text-zinc-200 truncate">Sarah Connor</p>
                     <p class="text-xs text-slate-400 dark:text-zinc-500 truncate">HR Director</p>

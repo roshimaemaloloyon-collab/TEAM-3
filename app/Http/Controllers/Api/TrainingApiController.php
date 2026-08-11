@@ -2,30 +2,70 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\ApiController;
 use App\Models\Training;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class TrainingApiController extends Controller
+class TrainingApiController extends ApiController
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): \Illuminate\Http\JsonResponse
     {
-        $trainings = Training::query()
-            ->when($request->filled('search'), function ($q, $search) {
+        $query = Training::query();
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                   ->orWhere('instructor', 'like', "%{$search}%");
-            })
-            ->when($request->filled('category'), fn ($q, $category) => $q->where('category', $category))
-            ->when($request->filled('status'), fn ($q, $status) => $q->where('status', $status))
-            ->latest()
-            ->paginate(15);
+            });
+        }
 
-        return response()->json($trainings);
+        if ($category = $request->input('category')) {
+            $query->where('category', $category);
+        }
+
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
+        }
+
+        $perPage = (int) $request->input('per_page', 15);
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDir = $request->input('sort_dir', 'desc');
+
+        $trainings = $query->orderBy($sortBy, $sortDir)->paginate($perPage);
+
+        return $this->success($trainings, 'Trainings retrieved successfully.', 200, [
+            'total' => $trainings->total(),
+            'current_page' => $trainings->currentPage(),
+            'last_page' => $trainings->lastPage(),
+            'per_page' => $trainings->perPage(),
+        ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function dashboard(): \Illuminate\Http\JsonResponse
+    {
+        $totalTrainings = Training::count();
+        $upcomingTrainings = Training::where('status', 'upcoming')->count();
+        $ongoingTrainings = Training::where('status', 'ongoing')->count();
+        $completedTrainings = Training::where('status', 'completed')->count();
+        $registeredDrivers = \App\Models\TrainingRegistration::count();
+        $attendanceRate = \App\Models\Attendance::where('status', 'present')->count() / max(\App\Models\Attendance::count(), 1) * 100;
+        $certificatesIssued = \App\Models\Certificate::count();
+        $avgTrainingScore = \App\Models\TrainingEvaluation::avg('overall_rating');
+
+        return $this->success([
+            'total_trainings' => $totalTrainings,
+            'upcoming_trainings' => $upcomingTrainings,
+            'ongoing_trainings' => $ongoingTrainings,
+            'completed_trainings' => $completedTrainings,
+            'registered_drivers' => $registeredDrivers,
+            'attendance_rate' => round($attendanceRate, 2),
+            'certificates_issued' => $certificatesIssued,
+            'average_training_score' => round($avgTrainingScore, 2),
+        ], 'Dashboard data retrieved successfully.');
+    }
+
+    public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
@@ -40,20 +80,31 @@ class TrainingApiController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return $this->error('Validation failed.', 422, $validator->errors());
         }
 
         $training = Training::create($request->all());
 
-        return response()->json($training, 201);
+        return $this->success($training, 'Training created successfully.', 201);
     }
 
-    public function show(Training $training): JsonResponse
+    public function show(Training $training): \Illuminate\Http\JsonResponse
     {
-        return response()->json($training->load('registrations.driver', 'attendance.driver', 'evaluations.driver', 'certificates.driver'));
+        return $this->success([
+            'training' => $training,
+            'status_label' => $training->getStatusLabel(),
+            'status_color' => $training->getStatusColor(),
+            'is_full' => $training->isFull(),
+            'available_slots' => $training->getAvailableSlots(),
+            'progress' => $training->getProgress(),
+            'duration_hours' => $training->getDurationHours(),
+            'attendance_rate' => $training->getAttendanceRate(),
+            'average_rating' => $training->getAverageRating(),
+            'certificates_issued' => $training->getCertificatesIssued(),
+        ], 'Training retrieved successfully.');
     }
 
-    public function update(Request $request, Training $training): JsonResponse
+    public function update(Request $request, Training $training): \Illuminate\Http\JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'title' => 'sometimes|string|max:255',
@@ -68,41 +119,30 @@ class TrainingApiController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return $this->error('Validation failed.', 422, $validator->errors());
+        }
+
+        if (!$training->canBeEdited()) {
+            return $this->error('This training cannot be edited.', 422);
         }
 
         $training->update($request->all());
 
-        return response()->json($training);
+        return $this->success([
+            'training' => $training->fresh(),
+            'status_label' => $training->getStatusLabel(),
+            'status_color' => $training->getStatusColor(),
+        ], 'Training updated successfully.');
     }
 
-    public function destroy(Training $training): JsonResponse
+    public function destroy(Training $training): \Illuminate\Http\JsonResponse
     {
+        if (!$training->canBeCancelled()) {
+            return $this->error('This training cannot be cancelled.', 422);
+        }
+
         $training->delete();
 
-        return response()->json(null, 204);
-    }
-
-    public function dashboard(): JsonResponse
-    {
-        $totalTrainings = Training::count();
-        $upcomingTrainings = Training::where('status', 'upcoming')->count();
-        $ongoingTrainings = Training::where('status', 'ongoing')->count();
-        $completedTrainings = Training::where('status', 'completed')->count();
-        $registeredDrivers = \App\Models\TrainingRegistration::count();
-        $attendanceRate = \App\Models\Attendance::where('status', 'present')->count() / max(\App\Models\Attendance::count(), 1) * 100;
-        $certificatesIssued = \App\Models\Certificate::count();
-        $avgTrainingScore = \App\Models\TrainingEvaluation::avg('overall_rating');
-
-        return response()->json([
-            'total_trainings' => $totalTrainings,
-            'upcoming_trainings' => $upcomingTrainings,
-            'ongoing_trainings' => $ongoingTrainings,
-            'completed_trainings' => $completedTrainings,
-            'registered_drivers' => $registeredDrivers,
-            'attendance_rate' => round($attendanceRate, 2),
-            'certificates_issued' => $certificatesIssued,
-            'average_training_score' => round($avgTrainingScore, 2),
-        ]);
+        return $this->success(null, 'Training deleted successfully.');
     }
 }

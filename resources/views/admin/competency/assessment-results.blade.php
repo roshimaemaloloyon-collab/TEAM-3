@@ -174,10 +174,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('skillGapChart'), {
         type: 'doughnut',
         data: {
-            labels: ['Safe Driving', 'Customer Service', 'Communication', 'Navigation', 'Professionalism', 'Time Management', 'Vehicle Care'],
+            labels: {!! json_encode($skillGapData->pluck('competency.name')->toArray()) !!},
             datasets: [{
-                data: [90, 86, 80, 84, 88, 78, 82],
-                backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#6366f1', '#8b5cf6', '#f97316', '#14b8a6']
+                data: {!! json_encode($skillGapData->pluck('avg_score')->toArray()) !!},
+                backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#6366f1', '#8b5cf6', '#f97316', '#14b8a6', '#f43f5e', '#84cc16', '#06b6d4']
             }]
         },
         options: { ...chartDefaults, plugins: { legend: { position: 'bottom', labels: { font: { family: "'Poppins', sans-serif" } } } } }
@@ -186,10 +186,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('compTrendChart'), {
         type: 'line',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {!! json_encode($trendData->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Average Score',
-                data: [82, 83, 84, 83, 85, 86],
+                data: {!! json_encode($trendData->pluck('avg_score')->toArray()) !!},
                 borderColor: '#F44336',
                 backgroundColor: 'rgba(244,67,54,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#F44336'

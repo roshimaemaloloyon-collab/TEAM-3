@@ -33,6 +33,38 @@ class TrainingReportsController extends Controller
             'training' => Report::where('category', 'training')->where('report_type', 'training')->count(),
         ];
 
-        return view('admin.training.reports', compact('reports', 'stats'));
+        if (config('database.default') === 'pgsql') {
+            $monthlyReports = Report::selectRaw("TO_CHAR(generated_at, 'MM') as month_num, COUNT(*) as total")->where('category', 'training')
+            ->whereNotNull('generated_at')
+            ->groupByRaw("TO_CHAR(generated_at, 'MM')")
+            ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        } else {
+            $monthlyReports = Report::selectRaw('strftime("%m", generated_at) as month_num, COUNT(*) as total')->where('category', 'training')
+            ->whereNotNull('generated_at')
+            ->groupBy('month_num')
+            ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        }
+
+        if (config('database.default') === 'pgsql') {
+            $reportTrend = Report::selectRaw("TO_CHAR(generated_at, 'MM') as month_num, COUNT(*) as total")->where('category', 'training')
+            ->whereNotNull('generated_at')
+            ->groupByRaw("TO_CHAR(generated_at, 'MM')")
+            ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        } else {
+            $reportTrend = Report::selectRaw('strftime("%m", generated_at) as month_num, COUNT(*) as total')->where('category', 'training')
+            ->whereNotNull('generated_at')
+            ->groupBy('month_num')
+            ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        }
+
+        return view('admin.training.reports', compact('reports', 'stats', 'monthlyReports', 'reportTrend'));
     }
 }

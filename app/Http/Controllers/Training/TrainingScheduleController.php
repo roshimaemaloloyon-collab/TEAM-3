@@ -40,6 +40,26 @@ class TrainingScheduleController extends Controller
             'total' => Training::count(),
         ];
 
-        return view('admin.training.schedule', compact('trainings', 'stats'));
+        if (config('database.default') === 'pgsql') {
+            $scheduleData = Training::selectRaw("TO_CHAR(start_datetime, 'MM') as month_num, COUNT(*) as total")
+                ->whereNotNull('start_datetime')
+                ->groupByRaw("TO_CHAR(start_datetime, 'MM')")
+                ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        } else {
+            $scheduleData = Training::selectRaw('strftime("%m", start_datetime) as month_num, COUNT(*) as total')
+                ->whereNotNull('start_datetime')
+                ->groupBy('month_num')
+                ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        }
+
+        $statusData = Training::selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->get();
+
+        return view('admin.training.schedule', compact('trainings', 'stats', 'scheduleData', 'statusData'));
     }
 }

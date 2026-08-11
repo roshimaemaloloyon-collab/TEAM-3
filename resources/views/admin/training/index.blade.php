@@ -152,7 +152,7 @@
         <button class="nav-tab" onclick="switchTab(this, 'registration')"><i class="fas fa-user-plus" style="margin-right: 0.4rem;"></i> Registration</button>
         <button class="nav-tab" onclick="switchTab(this, 'attendance')"><i class="fas fa-clipboard-check" style="margin-right: 0.4rem;"></i> Attendance</button>
         <div style="position: relative;">
-            <button class="nav-tab" onclick="toggleMore(this)">More <i class="fas fa-chevron-down" style="font-size: 0.7rem; margin-left: 0.25rem;"></i></button>
+            <button class="nav-tab" onclick="toggleMore(this)">More <i class="fas fa-chevron-down" style="font-size:0.7rem !important;width:12px !important;height:12px !important;max-width:12px !important;max-height:12px !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;margin-left:0.25rem;"></i></button>
             <div class="more-dropdown" id="moreDropdown" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 0.5rem; background: var(--white); border: 1px solid var(--border); border-radius: 0.75rem; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 180px; z-index: 200; overflow: hidden;">
                 <button class="nav-tab" onclick="switchTab(this, 'evaluation')" style="width: 100%; border-radius: 0; justify-content: flex-start; padding: 0.75rem 1rem;"><i class="fas fa-star" style="margin-right: 0.5rem;"></i> Evaluation</button>
                 <button class="nav-tab" onclick="switchTab(this, 'history')" style="width: 100%; border-radius: 0; justify-content: flex-start; padding: 0.75rem 1rem;"><i class="fas fa-history" style="margin-right: 0.5rem;"></i> Training History</button>

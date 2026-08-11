@@ -164,10 +164,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('completionTrendChart'), {
         type: 'line',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {!! json_encode($completionTrend->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Completion %',
-                data: [65, 70, 75, 78, 82, 85],
+                data: {!! json_encode($completionTrend->pluck('total')->toArray()) !!},
                 borderColor: '#10b981',
                 backgroundColor: 'rgba(16,185,129,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#10b981'
@@ -179,10 +179,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('learningReportAnalyticsChart'), {
         type: 'bar',
         data: {
-            labels: ['Road Safety', 'Defensive Driving', 'Customer Service', 'Company Policies'],
+            labels: {!! json_encode($reportAnalytics->pluck('report_type')->toArray()) !!},
             datasets: [{
                 label: 'Completion Rate %',
-                data: [85, 72, 68, 90],
+                data: {!! json_encode($reportAnalytics->pluck('total')->toArray()) !!},
                 backgroundColor: '#3b82f6',
                 borderRadius: 8
             }]

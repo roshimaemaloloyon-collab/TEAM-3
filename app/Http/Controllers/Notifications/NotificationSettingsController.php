@@ -18,7 +18,7 @@ class NotificationSettingsController extends Controller
             'active_channels' => NotificationSetting::where('enabled', true)->distinct('type')->count(),
             'disabled_notifications' => NotificationSetting::where('enabled', false)->count(),
             'reminder_settings' => NotificationSetting::where('frequency', '!=', 'immediate')->count(),
-            'delivery_preferences' => NotificationSetting::distinct('channel')->count(),
+            'delivery_preferences' => NotificationSetting::distinct('type')->count(),
         ];
 
         return view('admin.notifications.notification-settings', compact('settings', 'stats', 'drivers'));

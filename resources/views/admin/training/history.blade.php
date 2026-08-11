@@ -158,10 +158,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('trainingTimelineChart'), {
         type: 'line',
         data: {
-            labels: ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025', 'Q1 2026'],
+            labels: {!! json_encode($timelineData->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Trainings Completed',
-                data: [12, 18, 22, 25, 30],
+                data: {!! json_encode($timelineData->pluck('total')->toArray()) !!},
                 borderColor: '#10b981',
                 backgroundColor: 'rgba(16,185,129,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#10b981'
@@ -173,10 +173,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('historicalCompletionChart'), {
         type: 'line',
         data: {
-            labels: ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025', 'Q1 2026'],
+            labels: {!! json_encode($trendData->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Completion %',
-                data: [65, 70, 75, 80, 85],
+                data: {!! json_encode($trendData->pluck('total')->toArray()) !!},
                 borderColor: '#3b82f6',
                 backgroundColor: 'rgba(59,130,246,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#3b82f6'

@@ -135,10 +135,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('compDistAnalyticsChart'), {
         type: 'bar',
         data: {
-            labels: ['Safe Driving', 'Customer Service', 'Communication', 'Navigation', 'Professionalism', 'Time Management', 'Vehicle Care'],
+            labels: {!! json_encode($compDist->pluck('competency.name')->toArray()) !!},
             datasets: [{
                 label: 'Average Score',
-                data: [90, 86, 80, 84, 88, 78, 82],
+                data: {!! json_encode($compDist->pluck('avg_score')->toArray()) !!},
                 backgroundColor: '#F44336',
                 borderRadius: 8
             }]
@@ -149,8 +149,8 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('skillDistChart'), {
         type: 'pie',
         data: {
-            labels: ['Safe Driving', 'Customer Service', 'Communication', 'Navigation', 'Professionalism', 'Time Management', 'Vehicle Care'],
-            datasets: [{ data: [90, 86, 80, 84, 88, 78, 82], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#6366f1', '#8b5cf6', '#f97316', '#14b8a6'] }]
+            labels: {!! json_encode($skillDist->pluck('competency.name')->toArray()) !!},
+            datasets: [{ data: {!! json_encode($skillDist->pluck('total')->toArray()) !!}, backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#6366f1', '#8b5cf6', '#f97316', '#14b8a6', '#f43f5e', '#84cc16', '#06b6d4'] }]
         },
         options: { ...chartDefaults, plugins: { legend: { position: 'bottom', labels: { font: { family: "'Poppins', sans-serif" } } } } }
     });
@@ -158,10 +158,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('compTrendAnalyticsChart'), {
         type: 'line',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {!! json_encode($trend->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Average Score',
-                data: [82, 83, 84, 83, 85, 86],
+                data: {!! json_encode($trend->pluck('avg_score')->toArray()) !!},
                 borderColor: '#F44336',
                 backgroundColor: 'rgba(244,67,54,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#F44336'
@@ -173,10 +173,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('compGrowthChart'), {
         type: 'line',
         data: {
-            labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+            labels: {!! json_encode($growth->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Growth %',
-                data: [82, 84, 85, 86],
+                data: {!! json_encode($growth->pluck('avg_score')->toArray()) !!},
                 borderColor: '#10b981',
                 backgroundColor: 'rgba(16,185,129,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#10b981'
@@ -188,10 +188,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('compComparativeChart'), {
         type: 'bar',
         data: {
-            labels: ['Juan Dela Cruz', 'Maria Santos', 'Pedro Reyes', 'Ana Lim', 'Rosa Garcia'],
+            labels: {!! json_encode($comparative->keys()->map(fn($id) => $assessments->firstWhere('driver_id', $id)?->driver?->name ?? 'Driver')->toArray()) !!},
             datasets: [
-                { label: 'Current', data: [90, 92, 88, 86, 72], backgroundColor: '#F44336', borderRadius: 8 },
-                { label: 'Target', data: [95, 95, 90, 90, 80], backgroundColor: '#3b82f6', borderRadius: 8 }
+                { label: 'Current', data: {!! json_encode($comparative->values()->toArray()) !!}, backgroundColor: '#F44336', borderRadius: 8 },
+                { label: 'Target', data: {!! json_encode($comparative->map(fn() => 80)->values()->toArray()) !!}, backgroundColor: '#3b82f6', borderRadius: 8 }
             ]
         },
         options: { ...chartDefaults, scales: { y: { beginAtZero: true, max: 100 } } }

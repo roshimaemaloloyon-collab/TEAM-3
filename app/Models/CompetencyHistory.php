@@ -11,6 +11,8 @@ class CompetencyHistory extends Model
 {
     use HasFactory;
 
+    protected $table = 'competency_history';
+
     protected $fillable = [
         'driver_id',
         'competency_id',

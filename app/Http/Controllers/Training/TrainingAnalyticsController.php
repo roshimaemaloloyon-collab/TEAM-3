@@ -39,6 +39,52 @@ class TrainingAnalyticsController extends Controller
             'effectiveness' => '92%',
         ];
 
-        return view('admin.training.analytics', compact('trainings', 'stats'));
+        $trainingCompletion = Training::selectRaw('category, COUNT(*) as total')
+            ->groupBy('category')
+            ->get();
+
+        $categoryDist = Training::selectRaw('category, COUNT(*) as total')
+            ->groupBy('category')
+            ->get();
+
+        if (config('database.default') === 'pgsql') {
+            $completionTrend = Training::selectRaw("TO_CHAR(start_datetime, 'MM') as month_num, COUNT(*) as total");
+        } else {
+            $completionTrend = Training::selectRaw('strftime("%m", start_datetime) as month_num, COUNT(*) as total');
+        }
+            ->where('status', 'completed')
+            ->whereNotNull('start_datetime')
+            ->when($year, fn($q) => $q->whereYear('start_datetime', $year))
+            ->groupBy('month_num')
+            ->orderBy('month_num')
+            ->get();
+
+        if (config('database.default') === 'pgsql') {
+            $attendanceTrend = Attendance::selectRaw("TO_CHAR(created_at, 'MM') as month_num, COUNT(*) as total")->where('status', 'present')
+            ->whereNotNull('created_at')
+            ->groupByRaw("TO_CHAR(created_at, 'MM')")
+            ->orderBy('month_num')
+            ->get();
+        } else {
+            $attendanceTrend = Attendance::selectRaw('strftime("%m", created_at) as month_num, COUNT(*) as total')->where('status', 'present')
+            ->whereNotNull('created_at')
+            ->groupBy('month_num')
+            ->orderBy('month_num')
+            ->get();
+        }
+
+        $comparative = Training::selectRaw('category, COUNT(*) as total')
+            ->groupBy('category')
+            ->get();
+
+        return view('admin.training.analytics', compact(
+            'trainings',
+            'stats',
+            'trainingCompletion',
+            'categoryDist',
+            'completionTrend',
+            'attendanceTrend',
+            'comparative'
+        ));
     }
 }

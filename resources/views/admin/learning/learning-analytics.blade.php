@@ -144,10 +144,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('learningProgressAnalyticsChart'), {
         type: 'bar',
         data: {
-            labels: ['Road Safety', 'Defensive Driving', 'Customer Service', 'Company Policies', 'Traffic Rules'],
+            labels: {!! json_encode($progressAnalytics->pluck('module.title')->toArray()) !!},
             datasets: [{
                 label: 'Completion %',
-                data: [85, 72, 68, 90, 55],
+                data: {!! json_encode($progressAnalytics->pluck('avg_progress')->toArray()) !!},
                 backgroundColor: '#10b981',
                 borderRadius: 8
             }]
@@ -158,8 +158,8 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('moduleDistChart'), {
         type: 'pie',
         data: {
-            labels: ['Road Safety', 'Defensive Driving', 'Customer Service', 'Company Policies', 'Traffic Rules'],
-            datasets: [{ data: [30, 25, 20, 15, 10], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#6366f1', '#8b5cf6'] }]
+            labels: {!! json_encode($moduleDist->pluck('module.title')->toArray()) !!},
+            datasets: [{ data: {!! json_encode($moduleDist->pluck('total')->toArray()) !!}, backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#6366f1', '#8b5cf6'] }]
         },
         options: { ...chartDefaults, plugins: { legend: { position: 'bottom', labels: { font: { family: "'Poppins', sans-serif" } } } } }
     });
@@ -167,10 +167,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('completionTrendAnalyticsChart'), {
         type: 'line',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {!! json_encode($completionTrend->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Completion %',
-                data: [65, 70, 75, 78, 82, 85],
+                data: {!! json_encode($completionTrend->pluck('total')->toArray()) !!},
                 borderColor: '#F44336',
                 backgroundColor: 'rgba(244,67,54,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#F44336'
@@ -182,10 +182,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('learningEffectivenessChart'), {
         type: 'line',
         data: {
-            labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+            labels: {!! json_encode($effectiveness->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Effectiveness %',
-                data: [78, 82, 85, 88],
+                data: {!! json_encode($effectiveness->pluck('avg_progress')->toArray()) !!},
                 borderColor: '#3b82f6',
                 backgroundColor: 'rgba(59,130,246,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#3b82f6'
@@ -197,10 +197,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('learningComparativeChart'), {
         type: 'bar',
         data: {
-            labels: ['Juan Dela Cruz', 'Maria Santos', 'Pedro Reyes', 'Ana Lim', 'Rosa Garcia'],
+            labels: {!! json_encode($comparative->keys()->map(fn($id) => $drivers->firstWhere('id', $id)?->name ?? 'Driver')->toArray()) !!},
             datasets: [
-                { label: 'Completion %', data: [90, 85, 78, 88, 72], backgroundColor: '#F44336', borderRadius: 8 },
-                { label: 'Quiz Score', data: [85, 80, 75, 82, 68], backgroundColor: '#3b82f6', borderRadius: 8 }
+                { label: 'Completion %', data: {!! json_encode($comparative->pluck('completion')->toArray()) !!}, backgroundColor: '#F44336', borderRadius: 8 },
+                { label: 'Quiz Score', data: {!! json_encode($comparative->pluck('quiz')->toArray()) !!}, backgroundColor: '#3b82f6', borderRadius: 8 }
             ]
         },
         options: { ...chartDefaults, scales: { y: { beginAtZero: true, max: 100 } } }

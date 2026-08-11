@@ -30,11 +30,43 @@ class CompetencyHistoryController extends Controller
 
         $stats = [
             'historical_records' => CompetencyHistory::count(),
-            'archived' => CompetencyHistory::where('record_type', 'review')->count(),
-            'timeline_events' => CompetencyHistory::count(),
-            'skill_improvement' => '+3.2%',
+            'assessments' => CompetencyHistory::where('record_type', 'assessment')->count(),
+            'coaching_sessions' => CompetencyHistory::where('record_type', 'coaching')->count(),
+            'reviews' => CompetencyHistory::where('record_type', 'review')->count(),
         ];
 
-        return view('admin.competency.competency-history', compact('histories', 'stats'));
+        if (config('database.default') === 'pgsql') {
+            $timelineData = CompetencyHistory::selectRaw("TO_CHAR(recorded_at, 'MM') as month_num, COUNT(*) as total")
+                ->whereNotNull('recorded_at')
+                ->groupByRaw("TO_CHAR(recorded_at, 'MM')")
+                ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        } else {
+            $timelineData = CompetencyHistory::selectRaw('strftime("%m", recorded_at) as month_num, COUNT(*) as total')
+                ->whereNotNull('recorded_at')
+                ->groupBy('month_num')
+                ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        }
+
+        if (config('database.default') === 'pgsql') {
+            $trendData = CompetencyHistory::selectRaw("TO_CHAR(recorded_at, 'MM') as month_num, AVG(overall_score) as avg_score")
+                ->whereNotNull('recorded_at')
+                ->groupByRaw("TO_CHAR(recorded_at, 'MM')")
+                ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        } else {
+            $trendData = CompetencyHistory::selectRaw('strftime("%m", recorded_at) as month_num, AVG(overall_score) as avg_score')
+                ->whereNotNull('recorded_at')
+                ->groupBy('month_num')
+                ->orderBy('month_num')
+            ->limit(6)
+            ->get();
+        }
+
+        return view('admin.competency.competency-history', compact('histories', 'stats', 'timelineData', 'trendData'));
     }
 }

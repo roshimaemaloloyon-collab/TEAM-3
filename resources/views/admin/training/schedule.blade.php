@@ -179,4 +179,63 @@
     </div>
 </div>
 
+<!-- Charts -->
+<div class="charts-grid" style="margin-top:1.5rem;">
+    <div class="chart-card">
+        <h3><i class="fas fa-chart-bar"></i> Training Schedule</h3>
+        <div class="chart-wrapper">
+            <canvas id="trainingScheduleChart"></canvas>
+        </div>
+    </div>
+    <div class="chart-card">
+        <h3><i class="fas fa-chart-pie"></i> Training Status Distribution</h3>
+        <div class="chart-wrapper">
+            <canvas id="trainingStatusChart"></canvas>
+        </div>
+    </div>
+</div>
+
+@endsection
+
+@section('scripts')
+<script>
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMessage').textContent = message;
+    toast.style.display = 'flex';
+    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+}
+document.addEventListener('DOMContentLoaded', function() {
+    const chartDefaults = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { font: { family: "'Poppins', sans-serif" } } } }
+    };
+
+    new Chart(document.getElementById('trainingScheduleChart'), {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($scheduleData->pluck('month_num')->toArray()) !!},
+            datasets: [{
+                label: 'Trainings Scheduled',
+                data: {!! json_encode($scheduleData->pluck('total')->toArray()) !!},
+                backgroundColor: '#10b981',
+                borderRadius: 8
+            }]
+        },
+        options: { ...chartDefaults, scales: { y: { beginAtZero: true } } }
+    });
+
+    new Chart(document.getElementById('trainingStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {!! json_encode($statusData->pluck('status')->toArray()) !!},
+            datasets: [{ data: {!! json_encode($statusData->pluck('total')->toArray()) !!}, backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#6366f1'] }]
+        },
+        options: { ...chartDefaults, plugins: { legend: { position: 'bottom', labels: { font: { family: "'Poppins', sans-serif" } } } } }
+    });
+});
+</script>
 @endsection

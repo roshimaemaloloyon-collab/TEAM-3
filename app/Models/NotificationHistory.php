@@ -11,6 +11,8 @@ class NotificationHistory extends Model
 {
     use HasFactory;
 
+    protected $table = 'notification_history';
+
     protected $fillable = [
         'notification_id',
         'status',

@@ -164,10 +164,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('monthlyReportsChart'), {
         type: 'bar',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {!! json_encode($monthlyReports->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Reports Generated',
-                data: [5, 8, 6, 9, 7, 10],
+                data: {!! json_encode($monthlyReports->pluck('total')->toArray()) !!},
                 backgroundColor: '#3b82f6',
                 borderRadius: 8
             }]
@@ -178,10 +178,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('reportTrendChart'), {
         type: 'line',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {!! json_encode($reportTrend->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Reports Generated',
-                data: [5, 8, 6, 9, 7, 10],
+                data: {!! json_encode($reportTrend->pluck('total')->toArray()) !!},
                 borderColor: '#10b981',
                 backgroundColor: 'rgba(16,185,129,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#10b981'

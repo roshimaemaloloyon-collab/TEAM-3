@@ -15,13 +15,13 @@ class EvaluationHistoryController extends Controller
         $search = $request->query('search');
         $perPage = (int) ($request->query('per_page', 15));
 
-        $query = EvaluationHistory::with(['peerEvaluation.evaluator', 'peerEvaluation.evaluatedDriver', 'performedBy'])
-            ->orderByDesc('performed_at');
+        $query = PeerEvaluation::with(['evaluator', 'evaluatedDriver'])
+            ->orderByDesc('evaluation_date');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->whereHas('peerEvaluation.evaluator', fn ($q2) => $q2->where('name', 'like', "%{$search}%"))
-                  ->orWhereHas('peerEvaluation.evaluatedDriver', fn ($q2) => $q2->where('name', 'like', "%{$search}%"));
+                $q->whereHas('evaluator', fn ($q2) => $q2->where('name', 'like', "%{$search}%"))
+                  ->orWhereHas('evaluatedDriver', fn ($q2) => $q2->where('name', 'like', "%{$search}%"));
             });
         }
 
@@ -29,8 +29,8 @@ class EvaluationHistoryController extends Controller
 
         $stats = [
             'total_historical' => PeerEvaluation::count(),
-            'archived' => PeerEvaluation::where('status', 'archived')->count(),
-            'timeline_entries' => EvaluationHistory::count(),
+            'archived' => PeerEvaluation::where('status', 'rejected')->count(),
+            'timeline_entries' => PeerEvaluation::count(),
             'historical_avg_score' => PeerEvaluation::whereNotNull('overall_score')->avg('overall_score'),
         ];
 

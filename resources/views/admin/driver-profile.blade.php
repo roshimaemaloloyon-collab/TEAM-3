@@ -27,65 +27,143 @@
 <!-- Profile Header Card -->
 <div class="table-card" style="margin-bottom:1.5rem;">
     <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
-        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&h=200&q=80" alt="Driver" style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--primary);">
+        <img src="{{ $driver->photo ?: asset('drivers/photo/' . ($driver->id ?? 1)) }}" alt="{{ $driver->full_name }}" style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--primary);">
         <div style="flex:1;min-width:200px;">
-            <h2 style="font-size:1.5rem;color:var(--primary);margin:0 0 0.25rem;">Juan Dela Cruz</h2>
-            <p style="font-size:0.9rem;color:var(--text-muted);margin:0 0 0.5rem;">#DRV-2026-0001 • North Branch • North Route • Toyota Fortuner</p>
+            <h2 style="font-size:1.5rem;color:var(--primary);margin:0 0 0.25rem;">{{ $driver->full_name }}</h2>
+            <p style="font-size:0.9rem;color:var(--text-muted);margin:0 0 0.5rem;">{{ $driver->formatted_id }} • {{ $driver->branch ?? 'North Branch' }} • {{ $driver->route_assignment ?? 'North Route' }} • {{ $driver->vehicle_assignment ?? 'Unassigned' }}</p>
             <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-                <span class="status-badge status-active">Active</span>
-                <span class="status-badge" style="background:#d1fae5;color:#065f46;">4.9 Performance</span>
-                <span class="status-badge" style="background:#dbeafe;color:#1e40af;">1,248 Trips</span>
+                <span class="status-badge status-{{ strtolower($driver->status ?? 'active') }}">{{ ucfirst($driver->status ?? 'Active') }}</span>
+                <span class="status-badge" style="background:#d1fae5;color:#065f46;">{{ number_format($driver->performance_score ?? 4.9, 1) }} Performance</span>
+                <span class="status-badge" style="background:#dbeafe;color:#1e40af;">{{ number_format($driver->trips_count ?? 1248) }} Trips</span>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Profile Tabs Navigation -->
-<div class="driver-profile-tabs" style="margin-bottom:1.5rem;overflow-x:auto;overflow-y:hidden;">
-    <button class="profile-tab active" onclick="switchProfilePageTab(this, 'tab-overview')">
-        <i class="fas fa-chart-pie"></i>
-        <span>Overview</span>
-    </button>
-    <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-personal')">
-        <i class="fas fa-user"></i>
-        <span>Personal Information</span>
-    </button>
-    <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-employment')">
-        <i class="fas fa-briefcase"></i>
-        <span>Employment Details</span>
-    </button>
-    <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-documents')">
-        <i class="fas fa-file-alt"></i>
-        <span>Documents</span>
-    </button>
-    <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-vehicle')">
-        <i class="fas fa-car"></i>
-        <span>Vehicle Information</span>
-    </button>
-    <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-license')">
-        <i class="fas fa-id-card"></i>
-        <span>License Information</span>
-    </button>
-    <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-performance')">
-        <i class="fas fa-chart-line"></i>
-        <span>Performance History</span>
-    </button>
-    <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-training')">
-        <i class="fas fa-graduation-cap"></i>
-        <span>Training Records</span>
-    </button>
-    <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-evaluations')">
-        <i class="fas fa-users"></i>
-        <span>Peer-to-Peer Evaluations</span>
-    </button>
-    <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-recognition')">
-        <i class="fas fa-trophy"></i>
-        <span>Recognition & Awards</span>
-    </button>
-    <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-activity')">
-        <i class="fas fa-history"></i>
-        <span>Activity Logs</span>
-    </button>
+<style>
+    .driver-profile-tabs-wrapper {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 8px;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.04);
+    }
+    .driver-profile-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+    }
+    .profile-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 36px;
+        padding: 0 12px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        color: #475569;
+        font-family: 'Poppins', sans-serif;
+        font-size: 12.5px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        flex: 1 0 auto;
+        justify-content: center;
+    }
+    .profile-tab .tab-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        background: rgba(100, 116, 139, 0.1);
+        color: #64748b;
+        font-size: 11px;
+        transition: all 0.2s ease;
+    }
+    .profile-tab:hover {
+        background: #fff5f5;
+        border-color: #fca5a5;
+        color: var(--primary, #F44336);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(244, 67, 54, 0.1);
+    }
+    .profile-tab:hover .tab-icon {
+        background: rgba(244, 67, 54, 0.15);
+        color: var(--primary, #F44336);
+    }
+    .profile-tab.active {
+        background: linear-gradient(135deg, #F44336 0%, #D32F2F 100%);
+        border-color: transparent;
+        color: #ffffff;
+        box-shadow: 0 3px 10px rgba(244, 67, 54, 0.3);
+    }
+    .profile-tab.active .tab-icon {
+        background: rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+    }
+    .profile-page-tab {
+        animation: fadeInTab 0.3s ease-out;
+    }
+    @keyframes fadeInTab {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="driver-profile-tabs-wrapper">
+    <div class="driver-profile-tabs">
+        <button class="profile-tab active" onclick="switchProfilePageTab(this, 'tab-overview')">
+            <span class="tab-icon"><i class="fas fa-chart-pie"></i></span>
+            <span>Overview</span>
+        </button>
+        <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-personal')">
+            <span class="tab-icon"><i class="fas fa-user"></i></span>
+            <span>Personal Information</span>
+        </button>
+        <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-employment')">
+            <span class="tab-icon"><i class="fas fa-briefcase"></i></span>
+            <span>Employment Details</span>
+        </button>
+        <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-documents')">
+            <span class="tab-icon"><i class="fas fa-file-alt"></i></span>
+            <span>Documents</span>
+        </button>
+        <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-vehicle')">
+            <span class="tab-icon"><i class="fas fa-car"></i></span>
+            <span>Vehicle Information</span>
+        </button>
+        <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-license')">
+            <span class="tab-icon"><i class="fas fa-id-card"></i></span>
+            <span>License Information</span>
+        </button>
+        <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-performance')">
+            <span class="tab-icon"><i class="fas fa-chart-line"></i></span>
+            <span>Performance History</span>
+        </button>
+        <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-training')">
+            <span class="tab-icon"><i class="fas fa-graduation-cap"></i></span>
+            <span>Training Records</span>
+        </button>
+        <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-evaluations')">
+            <span class="tab-icon"><i class="fas fa-users"></i></span>
+            <span>Peer-to-Peer Evaluations</span>
+        </button>
+        <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-recognition')">
+            <span class="tab-icon"><i class="fas fa-trophy"></i></span>
+            <span>Recognition & Awards</span>
+        </button>
+        <button class="profile-tab" onclick="switchProfilePageTab(this, 'tab-activity')">
+            <span class="tab-icon"><i class="fas fa-history"></i></span>
+            <span>Activity Logs</span>
+        </button>
+    </div>
 </div>
 
 <!-- Tab Contents -->
@@ -97,22 +175,22 @@
             <div class="section-card">
                 <h3><i class="fas fa-user"></i> Quick Summary</h3>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;">
-                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Full Name</label><p style="font-weight:600;">Juan Dela Cruz</p></div>
-                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Driver ID</label><p style="font-weight:600;">#DRV-2026-0001</p></div>
-                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Contact</label><p style="font-weight:600;">+63 912 345 6789</p></div>
-                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Email</label><p style="font-weight:600;">juan.delacruz@email.com</p></div>
-                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Branch</label><p style="font-weight:600;">North Branch</p></div>
-                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Route</label><p style="font-weight:600;">North Route</p></div>
-                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Vehicle</label><p style="font-weight:600;">Toyota Fortuner</p></div>
-                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Status</label><p><span class="status-badge status-active">Active</span></p></div>
+                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Full Name</label><p style="font-weight:600;">{{ $driver->full_name }}</p></div>
+                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Driver ID</label><p style="font-weight:600;">{{ $driver->formatted_id }}</p></div>
+                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Contact</label><p style="font-weight:600;">{{ $driver->contact_number ?? 'N/A' }}</p></div>
+                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Email</label><p style="font-weight:600;">{{ $driver->email ?? 'N/A' }}</p></div>
+                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Branch</label><p style="font-weight:600;">{{ $driver->branch ?? 'N/A' }}</p></div>
+                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Route</label><p style="font-weight:600;">{{ $driver->route_assignment ?? 'N/A' }}</p></div>
+                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Vehicle</label><p style="font-weight:600;">{{ $driver->vehicle_assignment ?? 'N/A' }}</p></div>
+                    <div><label style="font-size:0.8rem;color:var(--text-muted);">Status</label><p><span class="status-badge status-{{ strtolower($driver->status ?? 'active') }}">{{ ucfirst($driver->status ?? 'Active') }}</span></p></div>
                 </div>
             </div>
             <div class="section-card">
                 <h3><i class="fas fa-chart-bar"></i> Performance Snapshot</h3>
                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem;">
-                    <div style="background:var(--beige);padding:1rem;border-radius:0.75rem;text-align:center;"><p style="font-size:1.5rem;font-weight:700;color:var(--primary);margin:0;">4.9</p><p style="font-size:0.8rem;color:var(--text-muted);">Performance</p></div>
-                    <div style="background:var(--beige);padding:1rem;border-radius:0.75rem;text-align:center;"><p style="font-size:1.5rem;font-weight:700;color:var(--primary);margin:0;">1,248</p><p style="font-size:0.8rem;color:var(--text-muted);">Trips</p></div>
-                    <div style="background:var(--beige);padding:1rem;border-radius:0.75rem;text-align:center;"><p style="font-size:1.5rem;font-weight:700;color:var(--primary);margin:0;">0</p><p style="font-size:0.8rem;color:var(--text-muted);">Complaints</p></div>
+                    <div style="background:var(--beige);padding:1rem;border-radius:0.75rem;text-align:center;"><p style="font-size:1.5rem;font-weight:700;color:var(--primary);margin:0;">{{ number_format($driver->performance_score ?? 4.9, 1) }}</p><p style="font-size:0.8rem;color:var(--text-muted);">Performance</p></div>
+                    <div style="background:var(--beige);padding:1rem;border-radius:0.75rem;text-align:center;"><p style="font-size:1.5rem;font-weight:700;color:var(--primary);margin:0;">{{ number_format($driver->trips_count ?? 1248) }}</p><p style="font-size:0.8rem;color:var(--text-muted);">Trips</p></div>
+                    <div style="background:var(--beige);padding:1rem;border-radius:0.75rem;text-align:center;"><p style="font-size:1.5rem;font-weight:700;color:var(--primary);margin:0;">{{ $driver->complaints_count ?? 0 }}</p><p style="font-size:0.8rem;color:var(--text-muted);">Complaints</p></div>
                 </div>
             </div>
         </div>
@@ -127,17 +205,17 @@
         <div class="section-card">
             <h3><i class="fas fa-user"></i> Personal Information</h3>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;">
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">First Name</label><p style="font-weight:600;">Juan</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Middle Name</label><p style="font-weight:600;">Santos</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Last Name</label><p style="font-weight:600;">Dela Cruz</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Birth Date</label><p style="font-weight:600;">March 15, 1990</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Gender</label><p style="font-weight:600;">Male</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Civil Status</label><p style="font-weight:600;">Married</p></div>
-                <div style="grid-column:span 2;"><label style="font-size:0.8rem;color:var(--text-muted);">Address</label><p style="font-weight:600;">123 Main St., Brgy. San Jose, Quezon City</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Contact Number</label><p style="font-weight:600;">+63 912 345 6789</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Email Address</label><p style="font-weight:600;">juan.delacruz@email.com</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Emergency Contact Person</label><p style="font-weight:600;">Maria Dela Cruz</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Emergency Contact Number</label><p style="font-weight:600;">+63 912 345 6790</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">First Name</label><p style="font-weight:600;">{{ $driver->first_name }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Middle Name</label><p style="font-weight:600;">{{ $driver->middle_name ?? 'N/A' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Last Name</label><p style="font-weight:600;">{{ $driver->last_name }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Birth Date</label><p style="font-weight:600;">{{ $driver->birth_date ? \Carbon\Carbon::parse($driver->birth_date)->format('M d, Y') : 'N/A' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Gender</label><p style="font-weight:600;">{{ $driver->gender ?? 'Male' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Civil Status</label><p style="font-weight:600;">{{ $driver->civil_status ?? 'Single' }}</p></div>
+                <div style="grid-column:span 2;"><label style="font-size:0.8rem;color:var(--text-muted);">Address</label><p style="font-weight:600;">{{ $driver->address ?? 'N/A' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Contact Number</label><p style="font-weight:600;">{{ $driver->contact_number ?? 'N/A' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Email Address</label><p style="font-weight:600;">{{ $driver->email ?? 'N/A' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Emergency Contact Person</label><p style="font-weight:600;">{{ $driver->emergency_contact_person ?? 'N/A' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Emergency Contact Number</label><p style="font-weight:600;">{{ $driver->emergency_contact_number ?? 'N/A' }}</p></div>
             </div>
         </div>
     </div>
@@ -147,13 +225,13 @@
         <div class="section-card">
             <h3><i class="fas fa-briefcase"></i> Employment Details</h3>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;">
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Driver ID</label><p style="font-weight:600;">#DRV-2026-0001</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Date Hired</label><p style="font-weight:600;">January 15, 2021</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Branch</label><p style="font-weight:600;">North Branch</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Vehicle Assignment</label><p style="font-weight:600;">Toyota Fortuner</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Vehicle Type</label><p style="font-weight:600;">SUV</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Route Assignment</label><p style="font-weight:600;">North Route</p></div>
-                <div style="grid-column:span 2;"><label style="font-size:0.8rem;color:var(--text-muted);">Employment Status</label><p><span class="status-badge status-active">Active</span></p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Driver ID</label><p style="font-weight:600;">{{ $driver->formatted_id }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Date Hired</label><p style="font-weight:600;">{{ $driver->date_hired ? \Carbon\Carbon::parse($driver->date_hired)->format('M d, Y') : 'N/A' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Branch</label><p style="font-weight:600;">{{ $driver->branch ?? 'N/A' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Vehicle Assignment</label><p style="font-weight:600;">{{ $driver->vehicle_assignment ?? 'Unassigned' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Vehicle Type</label><p style="font-weight:600;">{{ $driver->vehicle_type ?? 'N/A' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Route Assignment</label><p style="font-weight:600;">{{ $driver->route_assignment ?? 'N/A' }}</p></div>
+                <div style="grid-column:span 2;"><label style="font-size:0.8rem;color:var(--text-muted);">Employment Status</label><p><span class="status-badge status-{{ strtolower($driver->status ?? 'active') }}">{{ ucfirst($driver->status ?? 'Active') }}</span></p></div>
             </div>
         </div>
     </div>
@@ -162,7 +240,7 @@
     <div id="tab-documents" class="profile-page-tab" style="display:none;">
         <div class="section-card">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.75rem;">
-                <h3 style="margin:0;"><i class="fas fa-file-alt"></i> Driver Documents</h3>
+                <h3 style="margin:0;"><i class="fas fa-file-alt"></i> Driver Documents ({{ $driver->full_name }})</h3>
                 <button class="btn btn-primary" onclick="openModal('uploadDocModal')"><i class="fas fa-upload"></i> Upload Document</button>
             </div>
             <div class="table-wrapper">
@@ -181,11 +259,11 @@
                     <tbody>
                         <tr>
                             <td><strong><i class="fas fa-id-card" style="color:var(--primary);margin-right:0.5rem;"></i>Driver's License</strong></td>
-                            <td>Jan 10, 2026</td>
-                            <td>Dec 20, 2026</td>
+                            <td>{{ $driver->created_at ? $driver->created_at->format('M d, Y') : 'Jan 10, 2026' }}</td>
+                            <td>{{ $driver->license_expiration ? \Carbon\Carbon::parse($driver->license_expiration)->format('M d, Y') : 'Dec 20, 2026' }}</td>
                             <td><span class="status-badge" style="background:#d1fae5;color:#065f46;">🟢 Verified</span></td>
                             <td>Admin User</td>
-                            <td>Jan 10, 2026</td>
+                            <td>{{ $driver->updated_at ? $driver->updated_at->format('M d, Y') : 'Jan 10, 2026' }}</td>
                             <td style="text-align:center;">
                                 <div style="display:flex;gap:0.35rem;justify-content:center;flex-wrap:wrap;">
                                     <button class="icon-btn" title="Upload" onclick="showToast('Upload document')"><i class="fas fa-upload"></i></button>
@@ -197,7 +275,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td><strong><i class="fas fa-file-alt" style="color:var(--primary);margin-right:0.5rem;"></i>OR/CR</strong></td>
+                            <td><strong><i class="fas fa-file-alt" style="color:var(--primary);margin-right:0.5rem;"></i>OR/CR ({{ $driver->vehicle_assignment ?? 'Vehicle' }})</strong></td>
                             <td>Jan 10, 2026</td>
                             <td>Jun 20, 2027</td>
                             <td><span class="status-badge" style="background:#d1fae5;color:#065f46;">🟢 Verified</span></td>
@@ -251,7 +329,7 @@
                             <td><strong><i class="fas fa-notes-medical" style="color:var(--primary);margin-right:0.5rem;"></i>Medical Certificate</strong></td>
                             <td>Jan 05, 2026</td>
                             <td>Jan 05, 2027</td>
-                            <td><span class="status-badge" style="background:#fee2e2;color:#991b1b;">🔴 Expired</span></td>
+                            <td><span class="status-badge" style="background:#d1fae5;color:#065f46;">🟢 Verified</span></td>
                             <td>Admin User</td>
                             <td>Jan 05, 2026</td>
                             <td style="text-align:center;">
@@ -264,74 +342,6 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
-                            <td><strong><i class="fas fa-vial" style="color:var(--primary);margin-right:0.5rem;"></i>Drug Test Result</strong></td>
-                            <td>—</td>
-                            <td>—</td>
-                            <td><span class="status-badge" style="background:#f1f5f9;color:#64748b;">⚪ Not Uploaded</span></td>
-                            <td>—</td>
-                            <td>—</td>
-                            <td style="text-align:center;">
-                                <div style="display:flex;gap:0.35rem;justify-content:center;flex-wrap:wrap;">
-                                    <button class="icon-btn" title="Upload" onclick="showToast('Upload document')"><i class="fas fa-upload"></i></button>
-                                    <button class="icon-btn" title="Replace" disabled><i class="fas fa-sync-alt"></i></button>
-                                    <button class="icon-btn" title="Preview" disabled><i class="fas fa-eye"></i></button>
-                                    <button class="icon-btn" title="Download" disabled><i class="fas fa-download"></i></button>
-                                    <button class="icon-btn" title="Delete" disabled style="color:var(--text-muted);"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong><i class="fas fa-car" style="color:var(--primary);margin-right:0.5rem;"></i>Vehicle Registration</strong></td>
-                            <td>Jan 10, 2026</td>
-                            <td>Jan 10, 2027</td>
-                            <td><span class="status-badge" style="background:#d1fae5;color:#065f46;">🟢 Verified</span></td>
-                            <td>Admin User</td>
-                            <td>Jan 10, 2026</td>
-                            <td style="text-align:center;">
-                                <div style="display:flex;gap:0.35rem;justify-content:center;flex-wrap:wrap;">
-                                    <button class="icon-btn" title="Upload" onclick="showToast('Upload document')"><i class="fas fa-upload"></i></button>
-                                    <button class="icon-btn" title="Replace" onclick="showToast('Replace document')"><i class="fas fa-sync-alt"></i></button>
-                                    <button class="icon-btn" title="Preview" onclick="showToast('Preview document')"><i class="fas fa-eye"></i></button>
-                                    <button class="icon-btn" title="Download" onclick="showToast('Downloading document')"><i class="fas fa-download"></i></button>
-                                    <button class="icon-btn" title="Delete" onclick="showToast('Delete document')" style="color:var(--danger);"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong><i class="fas fa-shield-virus" style="color:var(--primary);margin-right:0.5rem;"></i>Vehicle Insurance</strong></td>
-                            <td>Jan 10, 2026</td>
-                            <td>Jul 10, 2026</td>
-                            <td><span class="status-badge" style="background:#ffedd5;color:#c2410c;">🟡 Pending Verification</span></td>
-                            <td>Admin User</td>
-                            <td>Jan 10, 2026</td>
-                            <td style="text-align:center;">
-                                <div style="display:flex;gap:0.35rem;justify-content:center;flex-wrap:wrap;">
-                                    <button class="icon-btn" title="Upload" onclick="showToast('Upload document')"><i class="fas fa-upload"></i></button>
-                                    <button class="icon-btn" title="Replace" onclick="showToast('Replace document')"><i class="fas fa-sync-alt"></i></button>
-                                    <button class="icon-btn" title="Preview" onclick="showToast('Preview document')"><i class="fas fa-eye"></i></button>
-                                    <button class="icon-btn" title="Download" onclick="showToast('Downloading document')"><i class="fas fa-download"></i></button>
-                                    <button class="icon-btn" title="Delete" onclick="showToast('Delete document')" style="color:var(--danger);"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong><i class="fas fa-file-upload" style="color:var(--primary);margin-right:0.5rem;"></i>Other Supporting Documents</strong></td>
-                            <td>—</td>
-                            <td>—</td>
-                            <td><span class="status-badge" style="background:#f1f5f9;color:#64748b;">⚪ Not Uploaded</span></td>
-                            <td>—</td>
-                            <td>—</td>
-                            <td style="text-align:center;">
-                                <div style="display:flex;gap:0.35rem;justify-content:center;flex-wrap:wrap;">
-                                    <button class="icon-btn" title="Upload" onclick="showToast('Upload document')"><i class="fas fa-upload"></i></button>
-                                    <button class="icon-btn" title="Replace" disabled><i class="fas fa-sync-alt"></i></button>
-                                    <button class="icon-btn" title="Preview" disabled><i class="fas fa-eye"></i></button>
-                                    <button class="icon-btn" title="Download" disabled><i class="fas fa-download"></i></button>
-                                    <button class="icon-btn" title="Delete" disabled style="color:var(--text-muted);"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -341,17 +351,17 @@
     <!-- Vehicle Information Tab -->
     <div id="tab-vehicle" class="profile-page-tab" style="display:none;">
         <div class="section-card">
-            <h3><i class="fas fa-car"></i> Vehicle Information</h3>
+            <h3><i class="fas fa-car"></i> Vehicle Information ({{ $driver->full_name }})</h3>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;">
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Vehicle ID</label><p style="font-weight:600;">VH-2026-001</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Plate Number</label><p style="font-weight:600;">ABC-1234</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Vehicle Type</label><p style="font-weight:600;">SUV</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Brand</label><p style="font-weight:600;">Toyota</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Model</label><p style="font-weight:600;">Fortuner</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Year Model</label><p style="font-weight:600;">2022</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Color</label><p style="font-weight:600;">White</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Route Assignment</label><p style="font-weight:600;">North Route</p></div>
-                <div style="grid-column:span 2;"><label style="font-size:0.8rem;color:var(--text-muted);">Vehicle Status</label><p><span class="status-badge status-success">Active</span></p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Vehicle ID</label><p style="font-weight:600;">VH-2026-{{ str_pad($driver->id, 3, '0', STR_PAD_LEFT) }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Plate Number</label><p style="font-weight:600;">{{ strtoupper(substr($driver->last_name ?? 'ABC', 0, 3)) }}-{{ 1000 + $driver->id }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Vehicle Type</label><p style="font-weight:600;">{{ $driver->vehicle_type ?? 'N/A' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Vehicle Model / Name</label><p style="font-weight:600;">{{ $driver->vehicle_assignment ?? 'Unassigned' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Assigned Branch</label><p style="font-weight:600;">{{ $driver->branch ?? 'N/A' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Assigned Route</label><p style="font-weight:600;">{{ $driver->route_assignment ?? 'N/A' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Year Model</label><p style="font-weight:600;">2023</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Color</label><p style="font-weight:600;">Pearl White</p></div>
+                <div style="grid-column:span 2;"><label style="font-size:0.8rem;color:var(--text-muted);">Vehicle Status</label><p><span class="status-badge status-success">Active & Operational</span></p></div>
             </div>
         </div>
     </div>
@@ -361,11 +371,11 @@
         <div class="section-card">
             <h3><i class="fas fa-id-card"></i> License Information</h3>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;">
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">License Number</label><p style="font-weight:600;">N01-12-345678</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">License Type</label><p style="font-weight:600;">Non-Professional</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">License Number</label><p style="font-weight:600;">{{ $driver->license_number ?? 'N01-12-345678' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">License Type</label><p style="font-weight:600;">Professional Driver</p></div>
                 <div><label style="font-size:0.8rem;color:var(--text-muted);">Restriction Codes</label><p style="font-weight:600;">1, 2, 3</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Date Issued</label><p style="font-weight:600;">March 15, 2015</p></div>
-                <div><label style="font-size:0.8rem;color:var(--text-muted);">Expiration Date</label><p style="font-weight:600;">March 15, 2027</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Date Hired</label><p style="font-weight:600;">{{ $driver->date_hired ? \Carbon\Carbon::parse($driver->date_hired)->format('M d, Y') : 'Jan 15, 2021' }}</p></div>
+                <div><label style="font-size:0.8rem;color:var(--text-muted);">Expiration Date</label><p style="font-weight:600;">{{ $driver->license_expiration ? \Carbon\Carbon::parse($driver->license_expiration)->format('M d, Y') : 'Mar 15, 2027' }}</p></div>
                 <div><label style="font-size:0.8rem;color:var(--text-muted);">License Status</label><p><span class="status-badge status-success">Valid</span></p></div>
             </div>
         </div>
@@ -661,6 +671,17 @@ function switchProfilePageTab(btn, tabId) {
     btn.classList.add('active');
     document.getElementById(tabId).style.display = 'block';
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam && document.getElementById(tabParam)) {
+        const targetBtn = document.querySelector(`.profile-tab[onclick*="${tabParam}"]`);
+        if (targetBtn) {
+            switchProfilePageTab(targetBtn, tabParam);
+        }
+    }
+});
 
 function showToast(message) {
     const toast = document.getElementById('toast');

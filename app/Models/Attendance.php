@@ -11,6 +11,8 @@ class Attendance extends Model
 {
     use HasFactory;
 
+    protected $table = 'attendance';
+
     public $timestamps = true;
 
     protected $fillable = [

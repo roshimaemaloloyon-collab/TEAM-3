@@ -36,22 +36,22 @@
     <div class="summary-card">
         <div class="card-icon green"><i class="fas fa-archive"></i></div>
         <div class="card-info">
-            <h3>{{ $stats['archived'] }}</h3>
-            <p>Archived Assessments</p>
+            <h3>{{ $stats['assessments'] }}</h3>
+            <p>Assessments</p>
         </div>
     </div>
     <div class="summary-card">
         <div class="card-icon orange"><i class="fas fa-stream"></i></div>
         <div class="card-info">
-            <h3>{{ $stats['timeline_events'] }}</h3>
-            <p>Competency Timeline</p>
+            <h3>{{ $stats['coaching_sessions'] }}</h3>
+            <p>Coaching Sessions</p>
         </div>
     </div>
     <div class="summary-card">
         <div class="card-icon purple"><i class="fas fa-chart-line"></i></div>
         <div class="card-info">
-            <h3>{{ $stats['skill_improvement'] }}</h3>
-            <p>Skill Improvement Rate</p>
+            <h3>{{ $stats['reviews'] }}</h3>
+            <p>Reviews</p>
         </div>
     </div>
 </div>
@@ -160,10 +160,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('compTimelineChart'), {
         type: 'line',
         data: {
-            labels: ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025', 'Q1 2026'],
+            labels: {!! json_encode($timelineData->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Competency Score',
-                data: [82, 83, 84, 85, 86],
+                data: {!! json_encode($timelineData->pluck('total')->toArray()) !!},
                 borderColor: '#F44336',
                 backgroundColor: 'rgba(244,67,54,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#F44336'
@@ -175,10 +175,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('compHistoryChart'), {
         type: 'line',
         data: {
-            labels: ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025', 'Q1 2026'],
+            labels: {!! json_encode($trendData->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Historical Score',
-                data: [80, 82, 83, 84, 86],
+                data: {!! json_encode($trendData->pluck('avg_score')->toArray()) !!},
                 borderColor: '#3b82f6',
                 backgroundColor: 'rgba(59,130,246,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#3b82f6'

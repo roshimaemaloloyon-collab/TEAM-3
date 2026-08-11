@@ -145,10 +145,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('trainingCompletionChart'), {
         type: 'bar',
         data: {
-            labels: ['Road Safety', 'Defensive Driving', 'Customer Service', 'Company Policies'],
+            labels: {!! json_encode($trainingCompletion->pluck('category')->toArray()) !!},
             datasets: [{
                 label: 'Completion %',
-                data: [85, 78, 92, 88],
+                data: {!! json_encode($trainingCompletion->pluck('total')->toArray()) !!},
                 backgroundColor: '#10b981',
                 borderRadius: 8
             }]
@@ -159,8 +159,8 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('categoryDistChart'), {
         type: 'pie',
         data: {
-            labels: ['Safety', 'Technical', 'Soft Skills', 'Compliance'],
-            datasets: [{ data: [30, 25, 20, 25], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#6366f1'] }]
+            labels: {!! json_encode($categoryDist->pluck('category')->toArray()) !!},
+            datasets: [{ data: {!! json_encode($categoryDist->pluck('total')->toArray()) !!}, backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#6366f1'] }]
         },
         options: { ...chartDefaults, plugins: { legend: { position: 'bottom', labels: { font: { family: "'Poppins', sans-serif" } } } } }
     });
@@ -168,10 +168,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('completionTrendChart'), {
         type: 'line',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {!! json_encode($completionTrend->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Completion %',
-                data: [65, 70, 75, 78, 82, 85],
+                data: {!! json_encode($completionTrend->pluck('total')->toArray()) !!},
                 borderColor: '#F44336',
                 backgroundColor: 'rgba(244,67,54,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#F44336'
@@ -183,10 +183,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('attendanceTrendAnalyticsChart'), {
         type: 'line',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {!! json_encode($attendanceTrend->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Attendance %',
-                data: [85, 88, 92, 90, 94, 93],
+                data: {!! json_encode($attendanceTrend->pluck('total')->toArray()) !!},
                 borderColor: '#3b82f6',
                 backgroundColor: 'rgba(59,130,246,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#3b82f6'
@@ -198,10 +198,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('trainingComparativeChart'), {
         type: 'bar',
         data: {
-            labels: ['Road Safety', 'Defensive Driving', 'Customer Service', 'Company Policies'],
+            labels: {!! json_encode($comparative->pluck('category')->toArray()) !!},
             datasets: [
-                { label: 'Completion', data: [85, 78, 92, 88], backgroundColor: '#F44336', borderRadius: 8 },
-                { label: 'Attendance', data: [90, 85, 95, 92], backgroundColor: '#3b82f6', borderRadius: 8 }
+                { label: 'Completion', data: {!! json_encode($comparative->pluck('total')->toArray()) !!}, backgroundColor: '#F44336', borderRadius: 8 },
+                { label: 'Attendance', data: {!! json_encode($attendanceTrend->pluck('total')->toArray()) !!}, backgroundColor: '#3b82f6', borderRadius: 8 }
             ]
         },
         options: { ...chartDefaults, scales: { y: { beginAtZero: true, max: 100 } } }

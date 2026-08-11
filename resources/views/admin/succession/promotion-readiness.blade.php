@@ -60,7 +60,7 @@
     <div class="summary-card">
         <div class="card-icon green"><i class="fas fa-check-circle"></i></div>
         <div class="card-info">
-            <h3>12</h3>
+            <h3>{{ $stats['ready'] ?? 12 }}</h3>
             <p>Promotion Ready</p>
             <span style="font-size: 0.75rem; font-weight: 600; color: var(--success);"><i class="fas fa-arrow-up"></i> +4 this quarter</span>
         </div>
@@ -68,23 +68,23 @@
     <div class="summary-card">
         <div class="card-icon orange"><i class="fas fa-hourglass-half"></i></div>
         <div class="card-info">
-            <h3>8</h3>
+            <h3>{{ $stats['nearly_ready'] ?? 8 }}</h3>
             <p>Nearly Ready</p>
-            <span style="font-size: 0.75rem; font-weight: 600; color: var(--warning);"><i class="fas fa-minus"></i> No change</span>
+            <span style="font-size: 0.75rem; font-weight: 600; color: var(--warning);"><i class="fas fa-minus"></i> Active evaluation</span>
         </div>
     </div>
     <div class="summary-card">
         <div class="card-icon red"><i class="fas fa-times-circle"></i></div>
         <div class="card-info">
-            <h3>15</h3>
-            <p>Not Yet Ready</p>
-            <span style="font-size: 0.75rem; font-weight: 600; color: var(--danger);"><i class="fas fa-arrow-down"></i> -2 this quarter</span>
+            <h3>{{ $stats['developing'] ?? 15 }}</h3>
+            <p>Developing Drivers</p>
+            <span style="font-size: 0.75rem; font-weight: 600; color: var(--danger);"><i class="fas fa-arrow-down"></i> Training in progress</span>
         </div>
     </div>
     <div class="summary-card">
         <div class="card-icon blue"><i class="fas fa-chart-line"></i></div>
         <div class="card-info">
-            <h3>4.2/5</h3>
+            <h3>{{ $stats['avg_score'] ?? '4.2/5' }}</h3>
             <p>Average Readiness Score</p>
             <span style="font-size: 0.75rem; font-weight: 600; color: var(--success);"><i class="fas fa-arrow-up"></i> +0.3</span>
         </div>
@@ -124,64 +124,48 @@
                     <th>Eligibility Status</th>
                     <th>Performance Score</th>
                     <th>Competency Score</th>
-                    <th>Training Completion</th>
+                    <th>Target Position</th>
                     <th>Recommendation</th>
                     <th>Approval Status</th>
                     <th style="text-align: center;">Actions</th>
                 </tr>
             </thead>
             <tbody>
+                @forelse($candidates as $c)
                 <tr>
-                    <td><strong>Juan Dela Cruz</strong></td>
-                    <td><strong>4.8/5</strong></td>
-                    <td><span class="status-badge status-active">Eligible</span></td>
-                    <td>4.9/5</td>
-                    <td>4.8/5</td>
-                    <td><span class="status-badge status-active">100%</span></td>
-                    <td><span class="status-badge badge-success">Recommended</span></td>
-                    <td><span class="status-badge status-active">Approved</span></td>
+                    <td><strong>{{ $c['name'] }}</strong></td>
+                    <td><strong>{{ $c['performance_score'] }}/5</strong></td>
+                    <td>
+                        <span class="status-badge {{ $c['status'] === 'Ready for Promotion' ? 'status-active' : ($c['status'] === 'Nearly Ready' ? 'status-pending' : 'status-inactive') }}">
+                            {{ $c['status'] }}
+                        </span>
+                    </td>
+                    <td>{{ $c['performance_score'] }}/5</td>
+                    <td>{{ $c['competency_score'] }}</td>
+                    <td><strong>{{ $c['target_position'] }}</strong></td>
+                    <td>
+                        <span class="status-badge {{ $c['status'] === 'Ready for Promotion' ? 'badge-success' : 'status-review' }}">
+                            {{ $c['status'] === 'Ready for Promotion' ? 'Recommended' : 'Pending' }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge {{ $c['status'] === 'Ready for Promotion' ? 'status-active' : 'status-pending' }}">
+                            {{ $c['status'] === 'Ready for Promotion' ? 'Approved' : 'Under Review' }}
+                        </span>
+                    </td>
                     <td style="text-align: center;">
                         <div style="display: flex; gap: 0.4rem; justify-content: center;">
-                            <button class="icon-btn" title="View" onclick="showToast('View readiness details')"><i class="fas fa-eye"></i></button>
+                            <button class="icon-btn" title="View" onclick="showToast('View readiness details for {{ $c['name'] }}')"><i class="fas fa-eye"></i></button>
                             <button class="icon-btn" title="Edit" onclick="showToast('Edit readiness')"><i class="fas fa-edit"></i></button>
-                            <button class="icon-btn" title="Generate Recommendation" onclick="showToast('Generating recommendation...')"><i class="fas fa-file-alt"></i></button>
+                            <button class="icon-btn" title="Generate Recommendation" onclick="showToast('Generating recommendation for {{ $c['name'] }}...')"><i class="fas fa-file-alt"></i></button>
                         </div>
                     </td>
                 </tr>
+                @empty
                 <tr>
-                    <td><strong>Maria Santos</strong></td>
-                    <td><strong>4.2/5</strong></td>
-                    <td><span class="status-badge status-pending">Under Review</span></td>
-                    <td>4.5/5</td>
-                    <td>4.0/5</td>
-                    <td><span class="status-badge status-pending">85%</span></td>
-                    <td><span class="status-badge status-review">Pending</span></td>
-                    <td><span class="status-badge status-pending">Pending</span></td>
-                    <td style="text-align: center;">
-                        <div style="display: flex; gap: 0.4rem; justify-content: center;">
-                            <button class="icon-btn" title="View" onclick="showToast('View readiness details')"><i class="fas fa-eye"></i></button>
-                            <button class="icon-btn" title="Edit" onclick="showToast('Edit readiness')"><i class="fas fa-edit"></i></button>
-                            <button class="icon-btn" title="Generate Recommendation" onclick="showToast('Generating recommendation...')"><i class="fas fa-file-alt"></i></button>
-                        </div>
-                    </td>
+                    <td colspan="9" style="text-align:center; padding:2rem; color:var(--text-muted);">No promotion readiness records found.</td>
                 </tr>
-                <tr>
-                    <td><strong>Pedro Reyes</strong></td>
-                    <td><strong>3.5/5</strong></td>
-                    <td><span class="status-badge status-inactive">Not Eligible</span></td>
-                    <td>3.8/5</td>
-                    <td>3.5/5</td>
-                    <td><span class="status-badge status-inactive">60%</span></td>
-                    <td><span class="status-badge status-inactive">Not Recommended</span></td>
-                    <td><span class="status-badge status-inactive">Rejected</span></td>
-                    <td style="text-align: center;">
-                        <div style="display: flex; gap: 0.4rem; justify-content: center;">
-                            <button class="icon-btn" title="View" onclick="showToast('View readiness details')"><i class="fas fa-eye"></i></button>
-                            <button class="icon-btn" title="Edit" onclick="showToast('Edit readiness')"><i class="fas fa-edit"></i></button>
-                            <button class="icon-btn" title="Generate Recommendation" onclick="showToast('Generating recommendation...')"><i class="fas fa-file-alt"></i></button>
-                        </div>
-                    </td>
-                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

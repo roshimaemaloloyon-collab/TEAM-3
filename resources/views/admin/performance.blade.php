@@ -92,7 +92,7 @@
             <button class="perf-tab-trigger" id="moreDropdownBtn" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-ellipsis-h" style="font-size:0.9rem;"></i>
                 <span>More</span>
-                <i class="fas fa-chevron-down" style="font-size:0.75rem;margin-left:0.25rem;"></i>
+                <i class="fas fa-chevron-down" style="font-size:0.75rem !important;width:12px !important;height:12px !important;max-width:12px !important;max-height:12px !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;margin-left:0.25rem;"></i>
             </button>
             <div id="moreDropdown" style="display:none;position:absolute;top:calc(100% + 0.6rem);left:0;z-index:50;background:var(--white);border:1px solid var(--border);border-radius:0.85rem;box-shadow:0 12px 30px rgba(0,0,0,0.12);min-width:200px;overflow:hidden;">
                 <button data-tab="tab-commendations" class="more-dropdown-item" style="display:flex;align-items:center;gap:0.75rem;width:100%;padding:0.75rem 1rem;border:none;background:none;color:var(--text-dark);font-size:0.85rem;cursor:pointer;transition:background 0.2s;font-family:'Poppins',sans-serif;text-align:left;"><i class="fas fa-medal" style="color:#d97706;width:16px;"></i> Commendations</button>

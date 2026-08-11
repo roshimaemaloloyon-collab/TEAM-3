@@ -14,6 +14,7 @@ class LearningModulesController extends Controller
         $search = $request->query('search');
         $category = $request->query('category');
         $status = $request->query('status');
+        $position = $request->query('position');
         $perPage = (int) ($request->query('per_page', 15));
 
         $query = LearningModule::with('creator')->orderByDesc('created_at');
@@ -30,6 +31,10 @@ class LearningModulesController extends Controller
             $query->where('status', $status);
         }
 
+        if ($position) {
+            $query->where('metadata->target_position', $position);
+        }
+
         $modules = $query->paginate($perPage)->withQueryString();
 
         $stats = [
@@ -39,6 +44,27 @@ class LearningModulesController extends Controller
             'completed_courses' => LearningAssignment::where('status', 'completed')->count(),
         ];
 
-        return view('admin.learning.learning-modules', compact('modules', 'stats'));
+        $driver = config('database.default');
+        if ($driver === 'pgsql') {
+            $progressData = LearningAssignment::selectRaw("TO_CHAR(assigned_date, 'MM') as month_num, AVG(progress_percentage) as avg_progress")
+                ->whereNotNull('assigned_date')
+                ->groupByRaw("TO_CHAR(assigned_date, 'MM')")
+                ->orderBy('month_num')
+                ->limit(6)
+                ->get();
+        } else {
+            $progressData = LearningAssignment::selectRaw('strftime("%m", assigned_date) as month_num, AVG(progress_percentage) as avg_progress')
+                ->whereNotNull('assigned_date')
+                ->groupBy('month_num')
+                ->orderBy('month_num')
+                ->limit(6)
+                ->get();
+        }
+
+        $completionData = LearningModule::selectRaw('category, COUNT(*) as total')
+            ->groupBy('category')
+            ->get();
+
+        return view('admin.learning.learning-modules', compact('modules', 'stats', 'progressData', 'completionData'));
     }
 }

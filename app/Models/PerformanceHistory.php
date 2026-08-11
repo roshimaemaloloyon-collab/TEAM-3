@@ -11,6 +11,8 @@ class PerformanceHistory extends Model
 {
     use HasFactory;
 
+    protected $table = 'performance_history';
+
     protected $fillable = [
         'driver_id',
         'overall_score',

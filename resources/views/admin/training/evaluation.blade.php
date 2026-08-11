@@ -157,10 +157,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('evaluationTrendChart'), {
         type: 'line',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {!! json_encode($evaluationTrend->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Avg Score',
-                data: [4.2, 4.3, 4.4, 4.3, 4.5, 4.6],
+                data: {!! json_encode($evaluationTrend->pluck('avg_rating')->toArray()) !!},
                 borderColor: '#F44336',
                 backgroundColor: 'rgba(244,67,54,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#F44336'
@@ -172,15 +172,15 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('satisfactionChart'), {
         type: 'bar',
         data: {
-            labels: ['Road Safety', 'Defensive Driving', 'Customer Service', 'Company Policies'],
+            labels: {!! json_encode($satisfactionByCategory->pluck('category')->toArray()) !!},
             datasets: [{
                 label: 'Satisfaction %',
-                data: [90, 85, 88, 92],
+                data: {!! json_encode($satisfactionByCategory->pluck('avg_rating')->toArray()) !!},
                 backgroundColor: '#10b981',
                 borderRadius: 8
             }]
         },
-        options: { ...chartDefaults, scales: { y: { beginAtZero: true, max: 100 } } }
+        options: { ...chartDefaults, scales: { y: { beginAtZero: true, max: 5 } } }
     });
 });
 </script>

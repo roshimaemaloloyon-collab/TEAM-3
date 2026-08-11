@@ -9,9 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>    <style>
         :root {
             --primary: #F44336;
             --primary-light: #EF5350;
@@ -42,6 +40,25 @@
         }
 
         h1, h2, h3, h4, h5, h6 { font-family: 'Poppins', sans-serif; }
+
+        /* Global Icon & SVG Size Bounds */
+        svg, i.fas, i.far, i.fab, i.fa {
+            max-width: 1.5rem !important;
+            max-height: 1.5rem !important;
+            box-sizing: border-box !important;
+        }
+
+        i.fa-chevron-right, i.fa-chevron-left, i.fa-chevron-down, i.fa-chevron-up, .chevron {
+            font-size: 0.75rem !important;
+            width: 12px !important;
+            height: 12px !important;
+            max-width: 12px !important;
+            max-height: 12px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+        }
 
         /* Sidebar */
         .sidebar {
@@ -164,7 +181,14 @@
         }
 
         .nav-parent i.fa-chevron-right {
-            font-size: 0.7rem;
+            font-size: 0.75rem !important;
+            width: 12px !important;
+            height: 12px !important;
+            max-width: 12px !important;
+            max-height: 12px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             transition: transform 0.25s ease;
             opacity: 0.7;
         }
@@ -233,6 +257,22 @@
             background: var(--primary-light);
             opacity: 1;
             box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.2);
+        }
+
+        .nav-section-header {
+            padding: 1.25rem 1.25rem 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #64748b;
+            user-select: none;
+        }
+
+        .nav-section-header:not(:first-child) {
+            margin-top: 0.5rem;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding-top: 1rem;
         }
 
         .user-area {
@@ -1078,6 +1118,8 @@
             <i class="fas fa-th-large"></i><span class="nav-text">Dashboard</span>
         </a>
 
+        <div class="nav-section-header">Driver Management</div>
+
         <a href="{{ route('admin.drivers.index') }}" class="nav-parent {{ request()->routeIs('admin.drivers.*') ? 'open' : '' }}" data-target="nav-drivers" onclick="event.preventDefault(); toggleAccordion(this)">
             <i class="fas fa-id-card"></i>
             <span class="nav-text">Manage Drivers</span>
@@ -1086,9 +1128,11 @@
         <div class="nav-submenu {{ request()->routeIs('admin.drivers.*') ? 'open' : '' }}" id="nav-drivers">
             <a href="{{ route('admin.drivers.index') }}" class="nav-subitem {{ request()->routeIs('admin.drivers.index') ? 'active' : '' }}">Driver List</a>
             <a href="{{ route('admin.drivers.profile', 1) }}" class="nav-subitem {{ request()->routeIs('admin.drivers.profile') ? 'active' : '' }}">Driver Profile</a>
-            <a href="javascript:void(0);" class="nav-subitem">Driver Documents</a>
-            <a href="javascript:void(0);" class="nav-subitem">Vehicle Information</a>
+            <a href="{{ route('admin.drivers.documents') }}" class="nav-subitem {{ request()->routeIs('admin.drivers.documents') ? 'active' : '' }}">Driver Documents</a>
+            <a href="{{ route('admin.drivers.vehicles') }}" class="nav-subitem {{ request()->routeIs('admin.drivers.vehicles') ? 'active' : '' }}">Vehicle Information</a>
         </div>
+
+        <div class="nav-section-header">Talent Development</div>
 
         <a href="javascript:void(0);" class="nav-parent {{ request()->routeIs('admin.performance.*') ? 'open' : '' }}" data-target="nav-performance" onclick="event.preventDefault(); toggleAccordion(this)">
             <i class="fas fa-chart-line"></i>
@@ -1112,6 +1156,7 @@
         <div class="nav-submenu {{ request()->routeIs('admin.competency.*') ? 'open' : '' }}" id="nav-competency">
             <a href="{{ route('admin.competency.assessments') }}" class="nav-subitem {{ request()->routeIs('admin.competency.assessments') ? 'active' : '' }}">Skills Assessment</a>
             <a href="{{ route('admin.competency.results') }}" class="nav-subitem {{ request()->routeIs('admin.competency.results') ? 'active' : '' }}">Assessment Results</a>
+            <a href="{{ route('admin.competency.gap-analysis') }}" class="nav-subitem {{ request()->routeIs('admin.competency.gap-analysis') ? 'active' : '' }}">Gap Analysis</a>
             <a href="{{ route('admin.competency.plans') }}" class="nav-subitem {{ request()->routeIs('admin.competency.plans') ? 'active' : '' }}">Development Plan</a>
             <a href="{{ route('admin.competency.reports') }}" class="nav-subitem {{ request()->routeIs('admin.competency.reports') ? 'active' : '' }}">Competency Reports</a>
             <a href="{{ route('admin.competency.analytics') }}" class="nav-subitem {{ request()->routeIs('admin.competency.analytics') ? 'active' : '' }}">Competency Analytics</a>
@@ -1160,19 +1205,7 @@
             <a href="{{ route('admin.succession.talent-pool') }}" class="nav-subitem {{ request()->routeIs('admin.succession.talent-pool') ? 'active' : '' }}">Talent Pool</a>
         </div>
 
-        <a href="javascript:void(0);" class="nav-parent {{ request()->routeIs('admin.recognition.*') ? 'open' : '' }}" data-target="nav-recognition" onclick="event.preventDefault(); toggleAccordion(this)">
-            <i class="fas fa-trophy"></i>
-            <span class="nav-text">Social Recognition</span>
-            <i class="fas fa-chevron-right chevron"></i>
-        </a>
-        <div class="nav-submenu {{ request()->routeIs('admin.recognition.*') ? 'open' : '' }}" id="nav-recognition">
-            <a href="{{ route('admin.recognition.awards') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.awards') ? 'active' : '' }}">Awards</a>
-            <a href="{{ route('admin.recognition.badges') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.badges') ? 'active' : '' }}">Achievement Badges</a>
-            <a href="{{ route('admin.recognition.leaderboard') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.leaderboard') ? 'active' : '' }}">Leaderboard</a>
-            <a href="{{ route('admin.recognition.history') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.history') ? 'active' : '' }}">Recognition History</a>
-            <a href="{{ route('admin.recognition.certificates') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.certificates') ? 'active' : '' }}">Certificates & Rewards</a>
-            <a href="{{ route('admin.recognition.analytics') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.analytics') ? 'active' : '' }}">Recognition Analytics</a>
-        </div>
+        <div class="nav-section-header">Evaluation & Recognition</div>
 
         <a href="{{ route('admin.evaluation.driver-evaluation') }}" class="nav-parent {{ request()->routeIs('admin.evaluation.*') ? 'open' : '' }}" data-target="nav-evaluation" onclick="event.preventDefault(); toggleAccordion(this)">
             <i class="fas fa-users"></i>
@@ -1188,6 +1221,22 @@
             <a href="{{ route('admin.evaluation.history') }}" class="nav-subitem {{ request()->routeIs('admin.evaluation.history') ? 'active' : '' }}">Evaluation History</a>
         </div>
 
+        <a href="javascript:void(0);" class="nav-parent {{ request()->routeIs('admin.recognition.*') ? 'open' : '' }}" data-target="nav-recognition" onclick="event.preventDefault(); toggleAccordion(this)">
+            <i class="fas fa-trophy"></i>
+            <span class="nav-text">Social Recognition</span>
+            <i class="fas fa-chevron-right chevron"></i>
+        </a>
+        <div class="nav-submenu {{ request()->routeIs('admin.recognition.*') ? 'open' : '' }}" id="nav-recognition">
+            <a href="{{ route('admin.recognition.awards') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.awards') ? 'active' : '' }}">Awards</a>
+            <a href="{{ route('admin.recognition.badges') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.badges') ? 'active' : '' }}">Achievement Badges</a>
+            <a href="{{ route('admin.recognition.leaderboard') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.leaderboard') ? 'active' : '' }}">Leaderboard</a>
+            <a href="{{ route('admin.recognition.history') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.history') ? 'active' : '' }}">Recognition History</a>
+            <a href="{{ route('admin.recognition.certificates') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.certificates') ? 'active' : '' }}">Certificates & Rewards</a>
+            <a href="{{ route('admin.recognition.analytics') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.analytics') ? 'active' : '' }}">Recognition Analytics</a>
+        </div>
+
+        <div class="nav-section-header">Analytics & Reports</div>
+
         <a href="javascript:void(0);" class="nav-parent {{ request()->routeIs('admin.reports.*') ? 'open' : '' }}" data-target="nav-reports" onclick="event.preventDefault(); toggleAccordion(this)">
             <i class="fas fa-file-alt"></i>
             <span class="nav-text">Reports & Analytics</span>
@@ -1201,6 +1250,8 @@
             <a href="{{ route('admin.reports.export-center') }}" class="nav-subitem {{ request()->routeIs('admin.reports.export-center') ? 'active' : '' }}">Export Center</a>
             <a href="{{ route('admin.reports.report-history') }}" class="nav-subitem {{ request()->routeIs('admin.reports.report-history') ? 'active' : '' }}">Report History</a>
         </div>
+
+        <div class="nav-section-header">System</div>
 
         <a href="javascript:void(0);" class="nav-parent {{ request()->routeIs('admin.notifications.*') ? 'open' : '' }}" data-target="nav-notifications" onclick="event.preventDefault(); toggleAccordion(this)">
             <i class="fas fa-bell"></i>
@@ -1251,7 +1302,7 @@
     </nav>
 
     <div class="user-area">
-        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=100&h=100&q=80" alt="Admin" class="user-avatar">
+        <img src="{{ asset('admin/avatar') }}" alt="Admin" class="user-avatar">
         <div class="user-info">
                 <div class="user-name">{{ Auth::user()?->name ?? 'Admin User' }}</div>
                 <div class="user-role">{{ Auth::user()?->isAdmin() ? 'System Administrator' : 'User' }}</div>
@@ -1284,7 +1335,7 @@
                 <span class="badge"></span>
             </a>
             <div class="profile-dropdown">
-                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=100&h=100&q=80" alt="Profile" class="profile-img" onclick="toggleDropdown()">
+                <img src="{{ asset('admin/avatar') }}" alt="Profile" class="profile-img" onclick="toggleDropdown()">
                 <div class="dropdown-menu" id="profileDropdown">
                     <a href="#"><i class="fas fa-user"></i> My Profile</a>
                     <a href="{{ route('admin.settings.index') }}"><i class="fas fa-cog"></i> Settings</a>
@@ -1389,10 +1440,24 @@
         }, 3000);
     }
 
+    // Persist sidebar scroll position across module page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            const savedScrollPos = sessionStorage.getItem('sidebar_scroll_position');
+            if (savedScrollPos !== null) {
+                sidebar.scrollTop = parseInt(savedScrollPos, 10);
+            }
+            sidebar.addEventListener('scroll', () => {
+                sessionStorage.setItem('sidebar_scroll_position', sidebar.scrollTop);
+            });
+        }
+    });
+
     document.addEventListener('click', function(e) {
         const dropdown = document.getElementById('profileDropdown');
         const profileImg = document.querySelector('.profile-img');
-        if (!dropdown.contains(e.target) && e.target !== profileImg) {
+        if (dropdown && !dropdown.contains(e.target) && e.target !== profileImg) {
             dropdown.classList.remove('show');
         }
     });

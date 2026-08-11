@@ -1,6 +1,6 @@
 @extends('admin.layouts.admin')
 
-@section('title', 'TripWise — Learning Modules')
+@section('title', 'TripWise — Learning Modules by Position')
 
 @section('content')
 <!-- Breadcrumb -->
@@ -9,164 +9,167 @@
     <span>/</span>
     <a href="{{ route('admin.learning.index') }}">Learning Management</a>
     <span>/</span>
-    <span>Learning Modules</span>
+    <span>Learning Modules by Position</span>
 </div>
 
 <!-- Page Header -->
 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
     <div>
-        <h1 style="font-size:1.75rem;color:var(--primary);margin:0 0 0.25rem;">Learning Modules</h1>
-        <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">Manage all learning materials assigned to drivers.</p>
-    </div>
-    <button class="btn btn-primary" onclick="openModal('addModuleModal')"><i class="fas fa-plus"></i> Assign Module</button>
-</div>
-
-<!-- Dashboard Stats Cards -->
-<div class="summary-grid">
-    <div class="summary-card">
-        <div class="card-icon blue"><i class="fas fa-book-open"></i></div>
-        <div class="card-info">
-            <h3>{{ $stats['total_modules'] }}</h3>
-            <p>Total Learning Modules</p>
-        </div>
-    </div>
-    <div class="summary-card">
-        <div class="card-icon green"><i class="fas fa-users"></i></div>
-        <div class="card-info">
-            <h3>{{ $stats['assigned_courses'] }}</h3>
-            <p>Assigned Courses</p>
-        </div>
-    </div>
-    <div class="summary-card">
-        <div class="card-icon orange"><i class="fas fa-play-circle"></i></div>
-        <div class="card-info">
-            <h3>{{ $stats['active_modules'] }}</h3>
-            <p>Active Modules</p>
-        </div>
-    </div>
-    <div class="summary-card">
-        <div class="card-icon purple"><i class="fas fa-check-circle"></i></div>
-        <div class="card-info">
-            <h3>{{ $stats['completed_courses'] }}</h3>
-            <p>Completed Courses</p>
-        </div>
+        <h1 style="font-size:1.75rem;color:var(--primary);margin:0 0 0.25rem;font-weight:700;">Learning Modules by Position</h1>
+        <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">Select your position to view learning modules tailored for your role.</p>
     </div>
 </div>
 
-<!-- Filters -->
-<div class="table-card" style="margin-bottom:1rem;">
-    <form method="GET" action="{{ route('admin.learning.modules') }}" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
-        <div style="flex:1;min-width:200px;">
-            <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Search</label>
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search modules..." style="width:100%;padding:0.6rem 1rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;background:var(--white);color:var(--text-dark);font-family:'Inter',sans-serif;">
-        </div>
-        <div style="min-width:180px;">
-            <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Category</label>
-            <select name="category" style="width:100%;padding:0.6rem 1rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;background:var(--white);color:var(--text-dark);font-family:'Inter',sans-serif;">
-                <option value="">All Categories</option>
-                <option value="road_safety" {{ request('category') === 'road_safety' ? 'selected' : '' }}>Road Safety</option>
-                <option value="defensive_driving" {{ request('category') === 'defensive_driving' ? 'selected' : '' }}>Defensive Driving</option>
-                <option value="customer_service" {{ request('category') === 'customer_service' ? 'selected' : '' }}>Customer Service</option>
-                <option value="company_policies" {{ request('category') === 'company_policies' ? 'selected' : '' }}>Company Policies</option>
-                <option value="traffic_rules" {{ request('category') === 'traffic_rules' ? 'selected' : '' }}>Traffic Rules</option>
-                <option value="emergency_response" {{ request('category') === 'emergency_response' ? 'selected' : '' }}>Emergency Response</option>
-                <option value="vehicle_maintenance" {{ request('category') === 'vehicle_maintenance' ? 'selected' : '' }}>Vehicle Maintenance</option>
-            </select>
-        </div>
-        <div style="min-width:180px;">
-            <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Status</label>
-            <select name="status" style="width:100%;padding:0.6rem 1rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;background:var(--white);color:var(--text-dark);font-family:'Inter',sans-serif;">
-                <option value="">All Statuses</option>
-                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
-                <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
-                <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>Archived</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-secondary"><i class="fas fa-search"></i> Filter</button>
-    </form>
-</div>
-
-<!-- Learning Modules Table -->
-<div class="table-card">
-    <h3 style="margin:0 0 1rem;"><i class="fas fa-book-open"></i> Learning Modules</h3>
-    <div style="overflow-x:auto;">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Module ID</th>
-                    <th>Module Title</th>
-                    <th>Category</th>
-                    <th>Assigned Driver</th>
-                    <th>Assigned Date</th>
-                    <th>Due Date</th>
-                    <th>Completion Status</th>
-                    <th>Progress</th>
-                    <th style="text-align:right;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($modules as $module)
-                    <tr>
-                        <td>#LRN-{{ str_pad($module->id, 5, '0', STR_PAD_LEFT) }}</td>
-                        <td><strong>{{ $module->title }}</strong></td>
-                        <td style="text-transform:capitalize;">{{ str_replace('_', ' ', $module->category) }}</td>
-                        <td>
-                            @php
-                                $assignments = \App\Models\LearningAssignment::where('learning_module_id', $module->id)->get();
-                                echo $assignments->count() . ' drivers';
-                            @endphp
-                        </td>
-                        <td>{{ $module->created_at->format('M d, Y') }}</td>
-                        <td>N/A</td>
-                        <td>
-                            <span class="item-badge {{ $module->status === 'active' ? 'badge-success' : ($module->status === 'inactive' ? 'badge-warning' : 'badge-info') }}">
-                                {{ ucfirst($module->status) }}
-                            </span>
-                        </td>
-                        <td>
-                            @php
-                                $avgProgress = $assignments->avg('progress_percentage') ?: 0;
-                            @endphp
-                            <div style="display:flex;align-items:center;gap:0.5rem;">
-                                <div class="progress-bar" style="width:100px;height:8px;">
-                                    <div class="progress-fill" style="width:{{ $avgProgress }}%;"></div>
-                                </div>
-                                <span style="font-size:0.85rem;font-weight:600;">{{ round($avgProgress) }}%</span>
-                            </div>
-                        </td>
-                        <td style="text-align:right;">
-                            <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                                <button class="btn btn-sm btn-secondary" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Assign Module"><i class="fas fa-plus"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Edit"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger" title="Archive"><i class="fas fa-archive"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:2rem;">No learning modules found.</td></tr>
-                @endforelse
-            </tbody>
-        </table>
+<!-- Top Filters & Search -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+    <div style="flex:1;max-width:400px;position:relative;">
+        <i class="fas fa-search" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-muted);"></i>
+        <input type="text" id="positionSearchInput" placeholder="Search position or modules..." style="width:100%;padding:0.65rem 1rem 0.65rem 2.5rem;border:1px solid var(--border);border-radius:0.75rem;font-size:0.9rem;background:var(--white);color:var(--text-dark);font-family:'Inter',sans-serif;" onkeyup="filterPositions()">
     </div>
-    <div style="margin-top:1rem;">
-        {{ $modules->links() }}
+    <div style="display:flex;gap:0.75rem;">
+        <select id="categorySelect" style="padding:0.65rem 1.25rem;border:1px solid var(--border);border-radius:0.75rem;font-size:0.9rem;background:var(--white);color:var(--text-dark);font-family:'Inter',sans-serif;" onchange="filterPositions()">
+            <option value="">All Categories</option>
+            <option value="driver">Drivers (MC & 4-Wheel)</option>
+            <option value="management">Management & Operations</option>
+            <option value="staff">Office & Administrative Staff</option>
+        </select>
     </div>
 </div>
 
-<!-- Charts -->
-<div class="charts-grid" style="margin-top:1.5rem;">
-    <div class="chart-card">
-        <h3><i class="fas fa-chart-line"></i> Learning Progress</h3>
-        <div class="chart-wrapper">
-            <canvas id="learningProgressChart"></canvas>
+@php
+    $positionsData = [
+        [
+            'name' => 'MC TAXI DRIVER',
+            'slug' => 'mc-taxi-driver',
+            'count' => 12,
+            'completion' => 60,
+            'category_type' => 'driver',
+            'icon' => 'fas fa-motorcycle',
+            'img' => route('position.photo', 'mc-taxi-driver')
+        ],
+        [
+            'name' => '4-WHEEL CAR DRIVER',
+            'slug' => '4-wheel-car-driver',
+            'count' => 14,
+            'completion' => 45,
+            'category_type' => 'driver',
+            'icon' => 'fas fa-car',
+            'img' => route('position.photo', '4-wheel-car-driver')
+        ],
+        [
+            'name' => 'OPERATIONS MANAGER',
+            'slug' => 'operations-manager',
+            'count' => 16,
+            'completion' => 70,
+            'category_type' => 'management',
+            'icon' => 'fas fa-users-cog',
+            'img' => route('position.photo', 'operations-manager')
+        ],
+        [
+            'name' => 'OFFICE STAFF',
+            'slug' => 'office-staff',
+            'count' => 10,
+            'completion' => 50,
+            'category_type' => 'staff',
+            'icon' => 'fas fa-folder-open',
+            'img' => route('position.photo', 'office-staff')
+        ],
+        [
+            'name' => 'HR MANAGER',
+            'slug' => 'hr-manager',
+            'count' => 15,
+            'completion' => 65,
+            'category_type' => 'management',
+            'icon' => 'fas fa-user-shield',
+            'img' => route('position.photo', 'hr-manager')
+        ],
+        [
+            'name' => 'FACILITIES COORDINATOR',
+            'slug' => 'facilities-coordinator',
+            'count' => 12,
+            'completion' => 55,
+            'category_type' => 'staff',
+            'icon' => 'fas fa-building',
+            'img' => route('position.photo', 'facilities-coordinator')
+        ],
+        [
+            'name' => 'VEHICLE DISPATCHER',
+            'slug' => 'vehicle-dispatcher',
+            'count' => 13,
+            'completion' => 60,
+            'category_type' => 'management',
+            'icon' => 'fas fa-map-marker-alt',
+            'img' => route('position.photo', 'vehicle-dispatcher')
+        ],
+        [
+            'name' => 'FINANCE OFFICER',
+            'slug' => 'finance-officer',
+            'count' => 14,
+            'completion' => 60,
+            'category_type' => 'staff',
+            'icon' => 'fas fa-dollar-sign',
+            'img' => route('position.photo', 'finance-officer')
+        ],
+        [
+            'name' => 'RECRUITMENT SPECIALIST',
+            'slug' => 'recruitment-specialist',
+            'count' => 11,
+            'completion' => 50,
+            'category_type' => 'staff',
+            'icon' => 'fas fa-id-badge',
+            'img' => route('position.photo', 'recruitment-specialist')
+        ]
+    ];
+@endphp
+
+<!-- Grid Layout matching exact card layout -->
+<div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));gap:1.25rem;" id="positionsGrid">
+    @foreach($positionsData as $pos)
+        <div class="position-card" data-name="{{ strtolower($pos['name']) }}" data-category="{{ $pos['category_type'] }}" style="background:var(--white);border:1px solid var(--border);border-radius:1rem;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.04);transition:transform 0.25s ease, box-shadow 0.25s ease;display:flex;flex-direction:column;justify-content:space-between;">
+            <div>
+                <!-- Top Card Image Container with Floating Badge -->
+                <div style="position:relative;height:190px;background:#FAF6EE;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+                    <img src="{{ $pos['img'] }}" alt="{{ $pos['name'] }}" style="width:100%;height:100%;object-fit:cover;">
+                    
+                    <!-- Floating Round Category Icon Badge on Bottom Left of Image -->
+                    <div style="position:absolute;left:1rem;bottom:0.75rem;width:40px;height:40px;border-radius:50%;background:var(--charcoal);color:var(--white);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,0.15);z-index:2;">
+                        <i class="{{ $pos['icon'] }}" style="font-size:1.05rem;"></i>
+                    </div>
+                </div>
+
+                <!-- Card Body -->
+                <div style="padding:1.25rem 1.25rem 0.75rem;">
+                    <h3 style="font-size:0.95rem;font-weight:700;color:var(--text-dark);margin:0 0 0.25rem;letter-spacing:0.02em;">{{ $pos['name'] }}</h3>
+                    <p style="font-size:0.8rem;color:var(--text-muted);margin:0 0 1rem;">{{ $pos['count'] }} Modules</p>
+
+                    <!-- Progress Bar -->
+                    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+                        <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+                            <div style="width:{{ $pos['completion'] }}%;height:100%;background:var(--primary);border-radius:3px;"></div>
+                        </div>
+                        <span style="font-size:0.75rem;font-weight:600;color:var(--text-muted);">{{ $pos['completion'] }}% Complete</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Footer Action Button -->
+            <div style="padding:0 1.25rem 1.25rem;">
+                <a href="{{ route('admin.learning.modules', ['position' => $pos['name']]) }}" style="display:block;width:100%;padding:0.6rem 0;text-align:center;border:1px solid var(--border);border-radius:0.5rem;background:var(--white);color:var(--text-dark);font-size:0.85rem;font-weight:600;text-decoration:none;transition:all 0.2s ease;">
+                    View Modules
+                </a>
+            </div>
         </div>
+    @endforeach
+</div>
+
+<!-- Bottom Banner Information -->
+<div style="margin-top:2rem;background:#f0f4f8;border:1px solid #dbeafe;border-radius:0.85rem;padding:1.25rem;display:flex;align-items:center;gap:1rem;">
+    <div style="width:42px;height:42px;border-radius:50%;background:var(--charcoal);color:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fas fa-graduation-cap" style="font-size:1.2rem;"></i>
     </div>
-    <div class="chart-card">
-        <h3><i class="fas fa-chart-bar"></i> Module Completion</h3>
-        <div class="chart-wrapper">
-            <canvas id="moduleCompletionChart"></canvas>
-        </div>
+    <div>
+        <h4 style="margin:0 0 0.2rem;font-size:0.95rem;color:var(--text-dark);font-weight:600;">Continuous Professional Development</h4>
+        <p style="margin:0;font-size:0.85rem;color:var(--text-muted);">Learning modules are continuously updated to ensure you have the latest knowledge and skills required for your role. Keep learning, keep growing with Tripwise!</p>
     </div>
 </div>
 
@@ -174,49 +177,24 @@
 
 @section('scripts')
 <script>
-function openModal(id) { document.getElementById(id).classList.add('active'); }
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toastMessage').textContent = message;
-    toast.style.display = 'flex';
-    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+function filterPositions() {
+    const searchVal = document.getElementById('positionSearchInput').value.toLowerCase();
+    const catVal = document.getElementById('categorySelect').value;
+    const cards = document.querySelectorAll('.position-card');
+
+    cards.forEach(card => {
+        const name = card.getAttribute('data-name');
+        const cat = card.getAttribute('data-category');
+
+        const matchesSearch = name.includes(searchVal);
+        const matchesCat = !catVal || cat === catVal;
+
+        if (matchesSearch && matchesCat) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
 }
-document.addEventListener('DOMContentLoaded', function() {
-    const chartDefaults = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { labels: { font: { family: "'Poppins', sans-serif" } } } }
-    };
-
-    new Chart(document.getElementById('learningProgressChart'), {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            datasets: [{
-                label: 'Completion %',
-                data: [45, 52, 58, 65, 72, 78],
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16,185,129,0.1)',
-                fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#10b981'
-            }]
-        },
-        options: { ...chartDefaults, plugins: { legend: { display: false } } }
-    });
-
-    new Chart(document.getElementById('moduleCompletionChart'), {
-        type: 'bar',
-        data: {
-            labels: ['Road Safety', 'Defensive Driving', 'Customer Service', 'Company Policies', 'Traffic Rules'],
-            datasets: [{
-                label: 'Completed',
-                data: [85, 72, 68, 90, 55],
-                backgroundColor: '#3b82f6',
-                borderRadius: 8
-            }]
-        },
-        options: { ...chartDefaults, scales: { y: { beginAtZero: true } } }
-    });
-});
 </script>
 @endsection

@@ -171,10 +171,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('attendanceTrendChart'), {
         type: 'line',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {!! json_encode($attendanceTrend->pluck('month_num')->toArray()) !!},
             datasets: [{
                 label: 'Attendance %',
-                data: [85, 88, 92, 90, 94, 93],
+                data: {!! json_encode($attendanceTrend->pluck('total')->toArray()) !!},
                 borderColor: '#10b981',
                 backgroundColor: 'rgba(16,185,129,0.1)',
                 fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#10b981'
@@ -186,8 +186,8 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(document.getElementById('attendanceDistChart'), {
         type: 'doughnut',
         data: {
-            labels: ['Present', 'Late', 'Absent', 'Excused'],
-            datasets: [{ data: [75, 15, 7, 3], backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#3b82f6'] }]
+            labels: {!! json_encode($attendanceDist->pluck('status')->toArray()) !!},
+            datasets: [{ data: {!! json_encode($attendanceDist->pluck('total')->toArray()) !!}, backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#3b82f6'] }]
         },
         options: { ...chartDefaults, plugins: { legend: { position: 'bottom', labels: { font: { family: "'Poppins', sans-serif" } } } } }
     });
