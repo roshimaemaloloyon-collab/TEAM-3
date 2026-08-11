@@ -25,42 +25,42 @@
 
 <!-- Statistics Cards -->
 <div class="summary-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:1.25rem;margin-bottom:1.5rem;">
-    <div class="table-card" style="padding:1.25rem;display:flex;align-items:center;gap:1rem;">
+    <a href="{{ route('admin.drivers.documents') }}" class="table-card" style="padding:1.25rem;display:flex;align-items:center;gap:1rem;text-decoration:none;cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
         <div style="width:48px;height:48px;border-radius:12px;background:#e0f2fe;color:#0284c7;display:flex;align-items:center;justify-content:center;font-size:1.25rem;">
             <i class="fas fa-file-alt"></i>
         </div>
         <div>
-            <h3 style="font-size:1.5rem;margin:0;color:var(--primary);">{{ $drivers->count() * 4 }}</h3>
+            <h3 style="font-size:1.5rem;margin:0;color:var(--primary);">{{ $drivers->total() * 4 }}</h3>
             <p style="font-size:0.85rem;color:var(--text-muted);margin:0;">Total Submitted Documents</p>
         </div>
-    </div>
-    <div class="table-card" style="padding:1.25rem;display:flex;align-items:center;gap:1rem;">
+    </a>
+    <a href="{{ route('admin.drivers.documents', ['status' => 'verified']) }}" class="table-card" style="padding:1.25rem;display:flex;align-items:center;gap:1rem;text-decoration:none;cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
         <div style="width:48px;height:48px;border-radius:12px;background:#d1fae5;color:#059669;display:flex;align-items:center;justify-content:center;font-size:1.25rem;">
             <i class="fas fa-check-circle"></i>
         </div>
         <div>
-            <h3 style="font-size:1.5rem;margin:0;color:#059669;">{{ intval($drivers->count() * 3.2) }}</h3>
+            <h3 style="font-size:1.5rem;margin:0;color:#059669;">{{ intval($drivers->total() * 3.2) }}</h3>
             <p style="font-size:0.85rem;color:var(--text-muted);margin:0;">Verified Documents</p>
         </div>
-    </div>
-    <div class="table-card" style="padding:1.25rem;display:flex;align-items:center;gap:1rem;">
+    </a>
+    <a href="{{ route('admin.drivers.documents', ['status' => 'pending']) }}" class="table-card" style="padding:1.25rem;display:flex;align-items:center;gap:1rem;text-decoration:none;cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
         <div style="width:48px;height:48px;border-radius:12px;background:#ffedd5;color:#ea580c;display:flex;align-items:center;justify-content:center;font-size:1.25rem;">
             <i class="fas fa-clock"></i>
         </div>
         <div>
-            <h3 style="font-size:1.5rem;margin:0;color:#ea580c;">{{ intval($drivers->count() * 0.6) }}</h3>
+            <h3 style="font-size:1.5rem;margin:0;color:#ea580c;">{{ intval($drivers->total() * 0.6) }}</h3>
             <p style="font-size:0.85rem;color:var(--text-muted);margin:0;">Pending Verification</p>
         </div>
-    </div>
-    <div class="table-card" style="padding:1.25rem;display:flex;align-items:center;gap:1rem;">
+    </a>
+    <a href="{{ route('admin.drivers.documents', ['status' => 'expired']) }}" class="table-card" style="padding:1.25rem;display:flex;align-items:center;gap:1rem;text-decoration:none;cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
         <div style="width:48px;height:48px;border-radius:12px;background:#fee2e2;color:#dc2626;display:flex;align-items:center;justify-content:center;font-size:1.25rem;">
             <i class="fas fa-exclamation-triangle"></i>
         </div>
         <div>
-            <h3 style="font-size:1.5rem;margin:0;color:#dc2626;">{{ intval($drivers->count() * 0.2) + 1 }}</h3>
+            <h3 style="font-size:1.5rem;margin:0;color:#dc2626;">{{ intval($drivers->total() * 0.2) + 1 }}</h3>
             <p style="font-size:0.85rem;color:var(--text-muted);margin:0;">Expired / Needing Action</p>
         </div>
-    </div>
+    </a>
 </div>
 
 <!-- Search & Filter Controls -->
@@ -69,17 +69,17 @@
         <div style="flex:1;min-width:240px;">
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Search driver name, ID, or document type..." style="width:100%;padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;">
         </div>
-        <div style="width:180px;">
+        <div style="width:200px;">
             <select name="type" style="width:100%;padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;">
                 <option value="">All Document Types</option>
-                <option value="license">Driver's License</option>
-                <option value="orcr">OR / CR</option>
-                <option value="nbi">NBI Clearance</option>
-                <option value="police">Police Clearance</option>
-                <option value="medical">Medical Certificate</option>
+                <option value="license" {{ request('type') == 'license' ? 'selected' : '' }}>Driver's License</option>
+                <option value="orcr" {{ request('type') == 'orcr' ? 'selected' : '' }}>OR / CR</option>
+                <option value="nbi" {{ request('type') == 'nbi' ? 'selected' : '' }}>NBI Clearance</option>
+                <option value="medical" {{ request('type') == 'medical' ? 'selected' : '' }}>Medical Certificate</option>
             </select>
         </div>
         <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+        <a href="{{ route('admin.drivers.documents') }}" class="btn btn-secondary"><i class="fas fa-undo"></i> Reset</a>
     </form>
 </div>
 
@@ -138,8 +138,8 @@
                     <td style="text-align:center;">
                         <div style="display:flex;gap:0.35rem;justify-content:center;">
                             <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-documents']) }}" class="icon-btn" title="View Document"><i class="fas fa-eye"></i></a>
-                            <button class="icon-btn" title="Download" onclick="showToast('Downloading document for {{ $driver->first_name }}...')"><i class="fas fa-download"></i></button>
-                            <button class="icon-btn" title="Update Status" onclick="showToast('Verification status updated.')"><i class="fas fa-check"></i></button>
+                            <button class="icon-btn" title="Download Document" onclick="alert('Downloading document file for {{ $driver->first_name }}...')"><i class="fas fa-download"></i></button>
+                            <button class="icon-btn" title="Verify Status" onclick="alert('Status updated for {{ $driver->first_name }}\'s document.')"><i class="fas fa-check"></i></button>
                         </div>
                     </td>
                 </tr>

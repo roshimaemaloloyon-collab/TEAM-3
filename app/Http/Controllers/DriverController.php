@@ -20,8 +20,19 @@ class DriverController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('first_name', 'like', "%{$search}%")
                   ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('driver_id', 'like', "%{$search}%");
+                  ->orWhere('driver_id', 'like', "%{$search}%")
+                  ->orWhere('vehicle_assignment', 'like', "%{$search}%");
             });
+        }
+
+        if ($status = $request->input('status')) {
+            if ($status === 'verified') {
+                $query->where('status', 'active');
+            } elseif ($status === 'pending') {
+                $query->where('status', 'review');
+            } elseif ($status === 'expired') {
+                $query->where('status', 'suspended');
+            }
         }
 
         $drivers = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
