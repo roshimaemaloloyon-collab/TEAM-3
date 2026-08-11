@@ -639,13 +639,8 @@
 </div>
 
 <!-- Toast Notification -->
-<div id="toast" style="position:fixed;bottom:2rem;right:2rem;background:var(--charcoal);color:var(--white);padding:1rem 1.5rem;border-radius:0.75rem;box-shadow:0 8px 24px rgba(0,0,0,0.2);z-index:3000;display:none;align-items:center;gap:0.75rem;min-width:300px;">
-    <i class="fas fa-check-circle" style="color:var(--success);font-size:1.25rem;"></i>
-    <span id="toastMessage" style="font-size:0.9rem;"></span>
 </div>
-@endsection
 
-@push('scripts')
 <script>
 function openModal(modalId) {
     document.getElementById(modalId).style.display = 'flex';
@@ -803,4 +798,4 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 </script>
-@endpush
+@endsection
