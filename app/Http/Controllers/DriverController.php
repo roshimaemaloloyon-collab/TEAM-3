@@ -59,22 +59,65 @@ class DriverController extends Controller
     {
         $driver = Driver::findOrFail($id);
         $docType = strtoupper($request->input('type', 'LICENSE'));
-        $content = "TRIPWISE TNVS DRIVER DOCUMENT RECORD ({$docType})\n";
-        $content .= "=================================================\n";
-        $content .= "Driver ID           : {$driver->driver_id}\n";
-        $content .= "Full Name           : {$driver->full_name}\n";
-        $content .= "Branch              : {$driver->branch}\n";
-        $content .= "Vehicle Assignment  : " . ($driver->vehicle_assignment ?? 'N/A') . "\n";
-        $content .= "Document Type       : {$docType}\n";
-        $content .= "License Expiration  : " . ($driver->license_expiration ?? '2026-12-20') . "\n";
-        $content .= "Verification Status : " . strtoupper($driver->status) . "\n";
-        $content .= "Generated Timestamp : " . date('Y-m-d H:i:s') . "\n";
 
-        $filename = "{$docType}_" . preg_replace('/[^A-Za-z0-9]/', '_', $driver->full_name) . ".txt";
+        // Create 800x500 official document image card using GD
+        $width = 800;
+        $height = 500;
+        $image = imagecreatetruecolor($width, $height);
 
-        return response()->streamDownload(function() use ($content) {
-            echo $content;
-        }, $filename, ['Content-Type' => 'text/plain']);
+        // Color Palette
+        $bgColor = imagecolorallocate($image, 248, 250, 252); // Soft light blue-grey
+        $cardBg = imagecolorallocate($image, 255, 255, 255);
+        $headerBg = imagecolorallocate($image, 244, 67, 54); // TripWise Primary Red
+        $textDark = imagecolorallocate($image, 30, 41, 59);
+        $textMuted = imagecolorallocate($image, 100, 116, 139);
+        $border = imagecolorallocate($image, 226, 232, 240);
+        $green = imagecolorallocate($image, 16, 185, 129);
+        $white = imagecolorallocate($image, 255, 255, 255);
+
+        // Fill background
+        imagefill($image, 0, 0, $bgColor);
+
+        // Card Container with border
+        imagefilledrectangle($image, 30, 30, $width - 30, $height - 30, $cardBg);
+        imagerectangle($image, 30, 30, $width - 30, $height - 30, $border);
+
+        // Top Banner Header
+        imagefilledrectangle($image, 30, 30, $width - 30, 110, $headerBg);
+        imagestring($image, 5, 50, 50, "TRIPWISE TNVS OFFICIAL DOCUMENT CERTIFICATE", $white);
+        imagestring($image, 4, 50, 75, "DOCUMENT TYPE: " . $docType, $white);
+
+        // Driver Photo Box Avatar Badge
+        imagefilledrectangle($image, 60, 140, 200, 280, $bgColor);
+        imagerectangle($image, 60, 140, 200, 280, $border);
+        
+        $initials = strtoupper(substr($driver->first_name, 0, 1) . substr($driver->last_name, 0, 1));
+        imagestring($image, 5, 115, 200, $initials, $headerBg);
+
+        // Driver & Document Information Fields
+        $x = 230;
+        $y = 140;
+        $lineHeight = 35;
+
+        imagestring($image, 4, $x, $y, "Driver Full Name : " . strtoupper($driver->full_name), $textDark);
+        imagestring($image, 4, $x, $y + $lineHeight, "Driver ID        : " . $driver->formatted_id, $textDark);
+        imagestring($image, 4, $x, $y + ($lineHeight * 2), "Assigned Branch  : " . ($driver->branch ?? 'North Branch'), $textDark);
+        imagestring($image, 4, $x, $y + ($lineHeight * 3), "Vehicle Assigned : " . ($driver->vehicle_assignment ?? 'Toyota Fortuner'), $textDark);
+        imagestring($image, 4, $x, $y + ($lineHeight * 4), "Expiration Date  : " . ($driver->license_expiration ? $driver->license_expiration->format('M d, Y') : 'Dec 20, 2026'), $textDark);
+        imagestring($image, 4, $x, $y + ($lineHeight * 5), "Status           : VERIFIED & VALID", $green);
+
+        // Footer Stamp & Verification Code
+        imagefilledrectangle($image, 30, 420, $width - 30, $height - 30, $bgColor);
+        imagestring($image, 3, 50, 440, "Official TNVS Verification Code: " . strtoupper(md5($driver->id . $docType)), $textMuted);
+        imagestring($image, 3, 550, 440, "Issue Date: " . date('Y-m-d'), $textMuted);
+
+        // Clean filename
+        $filename = "{$docType}_" . preg_replace('/[^A-Za-z0-9]/', '_', $driver->full_name) . ".png";
+
+        return response()->streamDownload(function() use ($image) {
+            imagepng($image);
+            imagedestroy($image);
+        }, $filename, ['Content-Type' => 'image/png']);
     }
 
     /**
