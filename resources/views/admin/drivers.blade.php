@@ -350,26 +350,33 @@
     <i class="fas fa-check-circle" style="color:var(--success);font-size:1.25rem;"></i>
     <span id="toastMessage" style="font-size:0.9rem;"></span>
 </div>
-@endsection
 
-@push('scripts')
 <script>
 function openModal(modalId) {
-    document.getElementById(modalId).style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+    const m = document.getElementById(modalId);
+    if (m) {
+        m.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
 }
 
 function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
-    document.body.style.overflow = 'auto';
+    const m = document.getElementById(modalId);
+    if (m) {
+        m.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
 }
 
 function switchTab(btn, tabId) {
     const modal = btn.closest('.modal-container');
-    modal.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
-    modal.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-    btn.classList.add('active');
-    document.getElementById(tabId).style.display = 'block';
+    if (modal) {
+        modal.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+        modal.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+        btn.classList.add('active');
+        const targetTab = document.getElementById(tabId);
+        if (targetTab) targetTab.style.display = 'block';
+    }
 }
 
 function showToast(message) {
@@ -383,32 +390,38 @@ function showToast(message) {
 
 function editDriver(driver) {
     const form = document.getElementById('editDriverForm');
-    form.action = `/admin/drivers/${driver.id}`;
-    document.getElementById('edit_first_name').value = driver.first_name || '';
-    document.getElementById('edit_middle_name').value = driver.middle_name || '';
-    document.getElementById('edit_last_name').value = driver.last_name || '';
-    document.getElementById('edit_address').value = driver.address || '';
-    document.getElementById('edit_contact_number').value = driver.contact_number || '';
-    document.getElementById('edit_email').value = driver.email || '';
-    document.getElementById('edit_branch').value = driver.branch || '';
-    document.getElementById('edit_vehicle_assignment').value = driver.vehicle_assignment || '';
-    document.getElementById('edit_route_assignment').value = driver.route_assignment || '';
-    document.getElementById('edit_status').value = driver.status || 'active';
-    openModal('editDriverModal');
+    if (form) {
+        form.action = `/admin/drivers/${driver.id}`;
+        document.getElementById('edit_first_name').value = driver.first_name || '';
+        document.getElementById('edit_middle_name').value = driver.middle_name || '';
+        document.getElementById('edit_last_name').value = driver.last_name || '';
+        document.getElementById('edit_address').value = driver.address || '';
+        document.getElementById('edit_contact_number').value = driver.contact_number || '';
+        document.getElementById('edit_email').value = driver.email || '';
+        document.getElementById('edit_branch').value = driver.branch || '';
+        document.getElementById('edit_vehicle_assignment').value = driver.vehicle_assignment || '';
+        document.getElementById('edit_route_assignment').value = driver.route_assignment || '';
+        document.getElementById('edit_status').value = driver.status || 'active';
+        openModal('editDriverModal');
+    }
 }
 
 function openStatusModal(id, currentStatus) {
     const form = document.getElementById('statusForm');
-    form.action = `/admin/drivers/${id}/status`;
-    const targetValue = currentStatus.toLowerCase() === 'active' ? 'inactive' : 'active';
-    document.getElementById('targetStatusValue').value = targetValue;
-    openModal('statusModal');
+    if (form) {
+        form.action = `/admin/drivers/${id}/status`;
+        const targetValue = currentStatus.toLowerCase() === 'active' ? 'inactive' : 'active';
+        document.getElementById('targetStatusValue').value = targetValue;
+        openModal('statusModal');
+    }
 }
 
 function openArchiveModal(id) {
     const form = document.getElementById('archiveForm');
-    form.action = `/admin/drivers/${id}`;
-    openModal('archiveModal');
+    if (form) {
+        form.action = `/admin/drivers/${id}`;
+        openModal('archiveModal');
+    }
 }
 
 document.addEventListener('click', function(e) {
@@ -418,4 +431,4 @@ document.addEventListener('click', function(e) {
     }
 });
 </script>
-@endpush
+@endsection
