@@ -139,7 +139,7 @@
         <!-- Top Performing Drivers List -->
         <div class="minimal-card">
             <div class="minimal-card-header">
-                <h3 class="minimal-card-title"><i class="fas fa-trophy" style="color:#f59e0b;"></i> Top Performing Drivers</h3>
+                <h3 class="minimal-card-title"><i class="fas fa-trophy" style="color:#f59e0b;"></i> </h3>
                 <a href="{{ route('admin.performance.reports') }}" style="font-size:0.75rem; color:var(--primary); text-decoration:none; font-weight:600;">View All &rarr;</a>
             </div>
             <table class="compact-table">
