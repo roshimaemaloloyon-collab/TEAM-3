@@ -266,11 +266,11 @@
                             <td>{{ $driver->updated_at ? $driver->updated_at->format('M d, Y') : 'Jan 10, 2026' }}</td>
                             <td style="text-align:center;">
                                 <div style="display:flex;gap:0.35rem;justify-content:center;flex-wrap:wrap;">
-                                    <button class="icon-btn" title="Upload" onclick="showToast('Upload document')"><i class="fas fa-upload"></i></button>
-                                    <button class="icon-btn" title="Replace" onclick="showToast('Replace document')"><i class="fas fa-sync-alt"></i></button>
-                                    <button class="icon-btn" title="Preview" onclick="showToast('Preview document')"><i class="fas fa-eye"></i></button>
-                                    <button class="icon-btn" title="Download" onclick="showToast('Downloading document')"><i class="fas fa-download"></i></button>
-                                    <button class="icon-btn" title="Delete" onclick="showToast('Delete document')" style="color:var(--danger);"><i class="fas fa-trash"></i></button>
+                                    <button class="icon-btn" title="Upload Driver's License" onclick="openDocUploadModal('Driver\'s License')"><i class="fas fa-upload"></i></button>
+                                    <button class="icon-btn" title="Replace Document" onclick="openDocUploadModal('Driver\'s License')"><i class="fas fa-sync-alt"></i></button>
+                                    <button class="icon-btn" title="Preview Document" onclick="previewDocument('Driver\'s License', '{{ $driver->full_name }}')"><i class="fas fa-eye"></i></button>
+                                    <a href="{{ route('admin.drivers.documents.download', ['id' => $driver->id, 'type' => 'license']) }}" class="icon-btn" title="Download Document"><i class="fas fa-download"></i></a>
+                                    <button class="icon-btn" title="Delete Document" onclick="deleteDocumentRow(this, 'Driver\'s License')" style="color:var(--danger);"><i class="fas fa-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -283,11 +283,11 @@
                             <td>Jan 10, 2026</td>
                             <td style="text-align:center;">
                                 <div style="display:flex;gap:0.35rem;justify-content:center;flex-wrap:wrap;">
-                                    <button class="icon-btn" title="Upload" onclick="showToast('Upload document')"><i class="fas fa-upload"></i></button>
-                                    <button class="icon-btn" title="Replace" onclick="showToast('Replace document')"><i class="fas fa-sync-alt"></i></button>
-                                    <button class="icon-btn" title="Preview" onclick="showToast('Preview document')"><i class="fas fa-eye"></i></button>
-                                    <button class="icon-btn" title="Download" onclick="showToast('Downloading document')"><i class="fas fa-download"></i></button>
-                                    <button class="icon-btn" title="Delete" onclick="showToast('Delete document')" style="color:var(--danger);"><i class="fas fa-trash"></i></button>
+                                    <button class="icon-btn" title="Upload OR/CR" onclick="openDocUploadModal('OR/CR')"><i class="fas fa-upload"></i></button>
+                                    <button class="icon-btn" title="Replace Document" onclick="openDocUploadModal('OR/CR')"><i class="fas fa-sync-alt"></i></button>
+                                    <button class="icon-btn" title="Preview Document" onclick="previewDocument('OR/CR', '{{ $driver->full_name }}')"><i class="fas fa-eye"></i></button>
+                                    <a href="{{ route('admin.drivers.documents.download', ['id' => $driver->id, 'type' => 'orcr']) }}" class="icon-btn" title="Download Document"><i class="fas fa-download"></i></a>
+                                    <button class="icon-btn" title="Delete Document" onclick="deleteDocumentRow(this, 'OR/CR')" style="color:var(--danger);"><i class="fas fa-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -300,11 +300,11 @@
                             <td>Mar 15, 2026</td>
                             <td style="text-align:center;">
                                 <div style="display:flex;gap:0.35rem;justify-content:center;flex-wrap:wrap;">
-                                    <button class="icon-btn" title="Upload" onclick="showToast('Upload document')"><i class="fas fa-upload"></i></button>
-                                    <button class="icon-btn" title="Replace" onclick="showToast('Replace document')"><i class="fas fa-sync-alt"></i></button>
-                                    <button class="icon-btn" title="Preview" onclick="showToast('Preview document')"><i class="fas fa-eye"></i></button>
-                                    <button class="icon-btn" title="Download" onclick="showToast('Downloading document')"><i class="fas fa-download"></i></button>
-                                    <button class="icon-btn" title="Delete" onclick="showToast('Delete document')" style="color:var(--danger);"><i class="fas fa-trash"></i></button>
+                                    <button class="icon-btn" title="Upload NBI Clearance" onclick="openDocUploadModal('NBI Clearance')"><i class="fas fa-upload"></i></button>
+                                    <button class="icon-btn" title="Replace Document" onclick="openDocUploadModal('NBI Clearance')"><i class="fas fa-sync-alt"></i></button>
+                                    <button class="icon-btn" title="Preview Document" onclick="previewDocument('NBI Clearance', '{{ $driver->full_name }}')"><i class="fas fa-eye"></i></button>
+                                    <a href="{{ route('admin.drivers.documents.download', ['id' => $driver->id, 'type' => 'nbi']) }}" class="icon-btn" title="Download Document"><i class="fas fa-download"></i></a>
+                                    <button class="icon-btn" title="Delete Document" onclick="deleteDocumentRow(this, 'NBI Clearance')" style="color:var(--danger);"><i class="fas fa-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -317,11 +317,11 @@
                             <td>Feb 01, 2026</td>
                             <td style="text-align:center;">
                                 <div style="display:flex;gap:0.35rem;justify-content:center;flex-wrap:wrap;">
-                                    <button class="icon-btn" title="Upload" onclick="showToast('Upload document')"><i class="fas fa-upload"></i></button>
-                                    <button class="icon-btn" title="Replace" onclick="showToast('Replace document')"><i class="fas fa-sync-alt"></i></button>
-                                    <button class="icon-btn" title="Preview" onclick="showToast('Preview document')"><i class="fas fa-eye"></i></button>
-                                    <button class="icon-btn" title="Download" onclick="showToast('Downloading document')"><i class="fas fa-download"></i></button>
-                                    <button class="icon-btn" title="Delete" onclick="showToast('Delete document')" style="color:var(--danger);"><i class="fas fa-trash"></i></button>
+                                    <button class="icon-btn" title="Upload Police Clearance" onclick="openDocUploadModal('Police Clearance')"><i class="fas fa-upload"></i></button>
+                                    <button class="icon-btn" title="Replace Document" onclick="openDocUploadModal('Police Clearance')"><i class="fas fa-sync-alt"></i></button>
+                                    <button class="icon-btn" title="Preview Document" onclick="previewDocument('Police Clearance', '{{ $driver->full_name }}')"><i class="fas fa-eye"></i></button>
+                                    <a href="{{ route('admin.drivers.documents.download', ['id' => $driver->id, 'type' => 'police']) }}" class="icon-btn" title="Download Document"><i class="fas fa-download"></i></a>
+                                    <button class="icon-btn" title="Delete Document" onclick="deleteDocumentRow(this, 'Police Clearance')" style="color:var(--danger);"><i class="fas fa-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -334,11 +334,11 @@
                             <td>Jan 05, 2026</td>
                             <td style="text-align:center;">
                                 <div style="display:flex;gap:0.35rem;justify-content:center;flex-wrap:wrap;">
-                                    <button class="icon-btn" title="Upload" onclick="showToast('Upload document')"><i class="fas fa-upload"></i></button>
-                                    <button class="icon-btn" title="Replace" onclick="showToast('Replace document')"><i class="fas fa-sync-alt"></i></button>
-                                    <button class="icon-btn" title="Preview" onclick="showToast('Preview document')"><i class="fas fa-eye"></i></button>
-                                    <button class="icon-btn" title="Download" onclick="showToast('Downloading document')"><i class="fas fa-download"></i></button>
-                                    <button class="icon-btn" title="Delete" onclick="showToast('Delete document')" style="color:var(--danger);"><i class="fas fa-trash"></i></button>
+                                    <button class="icon-btn" title="Upload Medical Certificate" onclick="openDocUploadModal('Medical Certificate')"><i class="fas fa-upload"></i></button>
+                                    <button class="icon-btn" title="Replace Document" onclick="openDocUploadModal('Medical Certificate')"><i class="fas fa-sync-alt"></i></button>
+                                    <button class="icon-btn" title="Preview Document" onclick="previewDocument('Medical Certificate', '{{ $driver->full_name }}')"><i class="fas fa-eye"></i></button>
+                                    <a href="{{ route('admin.drivers.documents.download', ['id' => $driver->id, 'type' => 'medical']) }}" class="icon-btn" title="Download Document"><i class="fas fa-download"></i></a>
+                                    <button class="icon-btn" title="Delete Document" onclick="deleteDocumentRow(this, 'Medical Certificate')" style="color:var(--danger);"><i class="fas fa-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -601,29 +601,30 @@
 <div class="modal-overlay" id="uploadDocModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;padding:2rem;">
     <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:600px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
         <div class="modal-header" style="padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-            <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Upload Document</h2>
+            <h2 id="uploadModalTitle" style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Upload Document</h2>
             <button onclick="closeModal('uploadDocModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body" style="padding:1.5rem;">
             <div style="margin-bottom:1rem;">
                 <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Document Type</label>
-                <select style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
-                    <option>Driver's License</option>
-                    <option>OR/CR</option>
-                    <option>NBI Clearance</option>
-                    <option>Police Clearance</option>
-                    <option>Medical Certificate</option>
-                    <option>Drug Test Result</option>
-                    <option>Vehicle Registration</option>
-                    <option>Vehicle Insurance</option>
-                    <option>Other Supporting Documents</option>
+                <select id="modalDocTypeSelect" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                    <option value="Driver's License">Driver's License</option>
+                    <option value="OR/CR">OR/CR</option>
+                    <option value="NBI Clearance">NBI Clearance</option>
+                    <option value="Police Clearance">Police Clearance</option>
+                    <option value="Medical Certificate">Medical Certificate</option>
+                    <option value="Drug Test Result">Drug Test Result</option>
+                    <option value="Vehicle Registration">Vehicle Registration</option>
+                    <option value="Vehicle Insurance">Vehicle Insurance</option>
+                    <option value="Other Supporting Documents">Other Supporting Documents</option>
                 </select>
             </div>
-            <div style="border:2px dashed var(--border);border-radius:1rem;padding:3rem;text-align:center;margin-bottom:1rem;background:var(--beige);">
+            <div style="border:2px dashed var(--border);border-radius:1rem;padding:3rem;text-align:center;margin-bottom:1rem;background:var(--beige);cursor:pointer;" onclick="document.getElementById('hiddenFileInput').click()">
                 <i class="fas fa-cloud-upload-alt" style="font-size:3rem;color:var(--primary);margin-bottom:1rem;"></i>
                 <p style="font-weight:600;margin:0 0 0.5rem;">Drag & Drop files here</p>
                 <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 1rem;">or</p>
-                <button class="btn btn-primary">Browse Files</button>
+                <button type="button" class="btn btn-primary">Browse Files</button>
+                <input type="file" id="hiddenFileInput" style="display:none;" onchange="showToast('File selected: ' + (this.files[0] ? this.files[0].name : ''))">
                 <p style="font-size:0.75rem;color:var(--text-muted);margin-top:1rem;">Supported: PDF, JPG, PNG (Max 10MB)</p>
             </div>
             <div id="uploadProgress" style="display:none;">
@@ -721,13 +722,50 @@ function confirmArchive() {
     showToast('Driver archived successfully.');
 }
 
+function openDocUploadModal(docType) {
+    const select = document.getElementById('modalDocTypeSelect');
+    if (select) {
+        for (let i = 0; i < select.options.length; i++) {
+            if (select.options[i].text.toLowerCase().includes(docType.toLowerCase())) {
+                select.selectedIndex = i;
+                break;
+            }
+        }
+    }
+    const titleHeader = document.getElementById('uploadModalTitle');
+    if (titleHeader) {
+        titleHeader.textContent = `Upload / Replace ${docType}`;
+    }
+    openModal('uploadDocModal');
+}
+
+function previewDocument(docType, driverName) {
+    alert(`DOCUMENT PREVIEW\n----------------\nDocument: ${docType}\nDriver: ${driverName}\nStatus: Verified\nFile Format: PDF / Image\n\nPreview loading completed!`);
+}
+
+function deleteDocumentRow(btn, docType) {
+    if (confirm(`Are you sure you want to delete ${docType}?`)) {
+        const tr = btn.closest('tr');
+        if (tr) {
+            tr.style.opacity = '0.3';
+            setTimeout(() => {
+                tr.remove();
+                showToast(`${docType} deleted successfully.`);
+            }, 500);
+        }
+    }
+}
+
 function uploadDocument() {
-    document.getElementById('uploadProgress').style.display = 'block';
+    const progress = document.getElementById('uploadProgress');
+    if (progress) progress.style.display = 'block';
+    const select = document.getElementById('modalDocTypeSelect');
+    const docName = select ? select.value : 'Document';
     setTimeout(() => {
         closeModal('uploadDocModal');
-        showToast('Document uploaded successfully.');
-        document.getElementById('uploadProgress').style.display = 'none';
-    }, 1500);
+        showToast(`${docName} uploaded & verified successfully.`);
+        if (progress) progress.style.display = 'none';
+    }, 1200);
 }
 
 document.addEventListener('click', function(e) {
