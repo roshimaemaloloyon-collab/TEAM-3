@@ -48,16 +48,22 @@ class TrainingAnalyticsController extends Controller
             ->get();
 
         if (config('database.default') === 'pgsql') {
-            $completionTrend = Training::selectRaw("TO_CHAR(start_datetime, 'MM') as month_num, COUNT(*) as total");
+            $completionTrend = Training::selectRaw("TO_CHAR(start_datetime, 'MM') as month_num, COUNT(*) as total")
+                ->where('status', 'completed')
+                ->whereNotNull('start_datetime')
+                ->when($year, fn($q) => $q->whereYear('start_datetime', $year))
+                ->groupByRaw("TO_CHAR(start_datetime, 'MM')")
+                ->orderBy('month_num')
+                ->get();
         } else {
-            $completionTrend = Training::selectRaw('strftime("%m", start_datetime) as month_num, COUNT(*) as total');
+            $completionTrend = Training::selectRaw('strftime("%m", start_datetime) as month_num, COUNT(*) as total')
+                ->where('status', 'completed')
+                ->whereNotNull('start_datetime')
+                ->when($year, fn($q) => $q->whereYear('start_datetime', $year))
+                ->groupBy('month_num')
+                ->orderBy('month_num')
+                ->get();
         }
-            ->where('status', 'completed')
-            ->whereNotNull('start_datetime')
-            ->when($year, fn($q) => $q->whereYear('start_datetime', $year))
-            ->groupBy('month_num')
-            ->orderBy('month_num')
-            ->get();
 
         if (config('database.default') === 'pgsql') {
             $attendanceTrend = Attendance::selectRaw("TO_CHAR(created_at, 'MM') as month_num, COUNT(*) as total")->where('status', 'present')

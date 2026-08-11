@@ -38,19 +38,19 @@ class DevelopmentPlanController extends Controller
         ];
 
         if (config('database.default') === 'pgsql') {
-            $progressData = CompetencyDevelopmentPlan::selectRaw("TO_CHAR(created_at, 'MM') as month_num, AVG(progress_percentage) as avg_progress")
+            $progressData = CompetencyDevelopmentPlan::selectRaw("TO_CHAR(created_at, 'MM') as month_num, AVG(completion_percentage) as avg_progress")
                 ->whereNotNull('created_at')
                 ->groupByRaw("TO_CHAR(created_at, 'MM')")
                 ->orderBy('month_num')
-            ->limit(6)
-            ->get();
+                ->limit(6)
+                ->get();
         } else {
-            $progressData = CompetencyDevelopmentPlan::selectRaw('strftime("%m", created_at) as month_num, AVG(progress_percentage) as avg_progress')
+            $progressData = CompetencyDevelopmentPlan::selectRaw('strftime("%m", created_at) as month_num, AVG(completion_percentage) as avg_progress')
                 ->whereNotNull('created_at')
                 ->groupBy('month_num')
                 ->orderBy('month_num')
-            ->limit(6)
-            ->get();
+                ->limit(6)
+                ->get();
         }
 
         $trainingData = CompetencyDevelopmentPlan::selectRaw('status, COUNT(*) as total')

@@ -14,19 +14,28 @@ class EvaluationAnalyticsController extends Controller
         $period = $request->query('period', 'monthly');
 
         if (config('database.default') === 'pgsql') {
-            $monthlyTrend = PeerEvaluation::selectRaw("TO_CHAR(evaluation_date, 'MM') as month_num, AVG(overall_score) as avg_score");
+            $monthlyTrend = PeerEvaluation::selectRaw("TO_CHAR(evaluation_date, 'MM') as month_num, AVG(overall_score) as avg_score")
+                ->groupByRaw("TO_CHAR(evaluation_date, 'MM')")
+                ->orderBy('month_num')
+                ->limit(12)
+                ->get();
         } else {
-            $monthlyTrend = PeerEvaluation::selectRaw('strftime("%m", evaluation_date) as month_num, AVG(overall_score) as avg_score');
+            $monthlyTrend = PeerEvaluation::selectRaw('strftime("%m", evaluation_date) as month_num, AVG(overall_score) as avg_score')
+                ->groupBy('month_num')
+                ->orderBy('month_num')
+                ->limit(12)
+                ->get();
         }
-            ->groupBy('year', 'month')
-            ->orderByDesc('year')
-            ->orderByDesc('month')
-            ->limit(12)
-            ->get();
 
-        $categoryPerformance = PeerEvaluation::selectRaw('JSON_EXTRACT(category_scores, "$.*") as scores')
-            ->whereNotNull('category_scores')
-            ->get();
+        if (config('database.default') === 'pgsql') {
+            $categoryPerformance = PeerEvaluation::selectRaw('category_scores as scores')
+                ->whereNotNull('category_scores')
+                ->get();
+        } else {
+            $categoryPerformance = PeerEvaluation::selectRaw('JSON_EXTRACT(category_scores, "$.*") as scores')
+                ->whereNotNull('category_scores')
+                ->get();
+        }
 
         $driverRanking = PeerEvaluation::select('evaluated_driver_id')
             ->selectRaw('COUNT(*) as evaluation_count')

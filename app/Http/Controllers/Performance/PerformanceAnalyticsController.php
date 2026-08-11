@@ -43,20 +43,30 @@ class PerformanceAnalyticsController extends Controller
         ];
 
         if (config('database.default') === 'pgsql') {
-            $perfTrend = Performance::selectRaw("TO_CHAR(recorded_at, 'MM') as month_num, AVG(overall_score) as avg_score");
+            $perfTrend = Performance::selectRaw("TO_CHAR(recorded_at, 'MM') as month_num, AVG(overall_score) as avg_score")
+                ->whereNotNull('recorded_at')
+                ->when($year, fn($q) => $q->whereYear('recorded_at', $year))
+                ->groupByRaw("TO_CHAR(recorded_at, 'MM')")
+                ->orderBy('month_num')
+                ->limit(6)
+                ->get()
+                ->map(fn($item) => [
+                    'month' => Carbon::createFromFormat('m', $item->month_num)->format('M'),
+                    'avg_score' => $item->avg_score,
+                ]);
         } else {
-            $perfTrend = Performance::selectRaw('strftime("%m", recorded_at) as month_num, AVG(overall_score) as avg_score');
+            $perfTrend = Performance::selectRaw('strftime("%m", recorded_at) as month_num, AVG(overall_score) as avg_score')
+                ->whereNotNull('recorded_at')
+                ->when($year, fn($q) => $q->whereYear('recorded_at', $year))
+                ->groupBy('month_num')
+                ->orderBy('month_num')
+                ->limit(6)
+                ->get()
+                ->map(fn($item) => [
+                    'month' => Carbon::createFromFormat('m', $item->month_num)->format('M'),
+                    'avg_score' => $item->avg_score,
+                ]);
         }
-            ->whereNotNull('recorded_at')
-            ->when($year, fn($q) => $q->whereYear('recorded_at', $year))
-            ->groupBy('month_num')
-            ->orderBy('month_num')
-            ->limit(6)
-            ->get()
-            ->map(fn($item) => [
-                'month' => Carbon::createFromFormat('m', $item->month_num)->format('M'),
-                'avg_score' => $item->avg_score,
-            ]);
 
         $kpiByCategory = Kpi::selectRaw('kpi_category, AVG(achievement_percentage) as avg_achievement')
             ->groupBy('kpi_category')
@@ -70,20 +80,30 @@ class PerformanceAnalyticsController extends Controller
         ];
 
         if (config('database.default') === 'pgsql') {
-            $attendanceTrend = Performance::selectRaw("TO_CHAR(recorded_at, 'MM') as month_num, AVG(attendance_rate) as avg_attendance");
+            $attendanceTrend = Performance::selectRaw("TO_CHAR(recorded_at, 'MM') as month_num, AVG(attendance_rate) as avg_attendance")
+                ->whereNotNull('recorded_at')
+                ->when($year, fn($q) => $q->whereYear('recorded_at', $year))
+                ->groupByRaw("TO_CHAR(recorded_at, 'MM')")
+                ->orderBy('month_num')
+                ->limit(6)
+                ->get()
+                ->map(fn($item) => [
+                    'month' => Carbon::createFromFormat('m', $item->month_num)->format('M'),
+                    'avg_attendance' => $item->avg_attendance,
+                ]);
         } else {
-            $attendanceTrend = Performance::selectRaw('strftime("%m", recorded_at) as month_num, AVG(attendance_rate) as avg_attendance');
+            $attendanceTrend = Performance::selectRaw('strftime("%m", recorded_at) as month_num, AVG(attendance_rate) as avg_attendance')
+                ->whereNotNull('recorded_at')
+                ->when($year, fn($q) => $q->whereYear('recorded_at', $year))
+                ->groupBy('month_num')
+                ->orderBy('month_num')
+                ->limit(6)
+                ->get()
+                ->map(fn($item) => [
+                    'month' => Carbon::createFromFormat('m', $item->month_num)->format('M'),
+                    'avg_attendance' => $item->avg_attendance,
+                ]);
         }
-            ->whereNotNull('recorded_at')
-            ->when($year, fn($q) => $q->whereYear('recorded_at', $year))
-            ->groupBy('month_num')
-            ->orderBy('month_num')
-            ->limit(6)
-            ->get()
-            ->map(fn($item) => [
-                'month' => Carbon::createFromFormat('m', $item->month_num)->format('M'),
-                'avg_attendance' => $item->avg_attendance,
-            ]);
 
         $customerByDriver = $performances->groupBy('driver_id')->map(fn($items) => $items->avg('customer_rating') ?? 0);
         $peerByDriver = $performances->groupBy('driver_id')->map(fn($items) => $items->avg('peer_evaluation_score') ?? 0);

@@ -45,19 +45,19 @@ class AssessmentResultsController extends Controller
             ->get();
 
         if (config('database.default') === 'pgsql') {
-            $trendData = CompetencyAssessment::selectRaw("TO_CHAR(assessed_at, 'MM') as month_num, AVG(overall_score) as avg_score")
+            $trendData = CompetencyAssessment::selectRaw("TO_CHAR(assessed_at, 'MM') as month_num, AVG(score) as avg_score")
                 ->whereNotNull('assessed_at')
                 ->groupByRaw("TO_CHAR(assessed_at, 'MM')")
                 ->orderBy('month_num')
-            ->limit(6)
-            ->get();
+                ->limit(6)
+                ->get();
         } else {
-            $trendData = CompetencyAssessment::selectRaw('strftime("%m", assessed_at) as month_num, AVG(overall_score) as avg_score')
+            $trendData = CompetencyAssessment::selectRaw('strftime("%m", assessed_at) as month_num, AVG(score) as avg_score')
                 ->whereNotNull('assessed_at')
                 ->groupBy('month_num')
                 ->orderBy('month_num')
-            ->limit(6)
-            ->get();
+                ->limit(6)
+                ->get();
         }
 
         return view('admin.competency.assessment-results', compact('results', 'stats', 'skillGapData', 'trendData'));
