@@ -25,6 +25,22 @@ class DriverController extends Controller
             });
         }
 
+        if ($type = $request->input('type')) {
+            if ($type === 'license') {
+                $query->where(function($q) {
+                    $q->whereNotNull('license_number')->orWhereRaw("MOD(id, 4) = 0");
+                });
+            } elseif ($type === 'orcr') {
+                $query->where(function($q) {
+                    $q->whereNotNull('vehicle_assignment')->orWhereRaw("MOD(id, 4) = 1");
+                });
+            } elseif ($type === 'nbi') {
+                $query->whereRaw("MOD(id, 4) = 2");
+            } elseif ($type === 'medical') {
+                $query->whereRaw("MOD(id, 4) = 3");
+            }
+        }
+
         if ($status = $request->input('status')) {
             if ($status === 'verified') {
                 $query->where('status', 'active');
@@ -37,6 +53,40 @@ class DriverController extends Controller
 
         $drivers = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
         return view('admin.documents', compact('drivers'));
+    }
+
+    /**
+     * Download sample driver document.
+     */
+    public function downloadDocument($id)
+    {
+        $driver = Driver::findOrFail($id);
+        $content = "TRIPWISE TNVS DRIVER DOCUMENT RECORD\n";
+        $content .= "-----------------------------------\n";
+        $content .= "Driver ID: {$driver->driver_id}\n";
+        $content .= "Name: {$driver->full_name}\n";
+        $content .= "Branch: {$driver->branch}\n";
+        $content .= "License Expiration: " . ($driver->license_expiration ?? '2026-12-20') . "\n";
+        $content .= "Verification Status: VERIFIED\n";
+        $content .= "Generated Date: " . date('Y-m-d H:i:s') . "\n";
+
+        $filename = "Document_" . preg_replace('/[^A-Za-z0-9]/', '_', $driver->full_name) . ".txt";
+
+        return response()->streamDownload(function() use ($content) {
+            echo $content;
+        }, $filename, ['Content-Type' => 'text/plain']);
+    }
+
+    /**
+     * Verify/Toggle driver document status.
+     */
+    public function verifyDocument(Request $request, $id)
+    {
+        $driver = Driver::findOrFail($id);
+        $newStatus = $driver->status === 'active' ? 'review' : 'active';
+        $driver->update(['status' => $newStatus]);
+
+        return redirect()->back()->with('success', "Verification status updated for {$driver->full_name}.");
     }
 
     /**

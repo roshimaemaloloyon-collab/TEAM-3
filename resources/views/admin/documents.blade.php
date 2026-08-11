@@ -136,10 +136,13 @@
                         @endif
                     </td>
                     <td style="text-align:center;">
-                        <div style="display:flex;gap:0.35rem;justify-content:center;">
+                        <div style="display:flex;gap:0.35rem;justify-content:center;align-items:center;">
                             <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-documents']) }}" class="icon-btn" title="View Document"><i class="fas fa-eye"></i></a>
-                            <button class="icon-btn" title="Download Document" onclick="alert('Downloading document file for {{ $driver->first_name }}...')"><i class="fas fa-download"></i></button>
-                            <button class="icon-btn" title="Verify Status" onclick="alert('Status updated for {{ $driver->first_name }}\'s document.')"><i class="fas fa-check"></i></button>
+                            <a href="{{ route('admin.drivers.documents.download', $driver->id) }}" class="icon-btn" title="Download Document Record"><i class="fas fa-download"></i></a>
+                            <form action="{{ route('admin.drivers.documents.verify', $driver->id) }}" method="POST" style="margin:0;display:inline;">
+                                @csrf
+                                <button type="submit" class="icon-btn" title="Toggle Verification Status" style="color:var(--success);"><i class="fas fa-check"></i></button>
+                            </form>
                         </div>
                     </td>
                 </tr>
