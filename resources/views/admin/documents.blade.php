@@ -155,4 +155,61 @@
         {{ $drivers->links() }}
     </div>
 </div>
+
+@push('scripts')
+<!-- Upload New Document Modal -->
+<div class="modal-overlay" id="uploadDocModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:550px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <form id="uploadDocForm" onsubmit="event.preventDefault(); showToast('Document uploaded successfully!'); closeModal('uploadDocModal');">
+            <div class="modal-header" style="padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Upload New Document</h2>
+                <button type="button" onclick="closeModal('uploadDocModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <div style="display:flex;flex-direction:column;gap:1rem;">
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Select Driver *</label>
+                        <select name="driver_id" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                            <option value="">Select a Driver...</option>
+                            @foreach($drivers as $driver)
+                                <option value="{{ $driver->id }}">{{ $driver->full_name }} ({{ $driver->formatted_id }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Document Type *</label>
+                        <select name="doc_type" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                            <option value="License">Driver's License</option>
+                            <option value="ORCR">OR / CR Vehicle Registration</option>
+                            <option value="NBI">NBI Clearance</option>
+                            <option value="Medical">Medical Certificate</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Expiry Date</label>
+                        <input type="date" name="expiry_date" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Document File (PDF / Image) *</label>
+                        <input type="file" required accept="image/*,.pdf" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('uploadDocModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Upload Document</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openModal(id) {
+    document.getElementById(id).style.display = 'flex';
+}
+function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+}
+</script>
+@endpush
 @endsection

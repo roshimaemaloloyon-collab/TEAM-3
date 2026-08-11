@@ -190,7 +190,7 @@
 </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
 <!-- Add New Driver Modal -->
 <div class="modal-overlay" id="addDriverModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;padding:2rem;">
     <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:800px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
@@ -423,4 +423,4 @@ document.addEventListener('click', function(e) {
     }
 });
 </script>
-@endsection
+@endpush
