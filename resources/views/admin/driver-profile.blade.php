@@ -691,6 +691,10 @@ function showToast(message) {
 }
 
 function editDriver(id) {
+    const form = document.getElementById('editDriverForm');
+    if (form) {
+        form.action = `/admin/drivers/${id}`;
+    }
     openModal('editDriverModal');
 }
 
