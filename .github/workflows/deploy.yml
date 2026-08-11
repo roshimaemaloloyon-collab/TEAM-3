@@ -1,10 +1,8 @@
-name: Deploy Team 3 (Performance) to Hostinger VPS
+name: Deploy Team 3 Performance App to Hostinger VPS
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [ main, master ]
 
 jobs:
   deploy:
@@ -14,36 +12,37 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: SSH and Deploy to VPS
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            echo "🚀 Deploying Team 3 Performance Management..."
+            set -e
+            echo "🚀 Deploying Team 3 Performance System..."
+            mkdir -p /var/www/performance
             cd /var/www/performance
-
-            # Pull latest changes from git
+            git config --global --add safe.directory /var/www/performance
             git fetch origin
             git reset --hard origin/main || git reset --hard origin/master
 
-            # Install dependencies
+            # Dependencies & DB Migrations
             composer install --no-dev --optimize-autoloader --no-interaction
-
-            # Run migrations
             php artisan migrate --force
 
-            # Clear and rebuild caches
+            # Optimize & Cache
+            php artisan config:clear
+            php artisan route:clear
+            php artisan cache:clear
+            php artisan view:clear
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
 
-            # Fix permissions
+            # Set Permissions & Reload Web Server
             chown -R www-data:www-data /var/www/performance
             chmod -R 775 /var/www/performance/storage /var/www/performance/bootstrap/cache
-
-            # Reload web server
             systemctl reload php8.3-fpm || systemctl reload php8.2-fpm || true
             systemctl reload nginx
 
