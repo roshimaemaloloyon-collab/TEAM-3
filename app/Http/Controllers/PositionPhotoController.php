@@ -19,11 +19,7 @@ class PositionPhotoController extends Controller
         }
 
         if ($roleKey === '4 WHEEL CAR DRIVER' || $roleKey === '4-WHEEL CAR DRIVER') {
-            $carPathPng = $publicDir . 'sedan.png';
-            if (file_exists($carPathPng)) {
-                return response()->file($carPathPng, ['Content-Type' => 'image/png']);
-            }
-            $carPathJpg = $publicDir . 'sedan.jpg';
+            $carPathJpg = $publicDir . '4wheel_car_driver.jpg';
             if (file_exists($carPathJpg)) {
                 return response()->file($carPathJpg, ['Content-Type' => 'image/jpeg']);
             }

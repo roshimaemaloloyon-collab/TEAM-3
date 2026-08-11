@@ -54,7 +54,7 @@
             'completion' => 45,
             'category_type' => 'driver',
             'icon' => 'fas fa-car',
-            'img' => route('position.photo', '4-wheel-car-driver')
+            'img' => route('position.photo', ['role' => '4-wheel-car-driver', 'v' => time()])
         ],
         [
             'name' => 'OPERATIONS MANAGER',
