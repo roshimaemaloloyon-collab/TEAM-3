@@ -45,7 +45,7 @@
             'completion' => 60,
             'category_type' => 'driver',
             'icon' => 'fas fa-motorcycle',
-            'img' => route('position.photo', 'mc-taxi-driver')
+            'img' => route('position.photo', ['role' => 'mc-taxi-driver', 'v' => time()])
         ],
         [
             'name' => '4-WHEEL CAR DRIVER',
