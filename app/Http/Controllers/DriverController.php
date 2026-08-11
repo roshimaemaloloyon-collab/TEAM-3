@@ -55,22 +55,22 @@ class DriverController extends Controller
         return view('admin.documents', compact('drivers'));
     }
 
-    /**
-     * Download sample driver document.
-     */
-    public function downloadDocument($id)
+    public function downloadDocument(Request $request, $id)
     {
         $driver = Driver::findOrFail($id);
-        $content = "TRIPWISE TNVS DRIVER DOCUMENT RECORD\n";
-        $content .= "-----------------------------------\n";
-        $content .= "Driver ID: {$driver->driver_id}\n";
-        $content .= "Name: {$driver->full_name}\n";
-        $content .= "Branch: {$driver->branch}\n";
-        $content .= "License Expiration: " . ($driver->license_expiration ?? '2026-12-20') . "\n";
-        $content .= "Verification Status: VERIFIED\n";
-        $content .= "Generated Date: " . date('Y-m-d H:i:s') . "\n";
+        $docType = strtoupper($request->input('type', 'LICENSE'));
+        $content = "TRIPWISE TNVS DRIVER DOCUMENT RECORD ({$docType})\n";
+        $content .= "=================================================\n";
+        $content .= "Driver ID           : {$driver->driver_id}\n";
+        $content .= "Full Name           : {$driver->full_name}\n";
+        $content .= "Branch              : {$driver->branch}\n";
+        $content .= "Vehicle Assignment  : " . ($driver->vehicle_assignment ?? 'N/A') . "\n";
+        $content .= "Document Type       : {$docType}\n";
+        $content .= "License Expiration  : " . ($driver->license_expiration ?? '2026-12-20') . "\n";
+        $content .= "Verification Status : " . strtoupper($driver->status) . "\n";
+        $content .= "Generated Timestamp : " . date('Y-m-d H:i:s') . "\n";
 
-        $filename = "Document_" . preg_replace('/[^A-Za-z0-9]/', '_', $driver->full_name) . ".txt";
+        $filename = "{$docType}_" . preg_replace('/[^A-Za-z0-9]/', '_', $driver->full_name) . ".txt";
 
         return response()->streamDownload(function() use ($content) {
             echo $content;

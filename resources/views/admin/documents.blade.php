@@ -114,22 +114,22 @@
                     </td>
                     <td><strong>{{ $driver->formatted_id }}</strong></td>
                     <td>
-                        @if($index % 4 == 0)
-                            <i class="fas fa-id-card" style="color:#0284c7;margin-right:0.4rem;"></i> Driver's License
-                        @elseif($index % 4 == 1)
-                            <i class="fas fa-file-alt" style="color:#059669;margin-right:0.4rem;"></i> OR / CR ({{ $driver->vehicle_assignment }})
-                        @elseif($index % 4 == 2)
+                        @if(request('type') == 'orcr' || ($index % 4 == 1 && !request('type')))
+                            <i class="fas fa-file-alt" style="color:#059669;margin-right:0.4rem;"></i> OR / CR Certificate
+                        @elseif(request('type') == 'nbi' || ($index % 4 == 2 && !request('type')))
                             <i class="fas fa-file-contract" style="color:#ea580c;margin-right:0.4rem;"></i> NBI Clearance
-                        @else
+                        @elseif(request('type') == 'medical' || ($index % 4 == 3 && !request('type')))
                             <i class="fas fa-notes-medical" style="color:#8b5cf6;margin-right:0.4rem;"></i> Medical Certificate
+                        @else
+                            <i class="fas fa-id-card" style="color:#0284c7;margin-right:0.4rem;"></i> Driver's License
                         @endif
                     </td>
                     <td>{{ $driver->created_at ? $driver->created_at->format('M d, Y') : 'Jan 10, 2026' }}</td>
                     <td>{{ $driver->license_expiration ? \Carbon\Carbon::parse($driver->license_expiration)->format('M d, Y') : 'Dec 20, 2026' }}</td>
                     <td>
-                        @if($index % 5 == 0)
+                        @if($driver->status === 'review')
                             <span class="status-badge" style="background:#ffedd5;color:#c2410c;">🟡 Pending Review</span>
-                        @elseif($index % 6 == 0)
+                        @elseif($driver->status === 'suspended')
                             <span class="status-badge" style="background:#fee2e2;color:#991b1b;">🔴 Expired</span>
                         @else
                             <span class="status-badge" style="background:#d1fae5;color:#065f46;">🟢 Verified</span>
@@ -138,10 +138,10 @@
                     <td style="text-align:center;">
                         <div style="display:flex;gap:0.35rem;justify-content:center;align-items:center;">
                             <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-documents']) }}" class="icon-btn" title="View Document"><i class="fas fa-eye"></i></a>
-                            <a href="{{ route('admin.drivers.documents.download', $driver->id) }}" class="icon-btn" title="Download Document Record"><i class="fas fa-download"></i></a>
+                            <a href="{{ route('admin.drivers.documents.download', ['id' => $driver->id, 'type' => request('type', 'license')]) }}" class="icon-btn" title="Download Document Record"><i class="fas fa-download"></i></a>
                             <form action="{{ route('admin.drivers.documents.verify', $driver->id) }}" method="POST" style="margin:0;display:inline;">
                                 @csrf
-                                <button type="submit" class="icon-btn" title="Toggle Verification Status" style="color:var(--success);"><i class="fas fa-check"></i></button>
+                                <button type="submit" class="icon-btn" title="Toggle Verification Status (Verified/Pending)" style="color:var(--success);"><i class="fas fa-check"></i></button>
                             </form>
                         </div>
                     </td>
