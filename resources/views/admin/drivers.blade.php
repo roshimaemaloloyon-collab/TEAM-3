@@ -64,6 +64,7 @@
             <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
             <option value="review" {{ request('status') == 'review' ? 'selected' : '' }}>Under Review</option>
             <option value="suspended" {{ request('status') == 'suspended' ? 'selected' : '' }}>Suspended</option>
+            <option value="archived" {{ request('status') == 'archived' ? 'selected' : '' }}>📦 Archived Drivers</option>
         </select>
         <select name="branch" id="filterBranch">
             <option value="">All Branches</option>
@@ -160,9 +161,15 @@
                             <button class="icon-btn" title="Activate/Deactivate" onclick="openStatusModal({{ $driver->id }}, '{{ ucfirst($driver->status) }}')">
                                 <i class="fas fa-power-off"></i>
                             </button>
-                            <button class="icon-btn" title="Archive Driver" onclick="openArchiveModal({{ $driver->id }})">
-                                <i class="fas fa-archive"></i>
-                            </button>
+                            @if($driver->status === 'archived')
+                                <button class="icon-btn" title="Restore Driver" onclick="openStatusModal({{ $driver->id }}, 'inactive')" style="color:var(--success);">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                            @else
+                                <button class="icon-btn" title="Archive Driver" onclick="openArchiveModal({{ $driver->id }})">
+                                    <i class="fas fa-archive"></i>
+                                </button>
+                            @endif
                         </div>
                     </td>
                 </tr>

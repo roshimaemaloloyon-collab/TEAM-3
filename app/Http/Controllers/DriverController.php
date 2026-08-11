@@ -49,12 +49,17 @@ class DriverController extends Controller
         return view('admin.vehicles', compact('drivers'));
     }
 
-    /**
-     * Display a listing of drivers with search, filters, summary stats, and pagination.
-     */
     public function index(Request $request)
     {
-        $query = Driver::query()->notArchived();
+        $status = $request->input('status');
+        if ($status === 'archived') {
+            $query = Driver::query()->where('status', 'archived');
+        } else {
+            $query = Driver::query()->notArchived();
+            if ($status) {
+                $query->where('status', $status);
+            }
+        }
 
         // Search Filter
         if ($search = $request->input('search')) {
@@ -65,11 +70,6 @@ class DriverController extends Controller
                   ->orWhere('contact_number', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%");
             });
-        }
-
-        // Status Filter
-        if ($status = $request->input('status')) {
-            $query->where('status', $status);
         }
 
         // Branch Filter
