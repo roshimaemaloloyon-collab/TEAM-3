@@ -185,12 +185,7 @@
         </div>
         <div>
             {{ $drivers->links() }}
-        </div>
-    </div>
 </div>
-@endsection
-
-@push('scripts')
 <!-- Add New Driver Modal -->
 <div class="modal-overlay" id="addDriverModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;padding:2rem;">
     <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:800px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
@@ -354,10 +349,9 @@
 <div id="toast" style="position:fixed;bottom:2rem;right:2rem;background:var(--charcoal);color:var(--white);padding:1rem 1.5rem;border-radius:0.75rem;box-shadow:0 8px 24px rgba(0,0,0,0.2);z-index:3000;display:none;align-items:center;gap:0.75rem;min-width:300px;">
     <i class="fas fa-check-circle" style="color:var(--success);font-size:1.25rem;"></i>
     <span id="toastMessage" style="font-size:0.9rem;"></span>
-</div>
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
 function openModal(modalId) {
     document.getElementById(modalId).style.display = 'flex';
