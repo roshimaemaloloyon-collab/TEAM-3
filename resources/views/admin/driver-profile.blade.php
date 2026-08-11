@@ -619,13 +619,18 @@
                     <option value="Other Supporting Documents">Other Supporting Documents</option>
                 </select>
             </div>
-            <div style="border:2px dashed var(--border);border-radius:1rem;padding:3rem;text-align:center;margin-bottom:1rem;background:var(--beige);cursor:pointer;" onclick="document.getElementById('hiddenFileInput').click()">
-                <i class="fas fa-cloud-upload-alt" style="font-size:3rem;color:var(--primary);margin-bottom:1rem;"></i>
-                <p style="font-weight:600;margin:0 0 0.5rem;">Drag & Drop files here</p>
-                <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 1rem;">or</p>
-                <button type="button" class="btn btn-primary">Browse Files</button>
-                <input type="file" id="hiddenFileInput" style="display:none;" onchange="showToast('File selected: ' + (this.files[0] ? this.files[0].name : ''))">
-                <p style="font-size:0.75rem;color:var(--text-muted);margin-top:1rem;">Supported: PDF, JPG, PNG (Max 10MB)</p>
+            <div style="border:2px dashed var(--border);border-radius:1rem;padding:2rem;text-align:center;margin-bottom:1rem;background:var(--beige);cursor:pointer;position:relative;" onclick="document.getElementById('hiddenFileInput').click()">
+                <div id="docImagePreviewContainer" style="display:none;margin-bottom:1rem;">
+                    <img id="docImagePreview" src="" alt="Document Preview" style="max-width:100%;max-height:220px;border-radius:0.75rem;border:2px solid var(--primary);object-fit:contain;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+                </div>
+                <div id="docUploadPlaceholder">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:3rem;color:var(--primary);margin-bottom:0.75rem;"></i>
+                    <p style="font-weight:600;margin:0 0 0.25rem;">Drag & Drop files here</p>
+                    <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.75rem;">or</p>
+                    <button type="button" class="btn btn-primary">Browse Files</button>
+                </div>
+                <input type="file" id="hiddenFileInput" accept="image/*,.pdf" style="display:none;" onchange="previewUploadDocumentImage(this)">
+                <p id="docFileSelectedInfo" style="font-size:0.8rem;color:var(--text-muted);margin-top:0.75rem;">Supported: PDF, JPG, PNG (Max 10MB)</p>
             </div>
             <div id="uploadProgress" style="display:none;">
                 <p style="font-size:0.85rem;font-weight:600;margin-bottom:0.5rem;">Uploading...</p>
@@ -752,6 +757,35 @@ function deleteDocumentRow(btn, docType) {
                 tr.remove();
                 showToast(`${docType} deleted successfully.`);
             }, 500);
+        }
+    }
+}
+
+function previewUploadDocumentImage(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const container = document.getElementById('docImagePreviewContainer');
+        const img = document.getElementById('docImagePreview');
+        const placeholder = document.getElementById('docUploadPlaceholder');
+        const label = document.getElementById('docFileSelectedInfo');
+
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (img) img.src = e.target.result;
+                if (container) container.style.display = 'block';
+                if (placeholder) placeholder.style.display = 'none';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            if (container) container.style.display = 'none';
+            if (placeholder) placeholder.style.display = 'block';
+        }
+
+        if (label) {
+            label.textContent = 'Selected File: ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+            label.style.color = 'var(--success)';
+            label.style.fontWeight = '600';
         }
     }
 }

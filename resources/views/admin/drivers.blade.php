@@ -211,11 +211,12 @@
                 <!-- Personal Information Tab -->
                 <div id="personalTab" class="tab-content">
                     <div style="text-align:center;margin-bottom:1.5rem;">
-                        <div style="width:100px;height:100px;border-radius:50%;background:var(--beige);margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;border:2px dashed var(--border);cursor:pointer;" onclick="document.getElementById('driverPhoto').click()">
-                            <i class="fas fa-camera" style="font-size:2rem;color:var(--text-muted);"></i>
+                        <div id="driverPhotoPreviewBox" style="width:110px;height:110px;border-radius:50%;background:var(--beige);margin:0 auto 0.75rem;display:flex;align-items:center;justify-content:center;border:2px dashed var(--primary);cursor:pointer;overflow:hidden;position:relative;transition:all 0.3s ease;" onclick="document.getElementById('driverPhoto').click()" title="Click to choose image">
+                            <i id="driverPhotoIcon" class="fas fa-camera" style="font-size:2rem;color:var(--text-muted);"></i>
+                            <img id="driverPhotoImg" src="" alt="Preview" style="display:none;width:100%;height:100%;object-fit:cover;">
                         </div>
-                        <input type="file" name="photo" id="driverPhoto" accept="image/*" style="display:none;">
-                        <p style="font-size:0.85rem;color:var(--text-muted);">Click to upload driver photo</p>
+                        <input type="file" name="photo" id="driverPhoto" accept="image/*" style="display:none;" onchange="previewDriverPhoto(this)">
+                        <p id="driverPhotoLabel" style="font-size:0.85rem;color:var(--text-muted);margin:0;">Click camera icon to select & view picture</p>
                     </div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
                         <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">First Name *</label><input type="text" name="first_name" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"></div>
@@ -428,6 +429,28 @@ function openArchiveModal(id) {
     if (form) {
         form.action = `/admin/drivers/${id}`;
         openModal('archiveModal');
+    }
+}
+
+function previewDriverPhoto(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.getElementById('driverPhotoImg');
+            const icon = document.getElementById('driverPhotoIcon');
+            const label = document.getElementById('driverPhotoLabel');
+            if (img && icon) {
+                img.src = e.target.result;
+                img.style.display = 'block';
+                icon.style.display = 'none';
+            }
+            if (label) {
+                label.textContent = 'Selected Image: ' + input.files[0].name + ' (' + (input.files[0].size / 1024).toFixed(1) + ' KB)';
+                label.style.color = 'var(--success)';
+                label.style.fontWeight = '600';
+            }
+        }
+        reader.readAsDataURL(input.files[0]);
     }
 }
 
