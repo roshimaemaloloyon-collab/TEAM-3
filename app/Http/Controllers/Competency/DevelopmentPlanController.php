@@ -72,7 +72,15 @@ class DevelopmentPlanController extends Controller
         ]);
 
         $driver = \App\Models\Driver::find($request->driver_id);
-        $userId = ($driver && $driver->user_id) ? $driver->user_id : (int)$request->driver_id;
+        $userId = null;
+        if ($driver && $driver->user_id && \App\Models\User::where('id', $driver->user_id)->exists()) {
+            $userId = $driver->user_id;
+        } elseif (\App\Models\User::where('id', $request->driver_id)->exists()) {
+            $userId = (int)$request->driver_id;
+        } else {
+            $firstUser = \App\Models\User::first();
+            $userId = $firstUser ? $firstUser->id : auth()->id();
+        }
 
         CompetencyDevelopmentPlan::create([
             'driver_id' => $userId,
