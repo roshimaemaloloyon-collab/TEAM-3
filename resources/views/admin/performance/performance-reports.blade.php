@@ -119,9 +119,9 @@
                         </td>
                         <td style="text-align:right;">
                             <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
-                                <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-performance']) }}" class="btn btn-sm btn-secondary" title="View Full Report"><i class="fas fa-eye"></i></a>
-                                <a href="{{ route('admin.drivers.documents.download', $driver->id) }}" class="btn btn-sm btn-primary" title="Download Document PDF"><i class="fas fa-file-pdf"></i></a>
-                                <button class="btn btn-sm btn-secondary" title="Print Report" onclick="window.print()"><i class="fas fa-print"></i></button>
+                                <a href="{{ route('admin.performance.reports.driver.pdf', $driver->id) }}" target="_blank" class="btn btn-sm btn-secondary" title="View & Print {{ $driver->full_name }}'s Report"><i class="fas fa-eye"></i></a>
+                                <a href="{{ route('admin.performance.reports.driver.pdf', $driver->id) }}" target="_blank" class="btn btn-sm btn-primary" title="Export PDF for {{ $driver->full_name }}"><i class="fas fa-file-pdf"></i></a>
+                                <a href="{{ route('admin.performance.reports.driver.pdf', $driver->id) }}" target="_blank" class="btn btn-sm btn-secondary" title="Print Performance Report for {{ $driver->full_name }}"><i class="fas fa-print"></i></a>
                             </div>
                         </td>
                     </tr>

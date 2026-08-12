@@ -204,6 +204,8 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
         Route::put('/reviews/{id}', [App\Http\Controllers\Performance\PerformanceReviewsController::class, 'update'])->name('reviews.update');
         Route::get('/reports', [App\Http\Controllers\Performance\PerformanceReportsController::class, 'index'])->name('reports');
         Route::get('/reports/export', [App\Http\Controllers\Performance\PerformanceReportsController::class, 'export'])->name('reports.export');
+        Route::get('/reports/{id}/export-pdf', [App\Http\Controllers\Performance\PerformanceReportsController::class, 'exportDriverPdf'])->name('reports.driver.pdf');
+        Route::get('/reports/{id}/export-excel', [App\Http\Controllers\Performance\PerformanceReportsController::class, 'exportDriverExcel'])->name('reports.driver.excel');
         Route::get('/analytics', [App\Http\Controllers\Performance\PerformanceAnalyticsController::class, 'index'])->name('analytics');
         Route::get('/history', [App\Http\Controllers\Performance\PerformanceHistoryController::class, 'index'])->name('history');
     });
