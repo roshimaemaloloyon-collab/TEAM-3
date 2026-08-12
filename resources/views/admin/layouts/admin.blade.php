@@ -1144,7 +1144,6 @@
             <a href="{{ route('admin.performance.kpi') }}" class="nav-subitem {{ request()->routeIs('admin.performance.kpi') ? 'active' : '' }}">KPI Monitoring</a>
             <a href="{{ route('admin.performance.reviews') }}" class="nav-subitem {{ request()->routeIs('admin.performance.reviews') ? 'active' : '' }}">Performance Reviews</a>
             <a href="{{ route('admin.performance.reports') }}" class="nav-subitem {{ request()->routeIs('admin.performance.reports') ? 'active' : '' }}">Performance Reports</a>
-            <a href="{{ route('admin.performance.analytics') }}" class="nav-subitem {{ request()->routeIs('admin.performance.analytics') ? 'active' : '' }}">Performance Analytics</a>
             <a href="{{ route('admin.performance.history') }}" class="nav-subitem {{ request()->routeIs('admin.performance.history') ? 'active' : '' }}">Performance History</a>
         </div>
 
@@ -1159,7 +1158,6 @@
             <a href="{{ route('admin.competency.gap-analysis') }}" class="nav-subitem {{ request()->routeIs('admin.competency.gap-analysis') ? 'active' : '' }}">Gap Analysis</a>
             <a href="{{ route('admin.competency.plans') }}" class="nav-subitem {{ request()->routeIs('admin.competency.plans') ? 'active' : '' }}">Development Plan</a>
             <a href="{{ route('admin.competency.reports') }}" class="nav-subitem {{ request()->routeIs('admin.competency.reports') ? 'active' : '' }}">Competency Reports</a>
-            <a href="{{ route('admin.competency.analytics') }}" class="nav-subitem {{ request()->routeIs('admin.competency.analytics') ? 'active' : '' }}">Competency Analytics</a>
             <a href="{{ route('admin.competency.history') }}" class="nav-subitem {{ request()->routeIs('admin.competency.history') ? 'active' : '' }}">Competency History</a>
         </div>
 
@@ -1173,7 +1171,6 @@
             <a href="{{ route('admin.learning.assessments') }}" class="nav-subitem {{ request()->routeIs('admin.learning.assessments') ? 'active' : '' }}">Assessments</a>
             <a href="{{ route('admin.learning.certificates') }}" class="nav-subitem {{ request()->routeIs('admin.learning.certificates') ? 'active' : '' }}">Certificates</a>
             <a href="{{ route('admin.learning.reports') }}" class="nav-subitem {{ request()->routeIs('admin.learning.reports') ? 'active' : '' }}">Learning Reports</a>
-            <a href="{{ route('admin.learning.analytics') }}" class="nav-subitem {{ request()->routeIs('admin.learning.analytics') ? 'active' : '' }}">Learning Analytics</a>
             <a href="{{ route('admin.learning.history') }}" class="nav-subitem {{ request()->routeIs('admin.learning.history') ? 'active' : '' }}">Learning History</a>
         </div>
 
@@ -1187,7 +1184,6 @@
             <a href="{{ route('admin.training.attendance') }}" class="nav-subitem {{ request()->routeIs('admin.training.attendance') ? 'active' : '' }}">Training Attendance</a>
             <a href="{{ route('admin.training.evaluations') }}" class="nav-subitem {{ request()->routeIs('admin.training.evaluations') ? 'active' : '' }}">Training Evaluation</a>
             <a href="{{ route('admin.training.reports') }}" class="nav-subitem {{ request()->routeIs('admin.training.reports') ? 'active' : '' }}">Training Reports</a>
-            <a href="{{ route('admin.training.analytics') }}" class="nav-subitem {{ request()->routeIs('admin.training.analytics') ? 'active' : '' }}">Training Analytics</a>
             <a href="{{ route('admin.training.history') }}" class="nav-subitem {{ request()->routeIs('admin.training.history') ? 'active' : '' }}">Training History</a>
         </div>
 
@@ -1217,7 +1213,6 @@
             <a href="{{ route('admin.evaluation.review') }}" class="nav-subitem {{ request()->routeIs('admin.evaluation.review') ? 'active' : '' }}">Evaluation Review</a>
             <a href="{{ route('admin.evaluation.feedback-summary') }}" class="nav-subitem {{ request()->routeIs('admin.evaluation.feedback-summary') ? 'active' : '' }}">Feedback Summary</a>
             <a href="{{ route('admin.evaluation.reports') }}" class="nav-subitem {{ request()->routeIs('admin.evaluation.reports') ? 'active' : '' }}">Evaluation Reports</a>
-            <a href="{{ route('admin.evaluation.analytics') }}" class="nav-subitem {{ request()->routeIs('admin.evaluation.analytics') ? 'active' : '' }}">Evaluation Analytics</a>
             <a href="{{ route('admin.evaluation.history') }}" class="nav-subitem {{ request()->routeIs('admin.evaluation.history') ? 'active' : '' }}">Evaluation History</a>
         </div>
 
@@ -1232,20 +1227,25 @@
             <a href="{{ route('admin.recognition.leaderboard') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.leaderboard') ? 'active' : '' }}">Leaderboard</a>
             <a href="{{ route('admin.recognition.history') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.history') ? 'active' : '' }}">Recognition History</a>
             <a href="{{ route('admin.recognition.certificates') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.certificates') ? 'active' : '' }}">Certificates & Rewards</a>
-            <a href="{{ route('admin.recognition.analytics') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.analytics') ? 'active' : '' }}">Recognition Analytics</a>
         </div>
 
         <div class="nav-section-header">Analytics & Reports</div>
 
-        <a href="javascript:void(0);" class="nav-parent {{ request()->routeIs('admin.reports.*') ? 'open' : '' }}" data-target="nav-reports" onclick="event.preventDefault(); toggleAccordion(this)">
+        <a href="javascript:void(0);" class="nav-parent {{ request()->routeIs('admin.reports.*') || request()->routeIs('*.analytics') ? 'open' : '' }}" data-target="nav-reports" onclick="event.preventDefault(); toggleAccordion(this)">
             <i class="fas fa-file-alt"></i>
             <span class="nav-text">Reports & Analytics</span>
             <i class="fas fa-chevron-right chevron"></i>
         </a>
-        <div class="nav-submenu {{ request()->routeIs('admin.reports.*') ? 'open' : '' }}" id="nav-reports">
+        <div class="nav-submenu {{ request()->routeIs('admin.reports.*') || request()->routeIs('*.analytics') ? 'open' : '' }}" id="nav-reports">
+            <a href="{{ route('admin.reports.analytics-dashboard') }}" class="nav-subitem {{ request()->routeIs('admin.reports.analytics-dashboard') ? 'active' : '' }}">📊 Master Analytics Dashboard</a>
+            <a href="{{ route('admin.performance.analytics') }}" class="nav-subitem {{ request()->routeIs('admin.performance.analytics') ? 'active' : '' }}">📈 Performance Analytics</a>
+            <a href="{{ route('admin.competency.analytics') }}" class="nav-subitem {{ request()->routeIs('admin.competency.analytics') ? 'active' : '' }}">🎯 Competency Analytics</a>
+            <a href="{{ route('admin.learning.analytics') }}" class="nav-subitem {{ request()->routeIs('admin.learning.analytics') ? 'active' : '' }}">📚 Learning Analytics</a>
+            <a href="{{ route('admin.training.analytics') }}" class="nav-subitem {{ request()->routeIs('admin.training.analytics') ? 'active' : '' }}">🎓 Training Analytics</a>
+            <a href="{{ route('admin.evaluation.analytics') }}" class="nav-subitem {{ request()->routeIs('admin.evaluation.analytics') ? 'active' : '' }}">👥 Evaluation Analytics</a>
+            <a href="{{ route('admin.recognition.analytics') }}" class="nav-subitem {{ request()->routeIs('admin.recognition.analytics') ? 'active' : '' }}">🏆 Recognition Analytics</a>
             <a href="{{ route('admin.reports.driver-reports') }}" class="nav-subitem {{ request()->routeIs('admin.reports.driver-reports') ? 'active' : '' }}">Driver Reports</a>
             <a href="{{ route('admin.reports.evaluation-reports') }}" class="nav-subitem {{ request()->routeIs('admin.reports.evaluation-reports') ? 'active' : '' }}">Evaluation Reports</a>
-            <a href="{{ route('admin.reports.analytics-dashboard') }}" class="nav-subitem {{ request()->routeIs('admin.reports.analytics-dashboard') ? 'active' : '' }}">Analytics Dashboard</a>
             <a href="{{ route('admin.reports.data-visualization') }}" class="nav-subitem {{ request()->routeIs('admin.reports.data-visualization') ? 'active' : '' }}">Data Visualization</a>
             <a href="{{ route('admin.reports.export-center') }}" class="nav-subitem {{ request()->routeIs('admin.reports.export-center') ? 'active' : '' }}">Export Center</a>
             <a href="{{ route('admin.reports.report-history') }}" class="nav-subitem {{ request()->routeIs('admin.reports.report-history') ? 'active' : '' }}">Report History</a>

@@ -19,6 +19,37 @@
         <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">Real-time analytics across all system modules. Monitor KPIs, trends, and performance metrics.</p>
     </div>
     <button class="btn btn-primary" onclick="exportReport('excel')"><i class="fas fa-download"></i> Export Analytics</button>
+<!-- Analytics Hub Quick Links -->
+<div class="table-card" style="margin-bottom:1.5rem;padding:1.25rem;">
+    <h3 style="font-size:1.1rem;margin:0 0 1rem;color:var(--primary);display:flex;align-items:center;gap:0.5rem;">
+        <i class="fas fa-th-large"></i> System Analytics Modules Hub
+    </h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:0.85rem;">
+        <a href="{{ route('admin.performance.analytics') }}" class="btn btn-secondary" style="display:flex;align-items:center;justify-content:flex-start;gap:0.75rem;padding:0.75rem 1rem;text-decoration:none;border-radius:10px;transition:all 0.2s;">
+            <i class="fas fa-chart-line" style="color:#F44336;font-size:1.1rem;"></i>
+            <span>Performance Analytics</span>
+        </a>
+        <a href="{{ route('admin.competency.analytics') }}" class="btn btn-secondary" style="display:flex;align-items:center;justify-content:flex-start;gap:0.75rem;padding:0.75rem 1rem;text-decoration:none;border-radius:10px;transition:all 0.2s;">
+            <i class="fas fa-brain" style="color:#3b82f6;font-size:1.1rem;"></i>
+            <span>Competency Analytics</span>
+        </a>
+        <a href="{{ route('admin.learning.analytics') }}" class="btn btn-secondary" style="display:flex;align-items:center;justify-content:flex-start;gap:0.75rem;padding:0.75rem 1rem;text-decoration:none;border-radius:10px;transition:all 0.2s;">
+            <i class="fas fa-book-open" style="color:#f59e0b;font-size:1.1rem;"></i>
+            <span>Learning Analytics</span>
+        </a>
+        <a href="{{ route('admin.training.analytics') }}" class="btn btn-secondary" style="display:flex;align-items:center;justify-content:flex-start;gap:0.75rem;padding:0.75rem 1rem;text-decoration:none;border-radius:10px;transition:all 0.2s;">
+            <i class="fas fa-chalkboard-teacher" style="color:#10b981;font-size:1.1rem;"></i>
+            <span>Training Analytics</span>
+        </a>
+        <a href="{{ route('admin.evaluation.analytics') }}" class="btn btn-secondary" style="display:flex;align-items:center;justify-content:flex-start;gap:0.75rem;padding:0.75rem 1rem;text-decoration:none;border-radius:10px;transition:all 0.2s;">
+            <i class="fas fa-users" style="color:#8b5cf6;font-size:1.1rem;"></i>
+            <span>Evaluation Analytics</span>
+        </a>
+        <a href="{{ route('admin.recognition.analytics') }}" class="btn btn-secondary" style="display:flex;align-items:center;justify-content:flex-start;gap:0.75rem;padding:0.75rem 1rem;text-decoration:none;border-radius:10px;transition:all 0.2s;">
+            <i class="fas fa-trophy" style="color:#ec4899;font-size:1.1rem;"></i>
+            <span>Recognition Analytics</span>
+        </a>
+    </div>
 </div>
 
 <!-- Dashboard Stats Cards -->
