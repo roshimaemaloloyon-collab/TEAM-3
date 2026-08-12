@@ -22,7 +22,7 @@ return new class extends Migration
 
         Schema::create('competency_assessments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('driver_id')->constrained('users')->cascadeOnDelete();
+            $table->unsignedBigInteger('driver_id');
             $table->foreignId('competency_id')->constrained()->cascadeOnDelete();
             $table->decimal('score', 5, 2)->nullable();
             $table->string('status')->default('pending'); // pending, assessed, reviewed, archived
