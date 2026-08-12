@@ -203,6 +203,7 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
         Route::post('/reviews', [App\Http\Controllers\Performance\PerformanceReviewsController::class, 'store'])->name('reviews.store');
         Route::put('/reviews/{id}', [App\Http\Controllers\Performance\PerformanceReviewsController::class, 'update'])->name('reviews.update');
         Route::get('/reports', [App\Http\Controllers\Performance\PerformanceReportsController::class, 'index'])->name('reports');
+        Route::get('/reports/export', [App\Http\Controllers\Performance\PerformanceReportsController::class, 'export'])->name('reports.export');
         Route::get('/analytics', [App\Http\Controllers\Performance\PerformanceAnalyticsController::class, 'index'])->name('analytics');
         Route::get('/history', [App\Http\Controllers\Performance\PerformanceHistoryController::class, 'index'])->name('history');
     });
