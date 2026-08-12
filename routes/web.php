@@ -219,12 +219,22 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
         })->name('index');
 
         Route::get('/assessments', [App\Http\Controllers\Competency\SkillsAssessmentController::class, 'index'])->name('assessments');
+        Route::post('/assessments', [App\Http\Controllers\Competency\SkillsAssessmentController::class, 'store'])->name('assessments.store');
+        Route::put('/assessments/{id}', [App\Http\Controllers\Competency\SkillsAssessmentController::class, 'update'])->name('assessments.update');
+        Route::get('/assessments/{id}/export-pdf', [App\Http\Controllers\Competency\SkillsAssessmentController::class, 'exportDriverPdf'])->name('assessments.driver.pdf');
+
         Route::get('/results', [App\Http\Controllers\Competency\AssessmentResultsController::class, 'index'])->name('results');
         Route::get('/gap-analysis', [App\Http\Controllers\Competency\GapAnalysisController::class, 'index'])->name('gap-analysis');
+
         Route::get('/plans', [App\Http\Controllers\Competency\DevelopmentPlanController::class, 'index'])->name('plans');
+        Route::post('/plans', [App\Http\Controllers\Competency\DevelopmentPlanController::class, 'store'])->name('plans.store');
+        Route::put('/plans/{id}', [App\Http\Controllers\Competency\DevelopmentPlanController::class, 'update'])->name('plans.update');
+
         Route::get('/reports', [App\Http\Controllers\Competency\CompetencyReportsController::class, 'index'])->name('reports');
+        Route::get('/reports/export', [App\Http\Controllers\Competency\CompetencyReportsController::class, 'export'])->name('reports.export');
         Route::get('/analytics', [App\Http\Controllers\Competency\CompetencyAnalyticsController::class, 'index'])->name('analytics');
         Route::get('/history', [App\Http\Controllers\Competency\CompetencyHistoryController::class, 'index'])->name('history');
+        Route::get('/history/export', [App\Http\Controllers\Competency\CompetencyHistoryController::class, 'export'])->name('history.export');
     });
 
     // Learning Management

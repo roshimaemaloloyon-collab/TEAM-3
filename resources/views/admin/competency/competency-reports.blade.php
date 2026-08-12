@@ -19,9 +19,9 @@
         <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">Generate competency-related reports.</p>
     </div>
     <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
-        <button class="btn btn-secondary" onclick="exportReport('pdf')"><i class="fas fa-file-pdf"></i> Export PDF</button>
-        <button class="btn btn-secondary" onclick="exportReport('excel')"><i class="fas fa-file-excel"></i> Export Excel</button>
-        <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Print Report</button>
+        <a href="{{ route('admin.competency.reports.export', ['format' => 'pdf']) }}" target="_blank" class="btn btn-secondary"><i class="fas fa-file-pdf"></i> Export PDF</a>
+        <a href="{{ route('admin.competency.reports.export', ['format' => 'csv']) }}" class="btn btn-secondary"><i class="fas fa-file-excel"></i> Export Excel</a>
+        <a href="{{ route('admin.competency.reports.export', ['format' => 'pdf']) }}" target="_blank" class="btn btn-primary"><i class="fas fa-print"></i> Print Report</a>
     </div>
 </div>
 

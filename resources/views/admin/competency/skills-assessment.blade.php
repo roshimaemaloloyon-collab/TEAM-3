@@ -113,11 +113,9 @@
                         </td>
                         <td>{{ $assessment->assessed_at ? \Carbon\Carbon::parse($assessment->assessed_at)->format('M d, Y') : 'N/A' }}</td>
                         <td style="text-align:right;">
-                            <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                                <button class="btn btn-sm btn-secondary" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Edit"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Assess"><i class="fas fa-clipboard-check"></i></button>
-                                <button class="btn btn-sm btn-danger" title="Archive"><i class="fas fa-archive"></i></button>
+                            <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
+                                <a href="{{ route('admin.competency.assessments.driver.pdf', $assessment->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" title="View & Print Assessment PDF"><i class="fas fa-file-pdf"></i></a>
+                                <button type="button" class="btn btn-sm btn-primary" title="Edit Assessment In-Place" onclick="openEditAssessModal({{ $assessment->id }}, '{{ addslashes($assessment->driver->name ?? 'Driver') }}', {{ $assessment->score ?? 85 }}, '{{ $assessment->status }}')"><i class="fas fa-edit"></i> Edit</button>
                             </div>
                         </td>
                     </tr>
@@ -129,6 +127,87 @@
     </div>
     <div style="margin-top:1rem;">
         {{ $assessments->links() }}
+    </div>
+</div>
+
+<!-- New Assessment Modal -->
+<div id="assessModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;">
+    <div class="modal-box" style="background:var(--white);border-radius:1rem;width:90%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.2);">
+        <form action="{{ route('admin.competency.assessments.store') }}" method="POST">
+            @csrf
+            <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">New Skills Assessment</h2>
+                <button type="button" onclick="closeModal('assessModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
+            </div>
+            <div style="padding:1.25rem 1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Select Driver</label>
+                    <select name="driver_id" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                        @foreach($allDrivers as $d)
+                            <option value="{{ $d->id }}">{{ $d->full_name }} ({{ $d->formatted_id }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Competency Category</label>
+                    <select name="competency_id" style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                        @foreach($competencies as $comp)
+                            <option value="{{ $comp->id }}">{{ $comp->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Assessment Score (0 - 100%)</label>
+                    <input type="number" name="score" min="0" max="100" value="88" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Evaluation Status</label>
+                    <select name="status" style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                        <option value="assessed">Assessed</option>
+                        <option value="pending">Pending</option>
+                    </select>
+                </div>
+            </div>
+            <div style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('assessModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Assessment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Assessment Modal -->
+<div id="editAssessModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;">
+    <div class="modal-box" style="background:var(--white);border-radius:1rem;width:90%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.2);">
+        <form id="editAssessForm" method="POST">
+            @csrf
+            @method('PUT')
+            <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Edit Assessment Score</h2>
+                <button type="button" onclick="closeModal('editAssessModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
+            </div>
+            <div style="padding:1.25rem 1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Driver Name</label>
+                    <input type="text" id="editDriverName" readonly style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:#f1f5f9;color:var(--text-dark);">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Score (0 - 100%)</label>
+                    <input type="number" name="score" id="editScore" min="0" max="100" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Status</label>
+                    <select name="status" id="editStatus" style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                        <option value="assessed">Assessed</option>
+                        <option value="pending">Pending</option>
+                    </select>
+                </div>
+            </div>
+            <div style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('editAssessModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Update Assessment</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -150,16 +229,16 @@
 
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
-function openModal(id) { document.getElementById(id).classList.add('active'); }
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toastMessage').textContent = message;
-    toast.style.display = 'flex';
-    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+function openEditAssessModal(id, name, score, status) {
+    document.getElementById('editAssessForm').action = '/admin/competency/assessments/' + id;
+    document.getElementById('editDriverName').value = name;
+    document.getElementById('editScore').value = score;
+    document.getElementById('editStatus').value = status;
+    openModal('editAssessModal');
 }
+
 document.addEventListener('DOMContentLoaded', function() {
     const chartDefaults = {
         responsive: true,
@@ -199,4 +278,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endsection
+@endpush

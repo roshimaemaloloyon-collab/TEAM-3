@@ -57,6 +57,49 @@ class DevelopmentPlanController extends Controller
             ->groupBy('status')
             ->get();
 
-        return view('admin.competency.development-plan', compact('plans', 'stats', 'progressData', 'trainingData'));
+        $allDrivers = \App\Models\Driver::query()->notArchived()->orderBy('first_name')->get();
+
+        return view('admin.competency.development-plan', compact('plans', 'stats', 'progressData', 'trainingData', 'allDrivers'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'driver_id' => 'required',
+            'plan_name' => 'required|string',
+            'completion_percentage' => 'nullable|numeric|min:0|max:100',
+            'status' => 'nullable|string'
+        ]);
+
+        CompetencyDevelopmentPlan::create([
+            'driver_id' => $request->driver_id,
+            'plan_name' => $validated['plan_name'],
+            'completion_percentage' => $request->input('completion_percentage', 0),
+            'status' => $request->input('status', 'active'),
+            'start_date' => now(),
+            'end_date' => now()->addMonths(3),
+        ]);
+
+        return back()->with('success', 'Development Plan created successfully.');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'plan_name' => 'required|string',
+            'completion_percentage' => 'nullable|numeric|min:0|max:100',
+            'status' => 'nullable|string'
+        ]);
+
+        $plan = CompetencyDevelopmentPlan::find($id);
+        if ($plan) {
+            $plan->update([
+                'plan_name' => $validated['plan_name'],
+                'completion_percentage' => $request->input('completion_percentage', $plan->completion_percentage),
+                'status' => $request->input('status', $plan->status),
+            ]);
+        }
+
+        return back()->with('success', 'Development Plan updated successfully.');
     }
 }

@@ -123,10 +123,9 @@
                             </span>
                         </td>
                         <td style="text-align:right;">
-                            <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                                <button class="btn btn-sm btn-secondary" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Edit"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Update Progress"><i class="fas fa-sync-alt"></i></button>
+                            <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
+                                <a href="{{ route('admin.competency.assessments.driver.pdf', $plan->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" title="View Plan PDF Report"><i class="fas fa-file-pdf"></i></a>
+                                <button type="button" class="btn btn-sm btn-primary" title="Edit Plan In-Place" onclick="openEditPlanModal({{ $plan->id }}, '{{ addslashes($plan->driver->name ?? 'Driver') }}', '{{ addslashes($plan->plan_name) }}', {{ $plan->completion_percentage }}, '{{ $plan->status }}')"><i class="fas fa-edit"></i> Edit</button>
                             </div>
                         </td>
                     </tr>
@@ -138,6 +137,89 @@
     </div>
     <div style="margin-top:1rem;">
         {{ $plans->links() }}
+    </div>
+</div>
+
+<!-- Create Plan Modal -->
+<div id="planModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;">
+    <div class="modal-box" style="background:var(--white);border-radius:1rem;width:90%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.2);">
+        <form action="{{ route('admin.competency.plans.store') }}" method="POST">
+            @csrf
+            <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Create Development Plan</h2>
+                <button type="button" onclick="closeModal('planModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
+            </div>
+            <div style="padding:1.25rem 1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Select Driver</label>
+                    <select name="driver_id" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                        @foreach($allDrivers as $d)
+                            <option value="{{ $d->id }}">{{ $d->full_name }} ({{ $d->formatted_id }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Plan Name / Target Skill</label>
+                    <input type="text" name="plan_name" placeholder="e.g. Advanced GPS & Route Optimization Course" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Initial Progress %</label>
+                    <input type="number" name="completion_percentage" min="0" max="100" value="0" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Status</label>
+                    <select name="status" style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                        <option value="active">Active</option>
+                        <option value="completed">Completed</option>
+                        <option value="on_hold">On Hold</option>
+                    </select>
+                </div>
+            </div>
+            <div style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('planModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Plan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Plan Modal -->
+<div id="editPlanModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;">
+    <div class="modal-box" style="background:var(--white);border-radius:1rem;width:90%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.2);">
+        <form id="editPlanForm" method="POST">
+            @csrf
+            @method('PUT')
+            <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Edit Development Plan</h2>
+                <button type="button" onclick="closeModal('editPlanModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
+            </div>
+            <div style="padding:1.25rem 1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Driver Name</label>
+                    <input type="text" id="editDriverName" readonly style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:#f1f5f9;color:var(--text-dark);">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Plan Name / Skill</label>
+                    <input type="text" name="plan_name" id="editPlanName" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Progress %</label>
+                    <input type="number" name="completion_percentage" id="editProgress" min="0" max="100" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Status</label>
+                    <select name="status" id="editStatus" style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                        <option value="active">Active</option>
+                        <option value="completed">Completed</option>
+                        <option value="on_hold">On Hold</option>
+                    </select>
+                </div>
+            </div>
+            <div style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('editPlanModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Update Plan</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -159,16 +241,17 @@
 
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
-function openModal(id) { document.getElementById(id).classList.add('active'); }
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toastMessage').textContent = message;
-    toast.style.display = 'flex';
-    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+function openEditPlanModal(id, driverName, planName, progress, status) {
+    document.getElementById('editPlanForm').action = '/admin/competency/plans/' + id;
+    document.getElementById('editDriverName').value = driverName;
+    document.getElementById('editPlanName').value = planName;
+    document.getElementById('editProgress').value = progress;
+    document.getElementById('editStatus').value = status;
+    openModal('editPlanModal');
 }
+
 document.addEventListener('DOMContentLoaded', function() {
     const chartDefaults = {
         responsive: true,
@@ -206,4 +289,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endsection
+@endpush
