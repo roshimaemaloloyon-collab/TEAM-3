@@ -13,12 +13,13 @@
 </div>
 
 <!-- Page Header -->
-<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;flex-wrap:wrap;gap:1rem;">
     <div>
-        <h1 style="font-size:1.75rem;color:var(--primary);margin:0 0 0.25rem;">Analytics Dashboard</h1>
-        <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">Real-time analytics across all system modules. Monitor KPIs, trends, and performance metrics.</p>
+        <h1 style="font-size:1.5rem;color:var(--primary);margin:0 0 0.25rem;">Analytics Dashboard</h1>
+        <p style="color:var(--text-muted);font-size:0.85rem;margin:0;">Real-time analytics across all system modules. Monitor KPIs, trends, and performance metrics.</p>
     </div>
     <button class="btn btn-primary" onclick="exportReport('excel')"><i class="fas fa-download"></i> Export Analytics</button>
+</div>
 <!-- Unified System Analytics Module Filter Tabs -->
 <div class="table-card" style="margin-bottom:1.5rem;padding:0.75rem 1rem;">
     <div style="display:flex;gap:0.5rem;overflow-x:auto;align-items:center;">
