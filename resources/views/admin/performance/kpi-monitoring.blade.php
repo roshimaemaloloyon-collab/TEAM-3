@@ -18,7 +18,10 @@
         <h1 style="font-size:1.75rem;color:var(--primary);margin:0 0 0.25rem;">KPI Monitoring</h1>
         <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">Monitor Key Performance Indicators (KPIs) for every driver.</p>
     </div>
-    <button class="btn btn-primary"><i class="fas fa-plus"></i> Add KPI</button>
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <a href="{{ route('admin.drivers.export', ['format' => 'pdf']) }}" target="_blank" class="btn btn-secondary"><i class="fas fa-file-pdf"></i> Export PDF</a>
+        <a href="{{ route('admin.drivers.export', ['format' => 'csv']) }}" class="btn btn-secondary"><i class="fas fa-file-excel"></i> Export Excel</a>
+    </div>
 </div>
 
 <!-- Dashboard Stats Cards -->

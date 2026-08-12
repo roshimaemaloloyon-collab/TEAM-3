@@ -89,7 +89,8 @@
         </select>
         <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
         <a href="{{ route('admin.drivers.index') }}" class="btn btn-secondary"><i class="fas fa-undo"></i> Reset</a>
-        <a href="{{ route('admin.drivers.export') }}" class="btn btn-secondary"><i class="fas fa-file-export"></i> Export</a>
+        <a href="{{ route('admin.drivers.export', ['format' => 'pdf']) }}" target="_blank" class="btn btn-secondary"><i class="fas fa-file-pdf"></i> Export PDF</a>
+        <a href="{{ route('admin.drivers.export', ['format' => 'csv']) }}" class="btn btn-secondary"><i class="fas fa-file-excel"></i> Export Excel</a>
     </form>
 </div>
 
