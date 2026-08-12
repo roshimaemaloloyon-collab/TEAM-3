@@ -19,8 +19,8 @@
         <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">Monitor and evaluate each driver's operational performance.</p>
     </div>
     <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
-        <a href="{{ route('admin.drivers.export', ['format' => 'pdf']) }}" target="_blank" class="btn btn-secondary"><i class="fas fa-file-pdf"></i> Export PDF</a>
-        <a href="{{ route('admin.drivers.export', ['format' => 'csv']) }}" class="btn btn-secondary"><i class="fas fa-file-excel"></i> Export Excel</a>
+        <a href="{{ route('admin.performance.drivers.export', ['format' => 'pdf']) }}" target="_blank" class="btn btn-secondary"><i class="fas fa-file-pdf"></i> Export PDF</a>
+        <a href="{{ route('admin.performance.drivers.export', ['format' => 'csv']) }}" class="btn btn-secondary"><i class="fas fa-file-excel"></i> Export Excel</a>
     </div>
 </div>
 

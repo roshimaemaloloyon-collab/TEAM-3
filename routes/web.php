@@ -196,7 +196,9 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
         })->name('index');
 
         Route::get('/drivers', [App\Http\Controllers\Performance\DriverPerformanceController::class, 'index'])->name('drivers');
+        Route::get('/drivers/export', [App\Http\Controllers\Performance\DriverPerformanceController::class, 'export'])->name('drivers.export');
         Route::get('/kpi', [App\Http\Controllers\Performance\KpiMonitoringController::class, 'index'])->name('kpi');
+        Route::get('/kpi/export', [App\Http\Controllers\Performance\KpiMonitoringController::class, 'export'])->name('kpi.export');
         Route::get('/reviews', [App\Http\Controllers\Performance\PerformanceReviewsController::class, 'index'])->name('reviews');
         Route::get('/reports', [App\Http\Controllers\Performance\PerformanceReportsController::class, 'index'])->name('reports');
         Route::get('/analytics', [App\Http\Controllers\Performance\PerformanceAnalyticsController::class, 'index'])->name('analytics');
