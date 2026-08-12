@@ -19,7 +19,7 @@
         <p>Fleet vehicle assignments, plate registration records, maintenance status, and vehicle route distribution.</p>
     </div>
     <div style="display:flex;gap:0.75rem;">
-        <button class="btn btn-primary" onclick="showToast('Vehicle assignment modal opened')"><i class="fas fa-car"></i> Assign New Vehicle</button>
+        <button class="btn btn-primary" onclick="openModal('assignVehicleModal')"><i class="fas fa-car"></i> Assign New Vehicle</button>
     </div>
 </div>
 
@@ -61,6 +61,26 @@
             <p style="font-size:0.85rem;color:var(--text-muted);margin:0;">Active Operating Zones</p>
         </div>
     </div>
+</div>
+
+<!-- Search & Filter Bar -->
+<div class="table-card" style="margin-bottom:1.5rem;">
+    <form method="GET" action="{{ route('admin.drivers.vehicles') }}" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;">
+        <div style="flex:1;min-width:240px;">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search driver name, vehicle model, plate number, route..." style="width:100%;padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;">
+        </div>
+        <div style="width:180px;">
+            <select name="type" style="width:100%;padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;">
+                <option value="">All Vehicle Types</option>
+                <option value="Sedan" {{ request('type') == 'Sedan' ? 'selected' : '' }}>Sedan</option>
+                <option value="SUV" {{ request('type') == 'SUV' ? 'selected' : '' }}>SUV</option>
+                <option value="Van" {{ request('type') == 'Van' ? 'selected' : '' }}>Van</option>
+                <option value="Motorcycle" {{ request('type') == 'Motorcycle' ? 'selected' : '' }}>Motorcycle</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+        <a href="{{ route('admin.drivers.vehicles') }}" class="btn btn-secondary"><i class="fas fa-undo"></i> Reset</a>
+    </form>
 </div>
 
 <!-- Vehicle Information Table -->
@@ -105,7 +125,7 @@
                     <td style="text-align:center;">
                         <div style="display:flex;gap:0.35rem;justify-content:center;">
                             <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-vehicle']) }}" class="icon-btn" title="Vehicle Details"><i class="fas fa-eye"></i></a>
-                            <button class="icon-btn" title="Reassign Driver" onclick="showToast('Reassign vehicle modal opened')"><i class="fas fa-sync-alt"></i></button>
+                            <button class="icon-btn" title="Reassign Driver" onclick="openReassignModal({{ json_encode($driver) }})"><i class="fas fa-sync-alt"></i></button>
                         </div>
                     </td>
                 </tr>
@@ -121,4 +141,126 @@
         {{ $drivers->links() }}
     </div>
 </div>
+
+<!-- Assign New Vehicle Modal -->
+<div class="modal-overlay" id="assignVehicleModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:650px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <form id="assignVehicleForm" onsubmit="event.preventDefault(); alert('Vehicle assignment saved successfully!'); closeModal('assignVehicleModal'); location.reload();">
+            <div class="modal-header" style="padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Assign New Fleet Vehicle</h2>
+                <button type="button" onclick="closeModal('assignVehicleModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                    <div style="grid-column:span 2;">
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Select Driver *</label>
+                        <select name="driver_id" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                            <option value="">Choose Driver...</option>
+                            @foreach($drivers as $driver)
+                                <option value="{{ $driver->id }}">{{ $driver->full_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Vehicle Model / Name *</label>
+                        <input type="text" required name="vehicle_model" placeholder="e.g. Toyota Fortuner, Honda Civic" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Vehicle Type *</label>
+                        <select name="vehicle_type" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                            <option value="Sedan">Sedan</option>
+                            <option value="SUV">SUV</option>
+                            <option value="Van">Van</option>
+                            <option value="Motorcycle">Motorcycle</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Plate Number *</label>
+                        <input type="text" required name="plate_number" placeholder="ABC-1234" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Branch Zone *</label>
+                        <select name="branch" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                            <option value="North Branch">North Branch</option>
+                            <option value="South Branch">South Branch</option>
+                            <option value="East Branch">East Branch</option>
+                            <option value="West Branch">West Branch</option>
+                            <option value="Central Branch">Central Branch</option>
+                        </select>
+                    </div>
+                    <div style="grid-column:span 2;">
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Assigned Route *</label>
+                        <select name="route" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                            <option value="North Route">North Route</option>
+                            <option value="South Route">South Route</option>
+                            <option value="East Route">East Route</option>
+                            <option value="West Route">West Route</option>
+                            <option value="Central Route">Central Route</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('assignVehicleModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Assignment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Reassign Vehicle Modal -->
+<div class="modal-overlay" id="reassignVehicleModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:550px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <form id="reassignForm" onsubmit="event.preventDefault(); alert('Vehicle assignment updated for driver!'); closeModal('reassignVehicleModal');">
+            <div class="modal-header" style="padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Reassign Driver Vehicle</h2>
+                <button type="button" onclick="closeModal('reassignVehicleModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <div style="display:flex;flex-direction:column;gap:1rem;">
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Driver Name</label>
+                        <input type="text" id="reassignDriverName" readonly style="width:100%;padding:0.6rem;background:#f1f5f9;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;font-weight:600;">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Current Vehicle Assignment</label>
+                        <input type="text" id="reassignCurrentVehicle" name="vehicle_assignment" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Vehicle Type</label>
+                        <select id="reassignVehicleType" name="vehicle_type" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                            <option value="Sedan">Sedan</option>
+                            <option value="SUV">SUV</option>
+                            <option value="Van">Van</option>
+                            <option value="Motorcycle">Motorcycle</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('reassignVehicleModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Update Assignment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openModal(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'flex';
+}
+
+function closeModal(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+}
+
+function openReassignModal(driver) {
+    document.getElementById('reassignDriverName').value = driver.first_name + ' ' + driver.last_name;
+    document.getElementById('reassignCurrentVehicle').value = driver.vehicle_assignment || '';
+    document.getElementById('reassignVehicleType').value = driver.vehicle_type || 'Sedan';
+    openModal('reassignVehicleModal');
+}
+</script>
 @endsection
