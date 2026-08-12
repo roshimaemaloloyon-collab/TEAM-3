@@ -43,6 +43,15 @@ class SkillsAssessmentController extends Controller
         ];
 
         $competencies = Competency::all();
+        if ($competencies->isEmpty()) {
+            $competencies = collect([
+                (object)['id' => 1, 'name' => 'Defensive Driving & Safety Standards'],
+                (object)['id' => 2, 'name' => 'Route Optimization & GPS Navigation'],
+                (object)['id' => 3, 'name' => 'Customer Service & Passenger Relations'],
+                (object)['id' => 4, 'name' => 'Vehicle Inspection & Road Readiness'],
+                (object)['id' => 5, 'name' => 'LTFRB & Regulatory Compliance']
+            ]);
+        }
 
         $allDrivers = \App\Models\Driver::query()->notArchived()->orderBy('first_name')->get();
 
