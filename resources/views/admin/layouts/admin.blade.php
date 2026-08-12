@@ -1131,19 +1131,6 @@
 
         <div class="nav-section-header">Talent Development</div>
 
-        <a href="javascript:void(0);" class="nav-parent {{ request()->routeIs('admin.performance.*') ? 'open' : '' }}" data-target="nav-performance" onclick="event.preventDefault(); toggleAccordion(this)">
-            <i class="fas fa-chart-line"></i>
-            <span class="nav-text">Performance Management</span>
-            <i class="fas fa-chevron-right chevron"></i>
-        </a>
-        <div class="nav-submenu {{ request()->routeIs('admin.performance.*') ? 'open' : '' }}" id="nav-performance">
-            <a href="{{ route('admin.performance.drivers') }}" class="nav-subitem {{ request()->routeIs('admin.performance.drivers') ? 'active' : '' }}">Driver Performance</a>
-            <a href="{{ route('admin.performance.kpi') }}" class="nav-subitem {{ request()->routeIs('admin.performance.kpi') ? 'active' : '' }}">KPI Monitoring</a>
-            <a href="{{ route('admin.performance.reviews') }}" class="nav-subitem {{ request()->routeIs('admin.performance.reviews') ? 'active' : '' }}">Performance Reviews</a>
-            <a href="{{ route('admin.performance.reports') }}" class="nav-subitem {{ request()->routeIs('admin.performance.reports') ? 'active' : '' }}">Performance Reports</a>
-            <a href="{{ route('admin.performance.history') }}" class="nav-subitem {{ request()->routeIs('admin.performance.history') ? 'active' : '' }}">Performance History</a>
-        </div>
-
         <a href="javascript:void(0);" class="nav-parent {{ request()->routeIs('admin.competency.*') ? 'open' : '' }}" data-target="nav-competency" onclick="event.preventDefault(); toggleAccordion(this)">
             <i class="fas fa-brain"></i>
             <span class="nav-text">Competency Management</span>
@@ -1182,6 +1169,19 @@
             <a href="{{ route('admin.training.evaluations') }}" class="nav-subitem {{ request()->routeIs('admin.training.evaluations') ? 'active' : '' }}">Training Evaluation</a>
             <a href="{{ route('admin.training.reports') }}" class="nav-subitem {{ request()->routeIs('admin.training.reports') ? 'active' : '' }}">Training Reports</a>
             <a href="{{ route('admin.training.history') }}" class="nav-subitem {{ request()->routeIs('admin.training.history') ? 'active' : '' }}">Training History</a>
+        </div>
+
+        <a href="javascript:void(0);" class="nav-parent {{ request()->routeIs('admin.performance.*') ? 'open' : '' }}" data-target="nav-performance" onclick="event.preventDefault(); toggleAccordion(this)">
+            <i class="fas fa-chart-line"></i>
+            <span class="nav-text">Performance Management</span>
+            <i class="fas fa-chevron-right chevron"></i>
+        </a>
+        <div class="nav-submenu {{ request()->routeIs('admin.performance.*') ? 'open' : '' }}" id="nav-performance">
+            <a href="{{ route('admin.performance.drivers') }}" class="nav-subitem {{ request()->routeIs('admin.performance.drivers') ? 'active' : '' }}">Driver Performance</a>
+            <a href="{{ route('admin.performance.kpi') }}" class="nav-subitem {{ request()->routeIs('admin.performance.kpi') ? 'active' : '' }}">KPI Monitoring</a>
+            <a href="{{ route('admin.performance.reviews') }}" class="nav-subitem {{ request()->routeIs('admin.performance.reviews') ? 'active' : '' }}">Performance Reviews</a>
+            <a href="{{ route('admin.performance.reports') }}" class="nav-subitem {{ request()->routeIs('admin.performance.reports') ? 'active' : '' }}">Performance Reports</a>
+            <a href="{{ route('admin.performance.history') }}" class="nav-subitem {{ request()->routeIs('admin.performance.history') ? 'active' : '' }}">Performance History</a>
         </div>
 
         <a href="javascript:void(0);" class="nav-parent {{ request()->routeIs('admin.succession.*') ? 'open' : '' }}" data-target="nav-succession" onclick="event.preventDefault(); toggleAccordion(this)">
