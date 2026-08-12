@@ -121,8 +121,8 @@
                         </td>
                         <td style="text-align:right;">
                             <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
-                                <a href="{{ route('admin.performance.history.driver.pdf', $driver->id) }}" target="_blank" class="btn btn-sm btn-secondary" title="View History Timeline & Snapshot PDF"><i class="fas fa-eye"></i></a>
-                                <a href="{{ route('admin.performance.history.driver.pdf', $driver->id) }}" target="_blank" class="btn btn-sm btn-primary" title="Export Specific Timeline PDF for {{ $driver->full_name }}"><i class="fas fa-history"></i> Log PDF</a>
+                                <a href="{{ route('admin.performance.history.driver.pdf', $driver->id) }}" target="_blank" class="btn btn-sm btn-secondary" title="View History Timeline"><i class="fas fa-eye"></i></a>
+                                <a href="{{ route('admin.performance.history.driver.pdf', $driver->id) }}" target="_blank" class="btn btn-sm btn-primary" title="Print Driver Performance PDF for {{ $driver->full_name }}"><i class="fas fa-file-pdf"></i> Print PDF</a>
                             </div>
                         </td>
                     </tr>

@@ -37,7 +37,7 @@ class PerformanceHistoryController extends Controller
             }
         }
 
-        $drivers = $query->orderByDesc('updated_at')->paginate($perPage)->withQueryString();
+        $drivers = $query->orderByDesc('performance_score')->orderByDesc('updated_at')->paginate($perPage)->withQueryString();
 
         $allCount = Driver::query()->notArchived()->count();
 
@@ -54,7 +54,7 @@ class PerformanceHistoryController extends Controller
     public function export(Request $request)
     {
         $format = strtolower($request->input('format', 'csv'));
-        $drivers = Driver::query()->notArchived()->orderByDesc('updated_at')->get();
+        $drivers = Driver::query()->notArchived()->orderByDesc('performance_score')->orderByDesc('updated_at')->get();
 
         if ($format === 'pdf') {
             return $this->exportPdf($drivers);
