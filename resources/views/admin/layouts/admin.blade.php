@@ -483,35 +483,35 @@
 
         /* Dashboard Content */
         .dashboard-content {
-            padding: 2rem;
-            max-width: 1400px;
+            padding: 1.25rem 1.5rem;
+            max-width: 1550px;
         }
 
         .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
         }
 
         .page-header h1 {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             color: var(--primary);
         }
 
         .page-header p {
             color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-top: 0.25rem;
+            font-size: 0.85rem;
+            margin-top: 0.15rem;
         }
 
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.6rem 1.25rem;
-            border-radius: 0.75rem;
-            font-size: 0.9rem;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.6rem;
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
             border: none;
@@ -544,41 +544,36 @@
         /* Summary Cards */
         .summary-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.25rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.85rem;
+            margin-bottom: 1rem;
         }
 
         .summary-card {
             background: var(--white);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             border: 1px solid var(--border);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.85rem;
         }
 
         .summary-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-        }
-
-        .summary-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(6, 49, 81, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
         }
 
         .card-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 1rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 0.75rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             flex-shrink: 0;
         }
 
@@ -590,71 +585,71 @@
         .card-icon.gold { background: #fef3c7; color: #92400e; }
 
         .card-info h3 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: var(--primary);
-            line-height: 1.2;
+            line-height: 1.1;
         }
 
         .card-info p {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--text-muted);
-            margin-top: 0.25rem;
+            margin-top: 0.15rem;
         }
 
         /* Charts Section */
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 0.85rem;
+            margin-bottom: 1rem;
         }
 
         .chart-card {
             background: var(--white);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             border: 1px solid var(--border);
         }
 
         .chart-card h3 {
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
             color: var(--primary);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
-        .chart-card h3 i { font-size: 1rem; opacity: 0.7; }
+        .chart-card h3 i { font-size: 0.9rem; opacity: 0.7; }
 
         .chart-wrapper {
             position: relative;
-            height: 280px;
+            height: 240px;
         }
 
         /* Tables */
         .table-card {
             background: var(--white);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             border: 1px solid var(--border);
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             overflow: hidden;
         }
 
         .table-card h3 {
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
             color: var(--primary);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
-        .table-card h3 i { font-size: 1rem; opacity: 0.7; }
+        .table-card h3 i { font-size: 0.9rem; opacity: 0.7; }
 
         .table-wrapper {
             overflow-x: auto;
@@ -663,7 +658,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         table thead {
@@ -671,17 +666,17 @@
         }
 
         table th {
-            padding: 0.85rem 1rem;
+            padding: 0.6rem 0.85rem;
             text-align: left;
             font-weight: 600;
             color: var(--primary);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.04em;
         }
 
         table td {
-            padding: 0.85rem 1rem;
+            padding: 0.6rem 0.85rem;
             border-bottom: 1px solid var(--border);
             color: var(--text-dark);
         }
@@ -696,9 +691,9 @@
 
         .status-badge {
             display: inline-block;
-            padding: 0.25rem 0.75rem;
+            padding: 0.2rem 0.6rem;
             border-radius: 2rem;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 600;
         }
 
@@ -710,35 +705,35 @@
         /* Sections Grid */
         .section-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 0.85rem;
+            margin-bottom: 1rem;
         }
 
         .section-card {
             background: var(--white);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             border: 1px solid var(--border);
         }
 
         .section-card h3 {
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
             color: var(--primary);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
-        .section-card h3 i { font-size: 1rem; opacity: 0.7; }
+        .section-card h3 i { font-size: 0.9rem; opacity: 0.7; }
 
         .list-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.85rem 0;
+            gap: 0.6rem;
+            padding: 0.6rem 0;
             border-bottom: 1px solid var(--border);
             transition: background 0.2s;
         }
