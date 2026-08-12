@@ -93,47 +93,47 @@
     </div>
 </div>
 
-<!-- Charts Grid (Full Width, 2 Columns) -->
-<div class="charts-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(450px, 1fr));gap:1rem;margin-bottom:1rem;">
-    <div class="chart-card" data-module="performance">
-        <h3><i class="fas fa-chart-line"></i> Monthly Performance Trend</h3>
-        <div class="chart-wrapper" style="height:250px;">
+<!-- Charts Grid (Compact Full Width, 3 Columns) -->
+<div class="charts-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:0.75rem;margin-bottom:1rem;">
+    <div class="chart-card" data-module="performance" style="padding:0.75rem 1rem;">
+        <h3 style="font-size:0.9rem;margin-bottom:0.5rem;"><i class="fas fa-chart-line"></i> Monthly Performance Trend</h3>
+        <div class="chart-wrapper" style="height:175px;">
             <canvas id="performanceTrendChart"></canvas>
         </div>
     </div>
-    <div class="chart-card" data-module="performance">
-        <h3><i class="fas fa-chart-bar"></i> KPI Distribution</h3>
-        <div class="chart-wrapper" style="height:250px;">
+    <div class="chart-card" data-module="performance" style="padding:0.75rem 1rem;">
+        <h3 style="font-size:0.9rem;margin-bottom:0.5rem;"><i class="fas fa-chart-bar"></i> KPI Distribution</h3>
+        <div class="chart-wrapper" style="height:175px;">
             <canvas id="kpiDistributionChart"></canvas>
         </div>
     </div>
-    <div class="chart-card" data-module="competency">
-        <h3><i class="fas fa-chart-area"></i> Competency Growth</h3>
-        <div class="chart-wrapper" style="height:250px;">
+    <div class="chart-card" data-module="competency" style="padding:0.75rem 1rem;">
+        <h3 style="font-size:0.9rem;margin-bottom:0.5rem;"><i class="fas fa-chart-area"></i> Competency Growth</h3>
+        <div class="chart-wrapper" style="height:175px;">
             <canvas id="competencyGrowthChart"></canvas>
         </div>
     </div>
-    <div class="chart-card" data-module="learning">
-        <h3><i class="fas fa-chart-pie"></i> Learning Progress</h3>
-        <div class="chart-wrapper" style="height:250px;">
+    <div class="chart-card" data-module="learning" style="padding:0.75rem 1rem;">
+        <h3 style="font-size:0.9rem;margin-bottom:0.5rem;"><i class="fas fa-chart-pie"></i> Learning Progress</h3>
+        <div class="chart-wrapper" style="height:175px;">
             <canvas id="learningProgressChart"></canvas>
         </div>
     </div>
-    <div class="chart-card" data-module="training">
-        <h3><i class="fas fa-chart-line"></i> Training Progress</h3>
-        <div class="chart-wrapper" style="height:250px;">
+    <div class="chart-card" data-module="training" style="padding:0.75rem 1rem;">
+        <h3 style="font-size:0.9rem;margin-bottom:0.5rem;"><i class="fas fa-chart-line"></i> Training Progress</h3>
+        <div class="chart-wrapper" style="height:175px;">
             <canvas id="trainingProgressChart"></canvas>
         </div>
     </div>
-    <div class="chart-card" data-module="recognition">
-        <h3><i class="fas fa-chart-bar"></i> Recognition Trend</h3>
-        <div class="chart-wrapper" style="height:250px;">
+    <div class="chart-card" data-module="recognition" style="padding:0.75rem 1rem;">
+        <h3 style="font-size:0.9rem;margin-bottom:0.5rem;"><i class="fas fa-chart-bar"></i> Recognition Trend</h3>
+        <div class="chart-wrapper" style="height:175px;">
             <canvas id="recognitionTrendChart"></canvas>
         </div>
     </div>
-    <div class="chart-card" data-module="evaluation" style="grid-column: span 1;">
-        <h3><i class="fas fa-chart-line"></i> Peer Evaluation Trend</h3>
-        <div class="chart-wrapper" style="height:250px;">
+    <div class="chart-card" data-module="evaluation" style="padding:0.75rem 1rem;">
+        <h3 style="font-size:0.9rem;margin-bottom:0.5rem;"><i class="fas fa-chart-line"></i> Peer Evaluation Trend</h3>
+        <div class="chart-wrapper" style="height:175px;">
             <canvas id="peerEvaluationTrendChart"></canvas>
         </div>
     </div>
