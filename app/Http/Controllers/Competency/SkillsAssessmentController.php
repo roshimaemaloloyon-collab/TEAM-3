@@ -67,8 +67,11 @@ class SkillsAssessmentController extends Controller
             'status' => 'nullable|string'
         ]);
 
+        $driver = \App\Models\Driver::find($request->driver_id);
+        $userId = ($driver && $driver->user_id) ? $driver->user_id : (int)$request->driver_id;
+
         CompetencyAssessment::create([
-            'driver_id' => $request->driver_id,
+            'driver_id' => $userId,
             'competency_id' => $request->competency_id ?? 1,
             'score' => $validated['score'],
             'status' => $request->input('status', 'assessed'),

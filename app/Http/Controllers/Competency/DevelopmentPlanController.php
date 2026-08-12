@@ -71,8 +71,11 @@ class DevelopmentPlanController extends Controller
             'status' => 'nullable|string'
         ]);
 
+        $driver = \App\Models\Driver::find($request->driver_id);
+        $userId = ($driver && $driver->user_id) ? $driver->user_id : (int)$request->driver_id;
+
         CompetencyDevelopmentPlan::create([
-            'driver_id' => $request->driver_id,
+            'driver_id' => $userId,
             'plan_name' => $validated['plan_name'],
             'completion_percentage' => $request->input('completion_percentage', 0),
             'status' => $request->input('status', 'active'),
