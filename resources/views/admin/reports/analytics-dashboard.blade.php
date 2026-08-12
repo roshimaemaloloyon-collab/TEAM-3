@@ -46,94 +46,97 @@
     </div>
 </div>
 
-<!-- Dashboard Stats Cards -->
-<div class="summary-grid">
-    <div class="summary-card" data-module="performance">
-        <div class="card-icon blue"><i class="fas fa-chart-line"></i></div>
-        <div class="card-info">
-            <h3>{{ number_format($stats['avg_performance'], 2) }}</h3>
-            <p>Average Performance Score</p>
+<!-- Analytics Dashboard Content Layout -->
+<div style="display:grid;grid-template-columns:260px 1fr;gap:1rem;align-items:start;margin-bottom:1rem;">
+    <!-- Left Column: Compact Stats Cards -->
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <div class="summary-card" data-module="performance" style="width:100%;padding:0.85rem 1rem;">
+            <div class="card-icon blue" style="width:38px;height:38px;font-size:1rem;"><i class="fas fa-chart-line"></i></div>
+            <div class="card-info">
+                <h3 style="font-size:1.2rem;">{{ number_format($stats['avg_performance'], 2) }}</h3>
+                <p style="font-size:0.75rem;">Avg Performance Score</p>
+            </div>
+        </div>
+        <div class="summary-card" data-module="competency" style="width:100%;padding:0.85rem 1rem;">
+            <div class="card-icon green" style="width:38px;height:38px;font-size:1rem;"><i class="fas fa-brain"></i></div>
+            <div class="card-info">
+                <h3 style="font-size:1.2rem;">{{ $stats['competency_completion'] }}%</h3>
+                <p style="font-size:0.75rem;">Competency Completion</p>
+            </div>
+        </div>
+        <div class="summary-card" data-module="learning" style="width:100%;padding:0.85rem 1rem;">
+            <div class="card-icon orange" style="width:38px;height:38px;font-size:1rem;"><i class="fas fa-book-open"></i></div>
+            <div class="card-info">
+                <h3 style="font-size:1.2rem;">{{ $stats['learning_completion'] }}%</h3>
+                <p style="font-size:0.75rem;">Learning Completion</p>
+            </div>
+        </div>
+        <div class="summary-card" data-module="training" style="width:100%;padding:0.85rem 1rem;">
+            <div class="card-icon purple" style="width:38px;height:38px;font-size:1rem;"><i class="fas fa-chalkboard-teacher"></i></div>
+            <div class="card-info">
+                <h3 style="font-size:1.2rem;">{{ $stats['training_completion'] }}%</h3>
+                <p style="font-size:0.75rem;">Training Completion</p>
+            </div>
+        </div>
+        <div class="summary-card" data-module="evaluation" style="width:100%;padding:0.85rem 1rem;">
+            <div class="card-icon teal" style="width:38px;height:38px;font-size:1rem;"><i class="fas fa-users"></i></div>
+            <div class="card-info">
+                <h3 style="font-size:1.2rem;">{{ number_format($stats['peer_evaluation_score'], 2) }}</h3>
+                <p style="font-size:0.75rem;">Peer Evaluation Score</p>
+            </div>
+        </div>
+        <div class="summary-card" data-module="recognition" style="width:100%;padding:0.85rem 1rem;">
+            <div class="card-icon gold" style="width:38px;height:38px;font-size:1rem;"><i class="fas fa-trophy"></i></div>
+            <div class="card-info">
+                <h3 style="font-size:1.2rem;">{{ $stats['recognition_count'] }}</h3>
+                <p style="font-size:0.75rem;">Recognition Count</p>
+            </div>
         </div>
     </div>
-    <div class="summary-card" data-module="competency">
-        <div class="card-icon green"><i class="fas fa-brain"></i></div>
-        <div class="card-info">
-            <h3>{{ $stats['competency_completion'] }}%</h3>
-            <p>Competency Completion</p>
-        </div>
-    </div>
-    <div class="summary-card" data-module="learning">
-        <div class="card-icon orange"><i class="fas fa-book-open"></i></div>
-        <div class="card-info">
-            <h3>{{ $stats['learning_completion'] }}%</h3>
-            <p>Learning Completion</p>
-        </div>
-    </div>
-    <div class="summary-card" data-module="training">
-        <div class="card-icon purple"><i class="fas fa-chalkboard-teacher"></i></div>
-        <div class="card-info">
-            <h3>{{ $stats['training_completion'] }}%</h3>
-            <p>Training Completion</p>
-        </div>
-    </div>
-    <div class="summary-card" data-module="evaluation">
-        <div class="card-icon teal"><i class="fas fa-users"></i></div>
-        <div class="card-info">
-            <h3>{{ number_format($stats['peer_evaluation_score'], 2) }}</h3>
-            <p>Peer Evaluation Score</p>
-        </div>
-    </div>
-    <div class="summary-card" data-module="recognition">
-        <div class="card-icon gold"><i class="fas fa-trophy"></i></div>
-        <div class="card-info">
-            <h3>{{ $stats['recognition_count'] }}</h3>
-            <p>Recognition Count</p>
-        </div>
-    </div>
-</div>
 
-<!-- Charts -->
-<div class="charts-grid">
-    <div class="chart-card" data-module="performance">
-        <h3><i class="fas fa-chart-line"></i> Monthly Performance Trend</h3>
-        <div class="chart-wrapper">
-            <canvas id="performanceTrendChart"></canvas>
+    <!-- Right Column: Charts Grid -->
+    <div class="charts-grid" style="grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:0.75rem;margin-bottom:0;">
+        <div class="chart-card" data-module="performance">
+            <h3><i class="fas fa-chart-line"></i> Monthly Performance Trend</h3>
+            <div class="chart-wrapper" style="height:220px;">
+                <canvas id="performanceTrendChart"></canvas>
+            </div>
         </div>
-    </div>
-    <div class="chart-card" data-module="performance">
-        <h3><i class="fas fa-chart-bar"></i> KPI Distribution</h3>
-        <div class="chart-wrapper">
-            <canvas id="kpiDistributionChart"></canvas>
+        <div class="chart-card" data-module="performance">
+            <h3><i class="fas fa-chart-bar"></i> KPI Distribution</h3>
+            <div class="chart-wrapper" style="height:220px;">
+                <canvas id="kpiDistributionChart"></canvas>
+            </div>
         </div>
-    </div>
-    <div class="chart-card" data-module="competency">
-        <h3><i class="fas fa-chart-area"></i> Competency Growth</h3>
-        <div class="chart-wrapper">
-            <canvas id="competencyGrowthChart"></canvas>
+        <div class="chart-card" data-module="competency">
+            <h3><i class="fas fa-chart-area"></i> Competency Growth</h3>
+            <div class="chart-wrapper" style="height:220px;">
+                <canvas id="competencyGrowthChart"></canvas>
+            </div>
         </div>
-    </div>
-    <div class="chart-card" data-module="learning">
-        <h3><i class="fas fa-chart-pie"></i> Learning Progress</h3>
-        <div class="chart-wrapper">
-            <canvas id="learningProgressChart"></canvas>
+        <div class="chart-card" data-module="learning">
+            <h3><i class="fas fa-chart-pie"></i> Learning Progress</h3>
+            <div class="chart-wrapper" style="height:220px;">
+                <canvas id="learningProgressChart"></canvas>
+            </div>
         </div>
-    </div>
-    <div class="chart-card" data-module="training">
-        <h3><i class="fas fa-chart-line"></i> Training Progress</h3>
-        <div class="chart-wrapper">
-            <canvas id="trainingProgressChart"></canvas>
+        <div class="chart-card" data-module="training">
+            <h3><i class="fas fa-chart-line"></i> Training Progress</h3>
+            <div class="chart-wrapper" style="height:220px;">
+                <canvas id="trainingProgressChart"></canvas>
+            </div>
         </div>
-    </div>
-    <div class="chart-card" data-module="recognition">
-        <h3><i class="fas fa-chart-bar"></i> Recognition Trend</h3>
-        <div class="chart-wrapper">
-            <canvas id="recognitionTrendChart"></canvas>
+        <div class="chart-card" data-module="recognition">
+            <h3><i class="fas fa-chart-bar"></i> Recognition Trend</h3>
+            <div class="chart-wrapper" style="height:220px;">
+                <canvas id="recognitionTrendChart"></canvas>
+            </div>
         </div>
-    </div>
-    <div class="chart-card" data-module="evaluation">
-        <h3><i class="fas fa-chart-line"></i> Peer Evaluation Trend</h3>
-        <div class="chart-wrapper">
-            <canvas id="peerEvaluationTrendChart"></canvas>
+        <div class="chart-card" data-module="evaluation">
+            <h3><i class="fas fa-chart-line"></i> Peer Evaluation Trend</h3>
+            <div class="chart-wrapper" style="height:220px;">
+                <canvas id="peerEvaluationTrendChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
