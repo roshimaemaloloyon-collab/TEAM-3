@@ -53,10 +53,11 @@ class SkillsAssessmentController extends Controller
             ];
 
             foreach ($defaultCompetencies as $c) {
-                Competency::firstOrCreate(['slug' => $c['slug']], $c);
+                Competency::firstOrCreate(['name' => $c['name']], $c);
             }
             $competencies = Competency::all();
         }
+        $competencies = $competencies->unique('name')->values();
 
         $allDrivers = \App\Models\Driver::query()->notArchived()->orderBy('first_name')->get();
 
