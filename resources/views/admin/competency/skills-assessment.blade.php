@@ -165,6 +165,7 @@
                     <select name="status" style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
                         <option value="assessed">Assessed</option>
                         <option value="pending">Pending</option>
+                        <option value="reviewed">Reviewed</option>
                     </select>
                 </div>
             </div>
@@ -200,6 +201,7 @@
                     <select name="status" id="editStatus" style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
                         <option value="assessed">Assessed</option>
                         <option value="pending">Pending</option>
+                        <option value="reviewed">Reviewed</option>
                     </select>
                 </div>
             </div>
