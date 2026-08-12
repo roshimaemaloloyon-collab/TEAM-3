@@ -208,6 +208,8 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
         Route::get('/reports/{id}/export-excel', [App\Http\Controllers\Performance\PerformanceReportsController::class, 'exportDriverExcel'])->name('reports.driver.excel');
         Route::get('/analytics', [App\Http\Controllers\Performance\PerformanceAnalyticsController::class, 'index'])->name('analytics');
         Route::get('/history', [App\Http\Controllers\Performance\PerformanceHistoryController::class, 'index'])->name('history');
+        Route::get('/history/export', [App\Http\Controllers\Performance\PerformanceHistoryController::class, 'export'])->name('history.export');
+        Route::get('/history/{id}/export-pdf', [App\Http\Controllers\Performance\PerformanceHistoryController::class, 'exportDriverHistoryPdf'])->name('history.driver.pdf');
     });
 
     // Competency Management

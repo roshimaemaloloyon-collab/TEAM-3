@@ -19,8 +19,8 @@
         <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">Maintain complete historical records of driver performance.</p>
     </div>
     <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
-        <button class="btn btn-secondary" onclick="exportReport('pdf')"><i class="fas fa-file-pdf"></i> Export PDF</button>
-        <button class="btn btn-secondary" onclick="exportReport('excel')"><i class="fas fa-file-excel"></i> Export Excel</button>
+        <a href="{{ route('admin.performance.history.export', ['format' => 'pdf']) }}" target="_blank" class="btn btn-secondary"><i class="fas fa-file-pdf"></i> Export PDF</a>
+        <a href="{{ route('admin.performance.history.export', ['format' => 'csv']) }}" class="btn btn-secondary"><i class="fas fa-file-excel"></i> Export Excel</a>
     </div>
 </div>
 
@@ -121,8 +121,8 @@
                         </td>
                         <td style="text-align:right;">
                             <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
-                                <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-performance']) }}" class="btn btn-sm btn-secondary" title="View History Timeline"><i class="fas fa-eye"></i></a>
-                                <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-performance']) }}" class="btn btn-sm btn-primary" title="View Logs"><i class="fas fa-history"></i></a>
+                                <a href="{{ route('admin.performance.history.driver.pdf', $driver->id) }}" target="_blank" class="btn btn-sm btn-secondary" title="View History Timeline & Snapshot PDF"><i class="fas fa-eye"></i></a>
+                                <a href="{{ route('admin.performance.history.driver.pdf', $driver->id) }}" target="_blank" class="btn btn-sm btn-primary" title="Export Specific Timeline PDF for {{ $driver->full_name }}"><i class="fas fa-history"></i> Log PDF</a>
                             </div>
                         </td>
                     </tr>
