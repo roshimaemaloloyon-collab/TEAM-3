@@ -18,7 +18,7 @@
         <h1 style="font-size:1.75rem;color:var(--primary);margin:0 0 0.25rem;">Assessment Results</h1>
         <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">Display competency assessment results and identify areas for improvement.</p>
     </div>
-    <button class="btn btn-secondary" onclick="window.print()"><i class="fas fa-print"></i> Print Assessment</button>
+    <a href="{{ route('admin.competency.reports.export', ['format' => 'pdf']) }}" target="_blank" class="btn btn-secondary"><i class="fas fa-print"></i> Print Assessment</a>
 </div>
 
 <!-- Dashboard Stats Cards -->
@@ -31,7 +31,7 @@
         </div>
     </div>
     <div class="summary-card">
-        <div class="card-icon orange"><i class="fas fa-exclamation-circle"></i></div>
+        <div class="card-icon orange"><i class="fas fa-exclamation-triangle"></i></div>
         <div class="card-info">
             <h3>{{ $stats['needs_improvement'] }}</h3>
             <p>Drivers Requiring Improvement</p>
@@ -53,29 +53,33 @@
     </div>
 </div>
 
-<!-- Filters -->
-<div class="table-card" style="margin-bottom:1rem;">
-    <form method="GET" action="{{ route('admin.competency.results') }}" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
+<!-- Search / Filter Bar -->
+<div class="filter-bar" style="background:var(--white);padding:1rem;border-radius:0.75rem;box-shadow:0 2px 8px rgba(0,0,0,0.04);border:1px solid var(--border);">
+    <form action="{{ route('admin.competency.results') }}" method="GET" style="display:flex;gap:0.75rem;flex:1;flex-wrap:wrap;">
         <div style="flex:1;min-width:200px;">
-            <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Search Driver</label>
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name..." style="width:100%;padding:0.6rem 1rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;background:var(--white);color:var(--text-dark);font-family:'Inter',sans-serif;">
+            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:0.25rem;">Search Driver</label>
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name..." style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;">
         </div>
-        <div style="min-width:180px;">
-            <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Status</label>
-            <select name="status" style="width:100%;padding:0.6rem 1rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;background:var(--white);color:var(--text-dark);font-family:'Inter',sans-serif;">
+        <div style="min-width:150px;">
+            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:0.25rem;">Status</label>
+            <select name="status" style="width:100%;">
                 <option value="">All Statuses</option>
                 <option value="assessed" {{ request('status') === 'assessed' ? 'selected' : '' }}>Assessed</option>
                 <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
                 <option value="reviewed" {{ request('status') === 'reviewed' ? 'selected' : '' }}>Reviewed</option>
             </select>
         </div>
-        <button type="submit" class="btn btn-secondary"><i class="fas fa-search"></i> Filter</button>
+        <div style="display:flex;align-items:flex-end;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
+        </div>
     </form>
 </div>
 
-<!-- Results Table -->
-<div class="table-card">
-    <h3 style="margin:0 0 1rem;"><i class="fas fa-clipboard-check"></i> Assessment Results</h3>
+<!-- Assessment Results Table -->
+<div style="background:var(--white);border-radius:0.75rem;box-shadow:0 2px 8px rgba(0,0,0,0.04);border:1px solid var(--border);padding:1.25rem;margin-top:1.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h3 style="font-size:1.1rem;color:var(--primary);margin:0;"><i class="fas fa-clipboard-check"></i> Assessment Results</h3>
+    </div>
     <div style="overflow-x:auto;">
         <table class="data-table">
             <thead>
@@ -93,8 +97,8 @@
             <tbody>
                 @forelse($results as $result)
                     <tr>
-                        <td><strong>{{ $result->driver->name ?? 'N/A' }}</strong></td>
-                        <td><strong>{{ $result->score ?? 'N/A' }}</strong></td>
+                        <td><strong>{{ $result->driver_name }}</strong></td>
+                        <td><strong>{{ number_format($result->score, 2) }}</strong></td>
                         <td>
                             @php
                                 $strengths = ['Safe Driving', 'Professionalism'];
@@ -120,10 +124,10 @@
                             </span>
                         </td>
                         <td style="text-align:right;">
-                            <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                                <button class="btn btn-sm btn-secondary" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Edit"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-secondary" title="Print" onclick="window.print()"><i class="fas fa-print"></i></button>
+                            <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
+                                <a href="{{ route('admin.competency.assessments.driver.pdf', $result->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" title="View Assessment Document"><i class="fas fa-eye"></i></a>
+                                <button type="button" class="btn btn-sm btn-primary" title="Edit Assessment" onclick="openEditResultModal({{ $result->id }}, '{{ addslashes($result->driver_name) }}', {{ $result->score ?? 85 }}, '{{ $result->status }}')"><i class="fas fa-edit"></i></button>
+                                <a href="{{ route('admin.competency.assessments.driver.pdf', $result->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" title="Print Driver PDF"><i class="fas fa-print"></i></a>
                             </div>
                         </td>
                     </tr>
@@ -154,16 +158,57 @@
     </div>
 </div>
 
+<!-- Edit Result Modal -->
+<div id="editResultModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;">
+    <div class="modal-box" style="background:var(--white);border-radius:1rem;width:90%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.2);">
+        <form id="editResultForm" method="POST">
+            @csrf
+            @method('PUT')
+            <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Edit Assessment Result</h2>
+                <button type="button" onclick="closeModal('editResultModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
+            </div>
+            <div style="padding:1.25rem 1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Driver Name</label>
+                    <input type="text" id="editResultDriverName" readonly style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:#f1f5f9;color:var(--text-dark);">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Score (0 - 100%)</label>
+                    <input type="number" name="score" id="editResultScore" min="0" max="100" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Status</label>
+                    <select name="status" id="editResultStatus" style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                        <option value="assessed">Assessed</option>
+                        <option value="pending">Pending</option>
+                        <option value="reviewed">Reviewed</option>
+                    </select>
+                </div>
+            </div>
+            <div style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('editResultModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Update Result</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toastMessage').textContent = message;
-    toast.style.display = 'flex';
-    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+function openEditResultModal(id, name, score, status) {
+    var modal = document.getElementById('editResultModal');
+    if (!modal) return;
+    document.getElementById('editResultForm').action = '/admin/competency/assessments/' + id;
+    document.getElementById('editResultDriverName').value = name;
+    document.getElementById('editResultScore').value = score;
+    document.getElementById('editResultStatus').value = status;
+    modal.style.display = 'flex';
+    modal.classList.add('active');
 }
+
 document.addEventListener('DOMContentLoaded', function() {
     const chartDefaults = {
         responsive: true,
@@ -199,4 +244,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endsection
+@endpush
