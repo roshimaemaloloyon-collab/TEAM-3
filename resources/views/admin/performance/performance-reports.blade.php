@@ -160,15 +160,8 @@
 
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
-function exportReport(format) { showToast('Exporting ' + format.toUpperCase() + ' report...'); }
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toastMessage').textContent = message;
-    toast.style.display = 'flex';
-    setTimeout(() => { toast.style.display = 'none'; }, 3000);
-}
 document.addEventListener('DOMContentLoaded', function() {
     const chartDefaults = {
         responsive: true,
@@ -206,4 +199,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+@endpush
+
 @endsection
