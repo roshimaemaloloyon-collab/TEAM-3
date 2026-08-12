@@ -19,77 +19,71 @@
         <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">Real-time analytics across all system modules. Monitor KPIs, trends, and performance metrics.</p>
     </div>
     <button class="btn btn-primary" onclick="exportReport('excel')"><i class="fas fa-download"></i> Export Analytics</button>
-<!-- Analytics Hub Quick Links -->
-<div class="table-card" style="margin-bottom:1.5rem;padding:1.25rem;">
-    <h3 style="font-size:1.1rem;margin:0 0 1rem;color:var(--primary);display:flex;align-items:center;gap:0.5rem;">
-        <i class="fas fa-th-large"></i> System Analytics Modules Hub
-    </h3>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:0.85rem;">
-        <a href="{{ route('admin.performance.analytics') }}" class="btn btn-secondary" style="display:flex;align-items:center;justify-content:flex-start;gap:0.75rem;padding:0.75rem 1rem;text-decoration:none;border-radius:10px;transition:all 0.2s;">
-            <i class="fas fa-chart-line" style="color:#F44336;font-size:1.1rem;"></i>
-            <span>Performance Analytics</span>
-        </a>
-        <a href="{{ route('admin.competency.analytics') }}" class="btn btn-secondary" style="display:flex;align-items:center;justify-content:flex-start;gap:0.75rem;padding:0.75rem 1rem;text-decoration:none;border-radius:10px;transition:all 0.2s;">
-            <i class="fas fa-brain" style="color:#3b82f6;font-size:1.1rem;"></i>
-            <span>Competency Analytics</span>
-        </a>
-        <a href="{{ route('admin.learning.analytics') }}" class="btn btn-secondary" style="display:flex;align-items:center;justify-content:flex-start;gap:0.75rem;padding:0.75rem 1rem;text-decoration:none;border-radius:10px;transition:all 0.2s;">
-            <i class="fas fa-book-open" style="color:#f59e0b;font-size:1.1rem;"></i>
-            <span>Learning Analytics</span>
-        </a>
-        <a href="{{ route('admin.training.analytics') }}" class="btn btn-secondary" style="display:flex;align-items:center;justify-content:flex-start;gap:0.75rem;padding:0.75rem 1rem;text-decoration:none;border-radius:10px;transition:all 0.2s;">
-            <i class="fas fa-chalkboard-teacher" style="color:#10b981;font-size:1.1rem;"></i>
-            <span>Training Analytics</span>
-        </a>
-        <a href="{{ route('admin.evaluation.analytics') }}" class="btn btn-secondary" style="display:flex;align-items:center;justify-content:flex-start;gap:0.75rem;padding:0.75rem 1rem;text-decoration:none;border-radius:10px;transition:all 0.2s;">
-            <i class="fas fa-users" style="color:#8b5cf6;font-size:1.1rem;"></i>
-            <span>Evaluation Analytics</span>
-        </a>
-        <a href="{{ route('admin.recognition.analytics') }}" class="btn btn-secondary" style="display:flex;align-items:center;justify-content:flex-start;gap:0.75rem;padding:0.75rem 1rem;text-decoration:none;border-radius:10px;transition:all 0.2s;">
-            <i class="fas fa-trophy" style="color:#ec4899;font-size:1.1rem;"></i>
-            <span>Recognition Analytics</span>
-        </a>
+<!-- Unified System Analytics Module Filter Tabs -->
+<div class="table-card" style="margin-bottom:1.5rem;padding:0.75rem 1rem;">
+    <div style="display:flex;gap:0.5rem;overflow-x:auto;align-items:center;">
+        <button type="button" class="btn btn-primary analytics-tab-btn active" onclick="filterAnalytics('all', this)" style="padding:0.6rem 1.25rem;font-size:0.85rem;border-radius:8px;">
+            <i class="fas fa-th-large"></i> All System Analytics
+        </button>
+        <button type="button" class="btn btn-secondary analytics-tab-btn" onclick="filterAnalytics('performance', this)" style="padding:0.6rem 1.25rem;font-size:0.85rem;border-radius:8px;">
+            <i class="fas fa-chart-line" style="color:#F44336;"></i> Performance Analytics
+        </button>
+        <button type="button" class="btn btn-secondary analytics-tab-btn" onclick="filterAnalytics('competency', this)" style="padding:0.6rem 1.25rem;font-size:0.85rem;border-radius:8px;">
+            <i class="fas fa-brain" style="color:#3b82f6;"></i> Competency Analytics
+        </button>
+        <button type="button" class="btn btn-secondary analytics-tab-btn" onclick="filterAnalytics('learning', this)" style="padding:0.6rem 1.25rem;font-size:0.85rem;border-radius:8px;">
+            <i class="fas fa-book-open" style="color:#f59e0b;"></i> Learning Analytics
+        </button>
+        <button type="button" class="btn btn-secondary analytics-tab-btn" onclick="filterAnalytics('training', this)" style="padding:0.6rem 1.25rem;font-size:0.85rem;border-radius:8px;">
+            <i class="fas fa-chalkboard-teacher" style="color:#10b981;"></i> Training Analytics
+        </button>
+        <button type="button" class="btn btn-secondary analytics-tab-btn" onclick="filterAnalytics('evaluation', this)" style="padding:0.6rem 1.25rem;font-size:0.85rem;border-radius:8px;">
+            <i class="fas fa-users" style="color:#8b5cf6;"></i> Evaluation Analytics
+        </button>
+        <button type="button" class="btn btn-secondary analytics-tab-btn" onclick="filterAnalytics('recognition', this)" style="padding:0.6rem 1.25rem;font-size:0.85rem;border-radius:8px;">
+            <i class="fas fa-trophy" style="color:#ec4899;"></i> Recognition Analytics
+        </button>
     </div>
 </div>
 
 <!-- Dashboard Stats Cards -->
 <div class="summary-grid">
-    <div class="summary-card">
+    <div class="summary-card" data-module="performance">
         <div class="card-icon blue"><i class="fas fa-chart-line"></i></div>
         <div class="card-info">
             <h3>{{ number_format($stats['avg_performance'], 2) }}</h3>
             <p>Average Performance Score</p>
         </div>
     </div>
-    <div class="summary-card">
+    <div class="summary-card" data-module="competency">
         <div class="card-icon green"><i class="fas fa-brain"></i></div>
         <div class="card-info">
             <h3>{{ $stats['competency_completion'] }}%</h3>
             <p>Competency Completion</p>
         </div>
     </div>
-    <div class="summary-card">
+    <div class="summary-card" data-module="learning">
         <div class="card-icon orange"><i class="fas fa-book-open"></i></div>
         <div class="card-info">
             <h3>{{ $stats['learning_completion'] }}%</h3>
             <p>Learning Completion</p>
         </div>
     </div>
-    <div class="summary-card">
+    <div class="summary-card" data-module="training">
         <div class="card-icon purple"><i class="fas fa-chalkboard-teacher"></i></div>
         <div class="card-info">
             <h3>{{ $stats['training_completion'] }}%</h3>
             <p>Training Completion</p>
         </div>
     </div>
-    <div class="summary-card">
+    <div class="summary-card" data-module="evaluation">
         <div class="card-icon teal"><i class="fas fa-users"></i></div>
         <div class="card-info">
             <h3>{{ number_format($stats['peer_evaluation_score'], 2) }}</h3>
             <p>Peer Evaluation Score</p>
         </div>
     </div>
-    <div class="summary-card">
+    <div class="summary-card" data-module="recognition">
         <div class="card-icon gold"><i class="fas fa-trophy"></i></div>
         <div class="card-info">
             <h3>{{ $stats['recognition_count'] }}</h3>
@@ -100,43 +94,43 @@
 
 <!-- Charts -->
 <div class="charts-grid">
-    <div class="chart-card">
+    <div class="chart-card" data-module="performance">
         <h3><i class="fas fa-chart-line"></i> Monthly Performance Trend</h3>
         <div class="chart-wrapper">
             <canvas id="performanceTrendChart"></canvas>
         </div>
     </div>
-    <div class="chart-card">
+    <div class="chart-card" data-module="performance">
         <h3><i class="fas fa-chart-bar"></i> KPI Distribution</h3>
         <div class="chart-wrapper">
             <canvas id="kpiDistributionChart"></canvas>
         </div>
     </div>
-    <div class="chart-card">
+    <div class="chart-card" data-module="competency">
         <h3><i class="fas fa-chart-area"></i> Competency Growth</h3>
         <div class="chart-wrapper">
             <canvas id="competencyGrowthChart"></canvas>
         </div>
     </div>
-    <div class="chart-card">
+    <div class="chart-card" data-module="learning">
         <h3><i class="fas fa-chart-pie"></i> Learning Progress</h3>
         <div class="chart-wrapper">
             <canvas id="learningProgressChart"></canvas>
         </div>
     </div>
-    <div class="chart-card">
+    <div class="chart-card" data-module="training">
         <h3><i class="fas fa-chart-line"></i> Training Progress</h3>
         <div class="chart-wrapper">
             <canvas id="trainingProgressChart"></canvas>
         </div>
     </div>
-    <div class="chart-card">
+    <div class="chart-card" data-module="recognition">
         <h3><i class="fas fa-chart-bar"></i> Recognition Trend</h3>
         <div class="chart-wrapper">
             <canvas id="recognitionTrendChart"></canvas>
         </div>
     </div>
-    <div class="chart-card">
+    <div class="chart-card" data-module="evaluation">
         <h3><i class="fas fa-chart-line"></i> Peer Evaluation Trend</h3>
         <div class="chart-wrapper">
             <canvas id="peerEvaluationTrendChart"></canvas>
@@ -148,6 +142,34 @@
 
 @push('scripts')
 <script>
+function filterAnalytics(moduleName, btn) {
+    document.querySelectorAll('.analytics-tab-btn').forEach(b => {
+        b.classList.remove('btn-primary', 'active');
+        b.classList.add('btn-secondary');
+    });
+    btn.classList.remove('btn-secondary');
+    btn.classList.add('btn-primary', 'active');
+
+    const summaryCards = document.querySelectorAll('.summary-card[data-module]');
+    const chartCards = document.querySelectorAll('.chart-card[data-module]');
+
+    summaryCards.forEach(card => {
+        if (moduleName === 'all' || card.getAttribute('data-module') === moduleName) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    chartCards.forEach(card => {
+        if (moduleName === 'all' || card.getAttribute('data-module') === moduleName) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
 function exportReport(format) {
     showToast('Exporting analytics as ' + format.toUpperCase() + '...');
 }
