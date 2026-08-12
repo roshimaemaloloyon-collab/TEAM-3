@@ -200,6 +200,8 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
         Route::get('/kpi', [App\Http\Controllers\Performance\KpiMonitoringController::class, 'index'])->name('kpi');
         Route::get('/kpi/export', [App\Http\Controllers\Performance\KpiMonitoringController::class, 'export'])->name('kpi.export');
         Route::get('/reviews', [App\Http\Controllers\Performance\PerformanceReviewsController::class, 'index'])->name('reviews');
+        Route::post('/reviews', [App\Http\Controllers\Performance\PerformanceReviewsController::class, 'store'])->name('reviews.store');
+        Route::put('/reviews/{id}', [App\Http\Controllers\Performance\PerformanceReviewsController::class, 'update'])->name('reviews.update');
         Route::get('/reports', [App\Http\Controllers\Performance\PerformanceReportsController::class, 'index'])->name('reports');
         Route::get('/analytics', [App\Http\Controllers\Performance\PerformanceAnalyticsController::class, 'index'])->name('analytics');
         Route::get('/history', [App\Http\Controllers\Performance\PerformanceHistoryController::class, 'index'])->name('history');

@@ -124,8 +124,8 @@
                         </td>
                         <td style="text-align:right;">
                             <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
-                                <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-performance']) }}" class="btn btn-sm btn-secondary" title="View Details"><i class="fas fa-eye"></i></a>
-                                <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-performance']) }}" class="btn btn-sm btn-primary" title="Edit Review"><i class="fas fa-edit"></i></a>
+                                <a href="{{ route('admin.drivers.profile', $driver->id) }}" class="btn btn-sm btn-secondary" title="View Profile"><i class="fas fa-eye"></i></a>
+                                <button type="button" class="btn btn-sm btn-primary" title="Edit Review In-Place" onclick="openEditReviewModal({{ $driver->id }}, '{{ addslashes($driver->full_name) }}', '{{ $driver->performance_score ?? 4.5 }}', '{{ $driver->status }}')"><i class="fas fa-edit"></i> Edit</button>
                             </div>
                         </td>
                     </tr>
@@ -165,37 +165,96 @@
 <!-- Add Review Modal -->
 <div id="addReviewModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;">
     <div class="modal-box" style="background:var(--white);border-radius:1rem;width:90%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.2);">
-        <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-            <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Create Performance Review</h2>
-            <button onclick="closeModal('addReviewModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
-        </div>
-        <div style="padding:1.25rem 1.5rem;">
-            <div style="margin-bottom:1rem;">
-                <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Driver</label>
-                <select style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
-                    <option>Juan Dela Cruz</option><option>Maria Santos</option><option>Pedro Reyes</option><option>Ana Lim</option><option>Rosa Garcia</option>
-                </select>
+        <form action="{{ route('admin.performance.reviews.store') }}" method="POST">
+            @csrf
+            <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Create Performance Review</h2>
+                <button type="button" onclick="closeModal('addReviewModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
             </div>
-            <div style="margin-bottom:1rem;">
-                <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Review Type</label>
-                <select style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
-                    <option>Monthly</option><option>Quarterly</option><option>Annual</option>
-                </select>
+            <div style="padding:1.25rem 1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Select Driver</label>
+                    <select name="driver_id" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                        @foreach($allDriversList as $d)
+                            <option value="{{ $d->id }}">{{ $d->full_name }} ({{ $d->formatted_id }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Review Period / Type</label>
+                    <select name="review_type" style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                        <option value="monthly">Monthly Review</option>
+                        <option value="quarterly">Quarterly Evaluation</option>
+                        <option value="annual">Annual Appraisal</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Performance Score (1.0 to 5.0)</label>
+                    <input type="number" name="performance_score" min="1" max="5" step="0.1" value="4.5" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Review Status</label>
+                    <select name="status" style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                        <option value="active">Completed</option>
+                        <option value="review">Pending Review</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Review Remarks & Recommendations</label>
+                    <textarea name="remarks" rows="3" placeholder="Enter evaluation feedback..." style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);resize:vertical;"></textarea>
+                </div>
             </div>
-            <div style="margin-bottom:1rem;">
-                <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Performance Score</label>
-                <input type="number" min="1" max="5" step="0.1" value="4.5" style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+            <div style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('addReviewModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Review</button>
             </div>
-            <div style="margin-bottom:1rem;">
-                <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Recommendations</label>
-                <textarea rows="3" style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);resize:vertical;"></textarea>
-            </div>
-        </div>
-        <div style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
-            <button class="btn btn-secondary" onclick="closeModal('addReviewModal')">Cancel</button>
-            <button class="btn btn-primary" onclick="closeModal('addReviewModal');showToast('Review created successfully.');">Save Review</button>
-        </div>
+        </form>
     </div>
 </div>
+
+<!-- Edit Review Modal -->
+<div id="editReviewModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;">
+    <div class="modal-box" style="background:var(--white);border-radius:1rem;width:90%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.2);">
+        <form id="editReviewForm" method="POST">
+            @csrf
+            @method('PUT')
+            <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Edit Performance Review</h2>
+                <button type="button" onclick="closeModal('editReviewModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
+            </div>
+            <div style="padding:1.25rem 1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Driver Name</label>
+                    <input type="text" id="editDriverName" readonly style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:#f1f5f9;color:var(--text-dark);">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Performance Score (1.0 to 5.0)</label>
+                    <input type="number" name="performance_score" id="editPerformanceScore" min="1" max="5" step="0.1" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Evaluation Status</label>
+                    <select name="status" id="editStatus" style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                        <option value="active">Completed</option>
+                        <option value="review">Pending Review</option>
+                    </select>
+                </div>
+            </div>
+            <div style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('editReviewModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Update Review</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openEditReviewModal(id, name, score, status) {
+    document.getElementById('editReviewForm').action = '/admin/performance/reviews/' + id;
+    document.getElementById('editDriverName').value = name;
+    document.getElementById('editPerformanceScore').value = score;
+    document.getElementById('editStatus').value = status === 'active' ? 'active' : 'review';
+    openModal('editReviewModal');
+}
+</script>
 
 @endsection

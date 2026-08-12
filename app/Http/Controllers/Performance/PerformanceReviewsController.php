@@ -46,6 +46,42 @@ class PerformanceReviewsController extends Controller
             'quarterly' => intval($allCount * 0.3),
         ];
 
-        return view('admin.performance.performance-reviews', compact('drivers', 'stats'));
+        $allDriversList = Driver::query()->notArchived()->orderBy('first_name')->get();
+
+        return view('admin.performance.performance-reviews', compact('drivers', 'allDriversList', 'stats'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'driver_id' => 'required|exists:drivers,id',
+            'performance_score' => 'required|numeric|min:1|max:5',
+            'review_type' => 'nullable|string',
+            'status' => 'nullable|string'
+        ]);
+
+        $driver = Driver::findOrFail($request->driver_id);
+        $driver->update([
+            'performance_score' => $validated['performance_score'],
+            'status' => $request->input('status', 'active')
+        ]);
+
+        return back()->with('success', 'Performance Review created and saved for ' . $driver->full_name);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'performance_score' => 'required|numeric|min:1|max:5',
+            'status' => 'nullable|string'
+        ]);
+
+        $driver = Driver::findOrFail($id);
+        $driver->update([
+            'performance_score' => $validated['performance_score'],
+            'status' => $request->input('status', 'active')
+        ]);
+
+        return back()->with('success', 'Performance Review updated for ' . $driver->full_name);
     }
 }
