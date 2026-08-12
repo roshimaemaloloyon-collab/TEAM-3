@@ -1419,6 +1419,22 @@
         }
     }
 
+    function openModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.style.display = 'flex';
+            modal.classList.add('active');
+        }
+    }
+
+    function closeModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.remove('active');
+        }
+    }
+
     function showToast(message, type = 'success') {
         const toast = document.createElement('div');
         toast.className = 'toast-notification ' + type;

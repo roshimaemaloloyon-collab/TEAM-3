@@ -247,6 +247,7 @@
     </div>
 </div>
 
+@push('scripts')
 <script>
 function openEditReviewModal(id, name, score, status) {
     document.getElementById('editReviewForm').action = '/admin/performance/reviews/' + id;
@@ -256,5 +257,6 @@ function openEditReviewModal(id, name, score, status) {
     openModal('editReviewModal');
 }
 </script>
+@endpush
 
 @endsection
