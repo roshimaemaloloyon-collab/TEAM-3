@@ -115,7 +115,7 @@
                         <td style="text-align:right;">
                             <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
                                 <a href="{{ route('admin.competency.assessments.driver.pdf', $assessment->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" title="View & Print Assessment PDF"><i class="fas fa-file-pdf"></i></a>
-                                <button type="button" class="btn btn-sm btn-primary" title="Edit Assessment In-Place" onclick="openEditAssessModal({{ $assessment->id }}, '{{ addslashes($assessment->driver->name ?? 'Driver') }}', {{ $assessment->score ?? 85 }}, '{{ $assessment->status }}')"><i class="fas fa-edit"></i> Edit</button>
+                                <button type="button" class="btn btn-sm btn-primary" title="Edit Assessment In-Place" onclick="openEditAssessModal({{ $assessment->id }}, '{{ addslashes($assessment->driver_name) }}', {{ $assessment->score ?? 85 }}, '{{ $assessment->status }}')"><i class="fas fa-edit"></i> Edit</button>
                             </div>
                         </td>
                     </tr>
@@ -228,6 +228,19 @@
 </div>
 
 @endsection
+
+<script>
+function openEditAssessModal(id, name, score, status) {
+    var modal = document.getElementById('editAssessModal');
+    if (!modal) return;
+    document.getElementById('editAssessForm').action = '/admin/competency/assessments/' + id;
+    document.getElementById('editDriverName').value = name;
+    document.getElementById('editScore').value = score;
+    document.getElementById('editStatus').value = status;
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+}
+</script>
 
 @push('scripts')
 <script>
