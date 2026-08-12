@@ -102,8 +102,8 @@
             <tbody>
                 @forelse($assessments as $assessment)
                     <tr>
-                        <td>#DRV-{{ str_pad($assessment->driver_id, 4, '0', STR_PAD_LEFT) }}</td>
-                        <td><strong>{{ $assessment->driver->name ?? 'N/A' }}</strong></td>
+                        <td>#DRV-{{ str_pad($assessment->driverProfile->id ?? $assessment->driver_id, 4, '0', STR_PAD_LEFT) }}</td>
+                        <td><strong>{{ $assessment->driver_name }}</strong></td>
                         <td>{{ $assessment->competency->name ?? 'N/A' }}</td>
                         <td><strong>{{ $assessment->score ?? 'N/A' }}</strong></td>
                         <td>
@@ -144,7 +144,7 @@
                     <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Select Driver</label>
                     <select name="driver_id" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
                         @foreach($allDrivers as $d)
-                            <option value="{{ $d->user_id ?: $d->id }}">{{ $d->full_name }} ({{ $d->formatted_id }})</option>
+                            <option value="{{ $d->id }}">{{ $d->full_name }} ({{ $d->formatted_id }})</option>
                         @endforeach
                     </select>
                 </div>

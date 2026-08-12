@@ -37,6 +37,39 @@ class CompetencyAssessment extends Model
         return $this->belongsTo(User::class, 'driver_id');
     }
 
+    public function driverProfile(): BelongsTo
+    {
+        return $this->belongsTo(Driver::class, 'driver_id');
+    }
+
+    public function getDriverNameAttribute(): string
+    {
+        // 1. Direct relationship by driver_id matching Driver model ID
+        if ($this->driverProfile && $this->driverProfile->full_name) {
+            return $this->driverProfile->full_name;
+        }
+
+        // 2. Query Driver model by ID directly
+        $driverById = Driver::find($this->driver_id);
+        if ($driverById && $driverById->full_name) {
+            return $driverById->full_name;
+        }
+
+        // 3. Query Driver model by user_id
+        $driverByUserId = Driver::where('user_id', $this->driver_id)->first();
+        if ($driverByUserId && $driverByUserId->full_name) {
+            return $driverByUserId->full_name;
+        }
+
+        // 4. Fallback to User model if name is not TripWise Admin
+        if ($this->driver && $this->driver->name && $this->driver->name !== 'TripWise Admin') {
+            return $this->driver->name;
+        }
+
+        // 5. Default fallback to Driver #ID
+        return 'Driver #' . str_pad($this->driver_id, 4, '0', STR_PAD_LEFT);
+    }
+
     public function competency(): BelongsTo
     {
         return $this->belongsTo(Competency::class);
