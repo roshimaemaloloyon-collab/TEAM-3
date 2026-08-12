@@ -21,7 +21,7 @@
     <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
         <a href="{{ route('admin.performance.reports.export', ['format' => 'pdf']) }}" target="_blank" class="btn btn-secondary"><i class="fas fa-file-pdf"></i> Export PDF</a>
         <a href="{{ route('admin.performance.reports.export', ['format' => 'csv']) }}" class="btn btn-secondary"><i class="fas fa-file-excel"></i> Export Excel</a>
-        <a href="{{ route('admin.drivers.documents') }}" class="btn btn-primary"><i class="fas fa-folder-open"></i> Print Report</a>
+        <a href="{{ route('admin.performance.reports.export', ['format' => 'pdf']) }}" target="_blank" class="btn btn-primary"><i class="fas fa-print"></i> Print Report</a>
     </div>
 </div>
 
