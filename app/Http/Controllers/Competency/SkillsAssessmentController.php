@@ -42,22 +42,19 @@ class SkillsAssessmentController extends Controller
             'completion_rate' => CompetencyAssessment::where('status', 'assessed')->count() . '%',
         ];
 
-        $competencies = Competency::all();
-        if ($competencies->isEmpty()) {
-            $defaultCompetencies = [
-                ['name' => 'Defensive Driving & Safety Standards', 'slug' => 'defensive-driving', 'category' => 'safety', 'target_score' => 90],
-                ['name' => 'Route Optimization & GPS Navigation', 'slug' => 'route-optimization', 'category' => 'technical', 'target_score' => 85],
-                ['name' => 'Customer Service & Passenger Relations', 'slug' => 'customer-service', 'category' => 'customer_service', 'target_score' => 90],
-                ['name' => 'Vehicle Inspection & Road Readiness', 'slug' => 'vehicle-inspection', 'category' => 'technical', 'target_score' => 80],
-                ['name' => 'LTFRB & Regulatory Compliance', 'slug' => 'ltfrb-compliance', 'category' => 'behavioral', 'target_score' => 95],
-            ];
+        $defaultCompetencies = [
+            ['name' => 'Defensive Driving & Safety Standards', 'slug' => 'defensive-driving', 'category' => 'safety', 'target_score' => 90],
+            ['name' => 'Route Optimization & GPS Navigation', 'slug' => 'route-optimization', 'category' => 'technical', 'target_score' => 85],
+            ['name' => 'Customer Service & Passenger Relations', 'slug' => 'customer-service', 'category' => 'customer_service', 'target_score' => 90],
+            ['name' => 'Vehicle Inspection & Road Readiness', 'slug' => 'vehicle-inspection', 'category' => 'technical', 'target_score' => 80],
+            ['name' => 'LTFRB & Regulatory Compliance', 'slug' => 'ltfrb-compliance', 'category' => 'behavioral', 'target_score' => 95],
+        ];
 
-            foreach ($defaultCompetencies as $c) {
-                Competency::firstOrCreate(['name' => $c['name']], $c);
-            }
-            $competencies = Competency::all();
+        foreach ($defaultCompetencies as $c) {
+            Competency::firstOrCreate(['name' => $c['name']], $c);
         }
-        $competencies = $competencies->unique('name')->values();
+
+        $competencies = Competency::all()->unique('name')->values();
 
         $allDrivers = \App\Models\Driver::query()->notArchived()->orderBy('first_name')->get();
 
