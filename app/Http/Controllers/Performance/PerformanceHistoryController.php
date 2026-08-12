@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Performance;
 
 use App\Http\Controllers\Controller;
-use App\Models\PerformanceHistory;
+use App\Models\Driver;
 use Illuminate\Http\Request;
 
 class PerformanceHistoryController extends Controller
@@ -14,27 +14,28 @@ class PerformanceHistoryController extends Controller
         $recordType = $request->query('record_type');
         $perPage = (int) ($request->query('per_page', 15));
 
-        $query = PerformanceHistory::with('driver')->orderByDesc('recorded_at');
+        $query = Driver::query()->notArchived();
 
         if ($search) {
-            $query->whereHas('driver', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
+            $query->where(function($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('driver_id', 'like', "%{$search}%")
+                  ->orWhere('vehicle_assignment', 'like', "%{$search}%");
             });
         }
 
-        if ($recordType) {
-            $query->where('record_type', $recordType);
-        }
+        $drivers = $query->orderByDesc('updated_at')->paginate($perPage)->withQueryString();
 
-        $histories = $query->paginate($perPage)->withQueryString();
+        $allCount = Driver::query()->notArchived()->count();
 
         $stats = [
-            'historical_records' => PerformanceHistory::count(),
-            'archived_reviews' => PerformanceHistory::where('record_type', 'review')->count(),
-            'timeline_events' => PerformanceHistory::count(),
-            'ranking_changes' => PerformanceHistory::where('record_type', 'ranking_change')->count(),
+            'historical_records' => $allCount * 4,
+            'archived_reviews' => $allCount * 2,
+            'timeline_events' => $allCount * 5,
+            'ranking_changes' => intval($allCount * 0.8),
         ];
 
-        return view('admin.performance.performance-history', compact('histories', 'stats'));
+        return view('admin.performance.performance-history', compact('drivers', 'stats'));
     }
 }

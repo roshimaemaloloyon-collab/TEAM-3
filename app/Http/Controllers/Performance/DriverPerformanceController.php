@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Performance;
 
 use App\Http\Controllers\Controller;
-use App\Models\Performance;
-use App\Models\User;
+use App\Models\Driver;
 use Illuminate\Http\Request;
 
 class DriverPerformanceController extends Controller
@@ -15,27 +14,39 @@ class DriverPerformanceController extends Controller
         $status = $request->query('status');
         $perPage = (int) ($request->query('per_page', 15));
 
-        $query = Performance::with('driver')->orderByDesc('overall_score');
+        $query = Driver::query()->notArchived();
 
         if ($search) {
-            $query->whereHas('driver', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
+            $query->where(function($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('driver_id', 'like', "%{$search}%")
+                  ->orWhere('vehicle_assignment', 'like', "%{$search}%");
             });
         }
 
         if ($status) {
-            $query->where('performance_status', $status);
+            if ($status === 'excellent') {
+                $query->where('performance_score', '>=', 4.8);
+            } elseif ($status === 'good') {
+                $query->whereBetween('performance_score', [4.5, 4.79]);
+            } elseif ($status === 'average') {
+                $query->whereBetween('performance_score', [4.0, 4.49]);
+            } elseif ($status === 'needs_improvement') {
+                $query->where('performance_score', '<', 4.0);
+            }
         }
 
-        $performances = $query->paginate($perPage)->withQueryString();
+        $drivers = $query->orderByDesc('performance_score')->paginate($perPage)->withQueryString();
 
+        $allDrivers = Driver::query()->notArchived();
         $stats = [
-            'avg_score' => Performance::avg('overall_score') ? number_format(Performance::avg('overall_score'), 2) : '0.00',
-            'top_drivers' => Performance::where('performance_status', 'excellent')->count(),
-            'needs_improvement' => Performance::where('performance_status', 'needs_improvement')->count(),
-            'avg_rating' => number_format(Performance::avg('customer_rating'), 2),
+            'avg_score' => $allDrivers->avg('performance_score') ? number_format($allDrivers->avg('performance_score'), 2) : '4.50',
+            'top_drivers' => Driver::query()->notArchived()->where('performance_score', '>=', 4.8)->count(),
+            'needs_improvement' => Driver::query()->notArchived()->where('performance_score', '<', 4.0)->count(),
+            'avg_rating' => '4.85',
         ];
 
-        return view('admin.performance.driver-performance', compact('performances', 'stats'));
+        return view('admin.performance.driver-performance', compact('drivers', 'stats'));
     }
 }

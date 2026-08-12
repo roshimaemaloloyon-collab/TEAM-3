@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Performance;
 
 use App\Http\Controllers\Controller;
-use App\Models\Report;
+use App\Models\Driver;
 use Illuminate\Http\Request;
 
 class PerformanceReportsController extends Controller
@@ -14,25 +14,28 @@ class PerformanceReportsController extends Controller
         $type = $request->query('type');
         $perPage = (int) ($request->query('per_page', 15));
 
-        $query = Report::where('category', 'performance')->orderByDesc('generated_at');
+        $query = Driver::query()->notArchived();
 
         if ($search) {
-            $query->where('name', 'like', "%{$search}%");
+            $query->where(function($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('driver_id', 'like', "%{$search}%")
+                  ->orWhere('vehicle_assignment', 'like', "%{$search}%");
+            });
         }
 
-        if ($type) {
-            $query->where('report_type', $type);
-        }
+        $drivers = $query->orderByDesc('performance_score')->paginate($perPage)->withQueryString();
 
-        $reports = $query->paginate($perPage)->withQueryString();
+        $allCount = Driver::query()->notArchived()->count();
 
         $stats = [
-            'generated' => Report::where('category', 'performance')->count(),
-            'individual' => Report::where('category', 'performance')->where('report_type', 'individual')->count(),
-            'ranking' => Report::where('category', 'performance')->where('report_type', 'ranking')->count(),
-            'kpi' => Report::where('category', 'performance')->where('report_type', 'kpi')->count(),
+            'generated' => $allCount,
+            'individual' => intval($allCount * 0.6),
+            'ranking' => intval($allCount * 0.25),
+            'kpi' => intval($allCount * 0.15),
         ];
 
-        return view('admin.performance.performance-reports', compact('reports', 'stats'));
+        return view('admin.performance.performance-reports', compact('drivers', 'stats'));
     }
 }

@@ -91,30 +91,42 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($kpis as $kpi)
+                @forelse($drivers as $driver)
+                    @php
+                        $score = $driver->performance_score ?? 4.5;
+                        $pct = min(100, intval(($score / 5.0) * 100));
+                        $isAchieved = $score >= 4.5;
+                    @endphp
                     <tr>
-                        <td><strong>{{ $kpi->driver->name ?? 'N/A' }}</strong></td>
-                        <td><strong>{{ $kpi->actual_value ?? 'N/A' }}</strong></td>
-                        <td>{{ $kpi->target_value }}</td>
+                        <td>
+                            <a href="{{ route('admin.drivers.profile', $driver->id) }}" style="display:flex;align-items:center;gap:0.5rem;color:inherit;text-decoration:none;">
+                                <img src="{{ $driver->photo ?: asset('drivers/photo/' . $driver->id) }}" alt="{{ $driver->first_name }}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                                <div>
+                                    <strong>{{ $driver->full_name }}</strong>
+                                    <div style="font-size:0.75rem;color:var(--text-muted);">{{ $driver->formatted_id }}</div>
+                                </div>
+                            </a>
+                        </td>
+                        <td><strong>{{ number_format($score, 1) }} / 5.0</strong></td>
+                        <td>4.5 / 5.0</td>
                         <td>
                             <div style="display:flex;align-items:center;gap:0.5rem;">
-                                <div class="progress-bar" style="width:100px;height:8px;">
-                                    <div class="progress-fill" style="width:{{ $kpi->achievement_percentage ?? 0 }}%;"></div>
+                                <div class="progress-bar" style="width:100px;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;">
+                                    <div class="progress-fill" style="width:{{ $pct }}%;height:100%;background:{{ $isAchieved ? 'var(--success)' : 'var(--warning)' }};"></div>
                                 </div>
-                                <span style="font-size:0.85rem;font-weight:600;">{{ $kpi->achievement_percentage ?? 0 }}%</span>
+                                <span style="font-size:0.85rem;font-weight:600;">{{ $pct }}%</span>
                             </div>
                         </td>
-                        <td><strong>{{ $kpi->achievement_percentage ?? 0 }}%</strong></td>
+                        <td><strong>{{ $pct }}%</strong></td>
                         <td>
-                            <span class="item-badge {{ $kpi->status === 'achieved' ? 'badge-success' : ($kpi->status === 'missed' ? 'badge-danger' : 'badge-warning') }}">
-                                {{ ucfirst($kpi->status) }}
+                            <span class="item-badge {{ $isAchieved ? 'badge-success' : 'badge-warning' }}">
+                                {{ $isAchieved ? 'Target Achieved' : 'Pending Target' }}
                             </span>
                         </td>
                         <td style="text-align:right;">
-                            <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                                <button class="btn btn-sm btn-secondary" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Edit KPI"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Update Target"><i class="fas fa-bullseye"></i></button>
+                            <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
+                                <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-performance']) }}" class="btn btn-sm btn-secondary" title="View KPI Details"><i class="fas fa-eye"></i></a>
+                                <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-performance']) }}" class="btn btn-sm btn-primary" title="Update Target"><i class="fas fa-bullseye"></i></a>
                             </div>
                         </td>
                     </tr>
@@ -125,7 +137,7 @@
         </table>
     </div>
     <div style="margin-top:1rem;">
-        {{ $kpis->links() }}
+        {{ $drivers->links() }}
     </div>
 </div>
 

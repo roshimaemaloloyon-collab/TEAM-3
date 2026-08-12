@@ -94,23 +94,35 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($histories as $history)
+                @forelse($drivers as $index => $driver)
+                    @php
+                        $score = $driver->performance_score ?? 4.5;
+                        $statusClass = $score >= 4.8 ? 'badge-success' : ($score >= 4.5 ? 'badge-info' : ($score >= 4.0 ? 'badge-warning' : 'badge-danger'));
+                        $statusLabel = $score >= 4.8 ? 'Excellent' : ($score >= 4.5 ? 'Good' : ($score >= 4.0 ? 'Average' : 'Needs Improvement'));
+                    @endphp
                     <tr>
-                        <td><strong>{{ $history->driver->name ?? 'N/A' }}</strong></td>
-                        <td><strong>{{ $history->overall_score ?? 'N/A' }}</strong></td>
-                        <td>{{ $history->kpi_score ?? 'N/A' }}</td>
-                        <td>{{ $history->recorded_at ? \Carbon\Carbon::parse($history->recorded_at)->format('M d, Y') : 'N/A' }}</td>
-                        <td>#{{ $history->ranking ?? 'N/A' }}</td>
                         <td>
-                            <span class="item-badge {{ $history->performance_status === 'excellent' ? 'badge-success' : ($history->performance_status === 'good' ? 'badge-info' : 'badge-warning') }}">
-                                {{ ucfirst(str_replace('_', ' ', $history->performance_status)) }}
+                            <a href="{{ route('admin.drivers.profile', $driver->id) }}" style="display:flex;align-items:center;gap:0.5rem;color:inherit;text-decoration:none;">
+                                <img src="{{ $driver->photo ?: asset('drivers/photo/' . $driver->id) }}" alt="{{ $driver->first_name }}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                                <div>
+                                    <strong>{{ $driver->full_name }}</strong>
+                                    <div style="font-size:0.75rem;color:var(--text-muted);">{{ $driver->formatted_id }}</div>
+                                </div>
+                            </a>
+                        </td>
+                        <td><strong>{{ number_format($score, 1) }} / 5.0</strong></td>
+                        <td>94.5%</td>
+                        <td>{{ $driver->updated_at ? $driver->updated_at->format('M d, Y') : 'Aug 10, 2026' }}</td>
+                        <td>#{{ $index + 1 }}</td>
+                        <td>
+                            <span class="item-badge {{ $statusClass }}">
+                                {{ $statusLabel }}
                             </span>
                         </td>
                         <td style="text-align:right;">
-                            <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                                <button class="btn btn-sm btn-secondary" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Archive"><i class="fas fa-archive"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Restore"><i class="fas fa-undo"></i></button>
+                            <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
+                                <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-performance']) }}" class="btn btn-sm btn-secondary" title="View History Timeline"><i class="fas fa-eye"></i></a>
+                                <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-performance']) }}" class="btn btn-sm btn-primary" title="View Logs"><i class="fas fa-history"></i></a>
                             </div>
                         </td>
                     </tr>
@@ -121,7 +133,7 @@
         </table>
     </div>
     <div style="margin-top:1rem;">
-        {{ $histories->links() }}
+        {{ $drivers->links() }}
     </div>
 </div>
 

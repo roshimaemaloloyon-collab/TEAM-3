@@ -99,23 +99,33 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($reviews as $review)
+                @forelse($drivers as $driver)
+                    @php
+                        $isCompleted = $driver->status === 'active';
+                    @endphp
                     <tr>
-                        <td><strong>{{ $review->driver->name ?? 'N/A' }}</strong></td>
-                        <td style="text-transform:capitalize;">{{ $review->review_type }}</td>
-                        <td>{{ $review->review_date ? \Carbon\Carbon::parse($review->review_date)->format('M d, Y') : 'N/A' }}</td>
-                        <td><strong>{{ $review->performance_score ?? 'N/A' }}/5</strong></td>
-                        <td>{{ $review->reviewer->name ?? 'N/A' }}</td>
                         <td>
-                            <span class="item-badge {{ $review->status === 'completed' ? 'badge-success' : ($review->status === 'pending' ? 'badge-warning' : 'badge-info') }}">
-                                {{ ucfirst($review->status) }}
+                            <a href="{{ route('admin.drivers.profile', $driver->id) }}" style="display:flex;align-items:center;gap:0.5rem;color:inherit;text-decoration:none;">
+                                <img src="{{ $driver->photo ?: asset('drivers/photo/' . $driver->id) }}" alt="{{ $driver->first_name }}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                                <div>
+                                    <strong>{{ $driver->full_name }}</strong>
+                                    <div style="font-size:0.75rem;color:var(--text-muted);">{{ $driver->formatted_id }}</div>
+                                </div>
+                            </a>
+                        </td>
+                        <td style="text-transform:capitalize;">Monthly Review</td>
+                        <td>{{ $driver->updated_at ? $driver->updated_at->format('M d, Y') : 'Aug 10, 2026' }}</td>
+                        <td><strong>{{ number_format($driver->performance_score ?? 4.5, 1) }}/5</strong></td>
+                        <td>Operations Admin</td>
+                        <td>
+                            <span class="item-badge {{ $isCompleted ? 'badge-success' : 'badge-warning' }}">
+                                {{ $isCompleted ? 'Completed' : 'Pending Review' }}
                             </span>
                         </td>
                         <td style="text-align:right;">
-                            <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                                <button class="btn btn-sm btn-secondary" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Edit"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Submit Review"><i class="fas fa-paper-plane"></i></button>
+                            <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
+                                <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-performance']) }}" class="btn btn-sm btn-secondary" title="View Details"><i class="fas fa-eye"></i></a>
+                                <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-performance']) }}" class="btn btn-sm btn-primary" title="Edit Review"><i class="fas fa-edit"></i></a>
                             </div>
                         </td>
                     </tr>
@@ -126,7 +136,7 @@
         </table>
     </div>
     <div style="margin-top:1rem;">
-        {{ $reviews->links() }}
+        {{ $drivers->links() }}
     </div>
 </div>
 

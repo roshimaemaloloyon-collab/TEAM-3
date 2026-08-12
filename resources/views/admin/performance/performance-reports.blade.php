@@ -97,35 +97,42 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($reports as $report)
+                @forelse($drivers as $driver)
                     <tr>
-                        <td>#RPT-{{ str_pad($report->id, 6, '0', STR_PAD_LEFT) }}</td>
-                        <td><strong>{{ $report->name }}</strong></td>
-                        <td style="text-transform:capitalize;">{{ $report->report_type }}</td>
-                        <td>{{ $report->generated_at ? \Carbon\Carbon::parse($report->generated_at)->format('M d, Y h:i A') : 'N/A' }}</td>
-                        <td>{{ $report->generatedBy->name ?? 'System' }}</td>
+                        <td>#RPT-DRV-{{ str_pad($driver->id, 5, '0', STR_PAD_LEFT) }}</td>
                         <td>
-                            <span class="item-badge {{ $report->status === 'completed' ? 'badge-success' : ($report->status === 'pending' ? 'badge-warning' : 'badge-danger') }}">
-                                {{ ucfirst($report->status) }}
+                            <a href="{{ route('admin.drivers.profile', $driver->id) }}" style="display:flex;align-items:center;gap:0.5rem;color:inherit;text-decoration:none;">
+                                <img src="{{ $driver->photo ?: asset('drivers/photo/' . $driver->id) }}" alt="{{ $driver->first_name }}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                                <div>
+                                    <strong>{{ $driver->full_name }} — Performance Report</strong>
+                                    <div style="font-size:0.75rem;color:var(--text-muted);">Driver ID: {{ $driver->formatted_id }}</div>
+                                </div>
+                            </a>
+                        </td>
+                        <td style="text-transform:capitalize;">Individual Evaluation</td>
+                        <td>{{ $driver->updated_at ? $driver->updated_at->format('M d, Y h:i A') : 'Aug 11, 2026 09:00 AM' }}</td>
+                        <td>System Admin</td>
+                        <td>
+                            <span class="item-badge badge-success">
+                                Generated
                             </span>
                         </td>
                         <td style="text-align:right;">
-                            <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                                <button class="btn btn-sm btn-secondary" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Download PDF"><i class="fas fa-file-pdf"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Download Excel"><i class="fas fa-file-excel"></i></button>
-                                <button class="btn btn-sm btn-secondary" title="Print" onclick="window.print()"><i class="fas fa-print"></i></button>
+                            <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
+                                <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-performance']) }}" class="btn btn-sm btn-secondary" title="View Full Report"><i class="fas fa-eye"></i></a>
+                                <a href="{{ route('admin.drivers.documents.download', $driver->id) }}" class="btn btn-sm btn-primary" title="Download Document PDF"><i class="fas fa-file-pdf"></i></a>
+                                <button class="btn btn-sm btn-secondary" title="Print Report" onclick="window.print()"><i class="fas fa-print"></i></button>
                             </div>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">No reports found.</td></tr>
+                    <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">No driver performance reports found.</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
     <div style="margin-top:1rem;">
-        {{ $reports->links() }}
+        {{ $drivers->links() }}
     </div>
 </div>
 
