@@ -183,3 +183,4 @@ class PerformanceHistoryController extends Controller
             'Content-Disposition' => 'inline; filename="' . $filename . '"',
         ]);
     }
+}
