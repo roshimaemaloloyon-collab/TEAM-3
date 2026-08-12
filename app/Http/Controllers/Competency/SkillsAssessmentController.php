@@ -44,13 +44,18 @@ class SkillsAssessmentController extends Controller
 
         $competencies = Competency::all();
         if ($competencies->isEmpty()) {
-            $competencies = collect([
-                (object)['id' => 1, 'name' => 'Defensive Driving & Safety Standards'],
-                (object)['id' => 2, 'name' => 'Route Optimization & GPS Navigation'],
-                (object)['id' => 3, 'name' => 'Customer Service & Passenger Relations'],
-                (object)['id' => 4, 'name' => 'Vehicle Inspection & Road Readiness'],
-                (object)['id' => 5, 'name' => 'LTFRB & Regulatory Compliance']
-            ]);
+            $defaultCompetencies = [
+                ['name' => 'Defensive Driving & Safety Standards', 'slug' => 'defensive-driving', 'category' => 'safety', 'target_score' => 90],
+                ['name' => 'Route Optimization & GPS Navigation', 'slug' => 'route-optimization', 'category' => 'technical', 'target_score' => 85],
+                ['name' => 'Customer Service & Passenger Relations', 'slug' => 'customer-service', 'category' => 'customer_service', 'target_score' => 90],
+                ['name' => 'Vehicle Inspection & Road Readiness', 'slug' => 'vehicle-inspection', 'category' => 'technical', 'target_score' => 80],
+                ['name' => 'LTFRB & Regulatory Compliance', 'slug' => 'ltfrb-compliance', 'category' => 'behavioral', 'target_score' => 95],
+            ];
+
+            foreach ($defaultCompetencies as $c) {
+                Competency::firstOrCreate(['slug' => $c['slug']], $c);
+            }
+            $competencies = Competency::all();
         }
 
         $allDrivers = \App\Models\Driver::query()->notArchived()->orderBy('first_name')->get();
@@ -78,9 +83,26 @@ class SkillsAssessmentController extends Controller
             $userId = $firstUser ? $firstUser->id : auth()->id();
         }
 
+        // Safely resolve valid competency_id in competencies table
+        $competencyId = null;
+        if ($request->competency_id && Competency::where('id', $request->competency_id)->exists()) {
+            $competencyId = $request->competency_id;
+        } else {
+            $firstComp = Competency::first();
+            if (!$firstComp) {
+                $firstComp = Competency::create([
+                    'name' => 'Defensive Driving & Safety Standards',
+                    'slug' => 'defensive-driving',
+                    'category' => 'safety',
+                    'target_score' => 90
+                ]);
+            }
+            $competencyId = $firstComp->id;
+        }
+
         CompetencyAssessment::create([
             'driver_id' => $userId,
-            'competency_id' => $request->competency_id ?? 1,
+            'competency_id' => $competencyId,
             'score' => $validated['score'],
             'status' => $request->input('status', 'assessed'),
             'assessed_at' => now(),
