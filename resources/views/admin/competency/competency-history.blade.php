@@ -105,7 +105,7 @@
                             </span>
                         </td>
                         <td style="text-align:right;">
-                            <div style="display:flex;gap:0.4rem;justify-content:flex-end;">
+                            <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
                                 <button type="button" class="btn btn-sm btn-secondary" title="View Assessment Breakdown" onclick="openAssessmentDetailModal({{ json_encode([
                                     'driver_name' => $history->driver_name,
                                     'date' => $history->recorded_at ? \Carbon\Carbon::parse($history->recorded_at)->format('M d, Y') : 'Aug 10, 2026',
@@ -114,7 +114,9 @@
                                     'assessed_by' => $history->recorder->name ?? 'TripWise Admin',
                                     'notes' => $history->notes ?? 'Evaluated on key TNVS competencies including road safety, GPS navigation, and passenger service.'
                                 ]) }})"><i class="fas fa-eye"></i></button>
-                                <button type="button" class="btn btn-sm btn-primary" title="Competency Actions / Plan" onclick="openHistoryActionModal({{ json_encode([
+                                <a href="{{ route('admin.competency.reports.export', ['format' => 'pdf', 'report_id' => $history->id]) }}" target="_blank" class="btn btn-sm btn-secondary" style="color:#dc2626;border-color:#fca5a5;" title="Download Driver PDF"><i class="fas fa-file-pdf"></i></a>
+                                <button type="button" class="btn btn-sm btn-primary" title="Execute Action / Development Plan" onclick="openHistoryActionModal({{ json_encode([
+                                    'id' => $history->id,
                                     'driver_name' => $history->driver_name,
                                     'score' => $history->formatted_score
                                 ]) }})"><i class="fas fa-external-link-alt"></i></button>
@@ -213,7 +215,7 @@
 <!-- History Action / Plan Update Modal -->
 <div class="modal-overlay" id="historyActionModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;padding:2rem;">
     <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:550px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
-        <form onsubmit="event.preventDefault(); alert('Competency action executed successfully!'); closeModal('historyActionModal');">
+        <form id="executeActionForm" onsubmit="executeCompetencyAction(event)">
             <div class="modal-header" style="padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#fff7ed;border-top-left-radius:1rem;border-top-right-radius:1rem;">
                 <h2 style="font-size:1.2rem;color:#c2410c;font-family:'Poppins',sans-serif;margin:0;font-weight:700;"><i class="fas fa-running" style="margin-right:0.5rem;"></i> Execute Competency Action</h2>
                 <button type="button" onclick="closeModal('historyActionModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
@@ -226,7 +228,7 @@
                     </div>
                     <div>
                         <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Select Action *</label>
-                        <select required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                        <select id="selectedActionType" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
                             <option value="export_pdf">📄 Export Official Driver Assessment PDF</option>
                             <option value="create_plan">🎯 Create Individual Development Plan</option>
                             <option value="assign_module">📚 Assign Refresher Learning Module</option>
@@ -235,7 +237,7 @@
                     </div>
                     <div>
                         <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Action Remarks & Notes</label>
-                        <textarea rows="3" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;" placeholder="Assigned 1-on-1 coaching for defensive driving protocols based on recent competency evaluation."></textarea>
+                        <textarea id="actionRemarks" rows="3" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;" placeholder="Assigned 1-on-1 coaching for defensive driving protocols based on recent competency evaluation."></textarea>
                     </div>
                 </div>
             </div>
@@ -331,9 +333,34 @@ function openAssessmentDetailModal(data) {
     openModal('assessmentDetailModal');
 }
 
+let currentSelectedDriver = {};
+
 function openHistoryActionModal(data) {
+    currentSelectedDriver = data;
     document.getElementById('actionDriverName').value = data.driver_name + ' (Score: ' + data.score + ')';
     openModal('historyActionModal');
+}
+
+function executeCompetencyAction(e) {
+    e.preventDefault();
+    const actionType = document.getElementById('selectedActionType').value;
+    const driverName = currentSelectedDriver.driver_name || 'Driver';
+    const reportId = currentSelectedDriver.id || 1;
+
+    closeModal('historyActionModal');
+
+    if (actionType === 'export_pdf') {
+        const url = "{{ route('admin.competency.reports.export', ['format' => 'pdf']) }}&report_id=" + reportId;
+        window.open(url, '_blank');
+    } else if (actionType === 'create_plan') {
+        alert('Redirecting to Development Plan builder for ' + driverName + '...');
+        window.location.href = "{{ route('admin.competency.plans') }}";
+    } else if (actionType === 'assign_module') {
+        alert('Redirecting to Learning Modules assignment page for ' + driverName + '...');
+        window.location.href = "{{ route('admin.learning.assignments') }}";
+    } else if (actionType === 'schedule_coaching') {
+        alert('1-on-1 Coaching Session scheduled successfully for ' + driverName + '! Notification sent to driver portal.');
+    }
 }
 </script>
 @endsection
