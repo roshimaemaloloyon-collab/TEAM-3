@@ -110,7 +110,6 @@ class DatabaseSeeder extends Seeder
             $driverUsers->push($user);
 
             $driver = Driver::create([
-                'user_id' => $user->id,
                 'driver_id' => '#DRV-2026-' . str_pad($idx + 1, 4, '0', STR_PAD_LEFT),
                 'first_name' => $nameInfo['first'],
                 'middle_name' => $nameInfo['middle'],
