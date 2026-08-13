@@ -191,6 +191,16 @@ class DatabaseSeeder extends Seeder
                 'generated_by' => $adminUser->id,
                 'generated_at' => fake()->dateTimeBetween('-1 month', 'now'),
             ]);
+
+            \App\Models\Report::create([
+                'name' => $dUser->name . ' — Skills & Competency Assessment',
+                'category' => 'competency',
+                'report_type' => 'competency',
+                'export_format' => 'pdf',
+                'status' => 'generated',
+                'generated_by' => $adminUser->id,
+                'generated_at' => now(),
+            ]);
         }
 
         $trainings = Training::factory(25)->create();
