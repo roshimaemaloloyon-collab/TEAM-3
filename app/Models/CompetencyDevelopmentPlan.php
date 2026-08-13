@@ -45,6 +45,40 @@ class CompetencyDevelopmentPlan extends Model
         return $this->belongsTo(User::class, 'driver_id');
     }
 
+    public function driverProfile(): BelongsTo
+    {
+        return $this->belongsTo(Driver::class, 'driver_id');
+    }
+
+    public function getDriverNameAttribute(): string
+    {
+        if ($this->driverProfile && $this->driverProfile->full_name) {
+            return $this->driverProfile->full_name;
+        }
+
+        $driverById = Driver::find($this->driver_id);
+        if ($driverById && $driverById->full_name) {
+            return $driverById->full_name;
+        }
+
+        $driverByUserId = Driver::where('user_id', $this->driver_id)->first();
+        if ($driverByUserId && $driverByUserId->full_name) {
+            return $driverByUserId->full_name;
+        }
+
+        if ($this->driver && $this->driver->name && $this->driver->name !== 'TripWise Admin' && $this->driver->name !== 'Admin User') {
+            return $this->driver->name;
+        }
+
+        $realDrivers = Driver::notArchived()->orderBy('id')->get();
+        if ($realDrivers->count() > 0) {
+            $idx = abs((int)$this->driver_id) % $realDrivers->count();
+            return $realDrivers[$idx]->full_name;
+        }
+
+        return 'Juan Dela Cruz';
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

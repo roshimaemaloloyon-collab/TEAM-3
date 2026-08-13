@@ -94,7 +94,7 @@
             <tbody>
                 @forelse($plans as $plan)
                     <tr>
-                        <td><strong>{{ $plan->driver->name ?? 'N/A' }}</strong></td>
+                        <td><strong>{{ $plan->driver_name }}</strong></td>
                         <td>{{ $plan->plan_name }}</td>
                         <td>
                             @php

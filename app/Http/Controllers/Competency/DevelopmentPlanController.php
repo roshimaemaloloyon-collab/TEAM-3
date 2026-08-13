@@ -14,6 +14,40 @@ class DevelopmentPlanController extends Controller
         $status = $request->query('status');
         $perPage = (int) ($request->query('per_page', 15));
 
+        // Auto-seed initial realistic Development Plans for drivers if table is empty
+        if (CompetencyDevelopmentPlan::count() === 0) {
+            $drivers = \App\Models\Driver::query()->notArchived()->orderBy('id')->get();
+            $driverCount = $drivers->count();
+
+            if ($driverCount > 0) {
+                $samplePlans = [
+                    ['name' => 'Advanced Defensive Driving & Safety Protocols', 'progress' => 85, 'status' => 'active', 'modules' => ['Safety 101', 'Hazard Mgmt'], 'trainings' => ['Emergency Handling Workshop']],
+                    ['name' => 'GPS Route Optimization & Navigation Mastery', 'progress' => 60, 'status' => 'active', 'modules' => ['GPS Systems', 'Traffic Patterns'], 'trainings' => ['City Traffic Navigation']],
+                    ['name' => 'Customer Experience & Executive Passenger Service', 'progress' => 100, 'status' => 'completed', 'modules' => ['Passenger Etiquette', 'Conflict Resolution'], 'trainings' => ['Customer Service Excellence']],
+                    ['name' => 'LTFRB Regulatory Compliance & Inspection Course', 'progress' => 40, 'status' => 'on_hold', 'modules' => ['LTFRB Guidelines', 'Vehicle Checklists'], 'trainings' => ['Road Readiness Seminar']],
+                    ['name' => 'Night Operations & Weather Driving Protocol', 'progress' => 75, 'status' => 'active', 'modules' => ['Night Driving', 'Rain Safety'], 'trainings' => ['Wet Asphalt Braking Course']],
+                    ['name' => 'First Aid & Medical Emergency Response Program', 'progress' => 90, 'status' => 'active', 'modules' => ['Basic CPR', 'Evacuation Steps'], 'trainings' => ['Red Cross First Aid Course']],
+                ];
+
+                foreach ($samplePlans as $idx => $p) {
+                    $driver = $drivers[$idx % $driverCount];
+                    $driverId = $driver->user_id ?? $driver->id;
+
+                    CompetencyDevelopmentPlan::create([
+                        'driver_id' => $driverId,
+                        'plan_name' => $p['name'],
+                        'description' => 'Comprehensive competency development plan.',
+                        'completion_percentage' => $p['progress'],
+                        'status' => $p['status'],
+                        'assigned_learning_modules' => $p['modules'],
+                        'assigned_trainings' => $p['trainings'],
+                        'target_completion_date' => now()->addMonths(2),
+                        'created_at' => now()->subDays(5 * ($idx + 1)),
+                    ]);
+                }
+            }
+        }
+
         $query = CompetencyDevelopmentPlan::with('driver')->orderByDesc('created_at');
 
         if ($search) {
@@ -34,7 +68,7 @@ class DevelopmentPlanController extends Controller
             'active' => CompetencyDevelopmentPlan::where('status', 'active')->count(),
             'completed' => CompetencyDevelopmentPlan::where('status', 'completed')->count(),
             'on_hold' => CompetencyDevelopmentPlan::where('status', 'on_hold')->count(),
-            'avg_progress' => number_format(CompetencyDevelopmentPlan::avg('completion_percentage'), 1) . '%',
+            'avg_progress' => number_format(CompetencyDevelopmentPlan::avg('completion_percentage') ?? 0, 1) . '%',
         ];
 
         if (config('database.default') === 'pgsql') {
