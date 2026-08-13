@@ -101,21 +101,40 @@
                         <td><strong>{{ number_format($result->score, 2) }}</strong></td>
                         <td>
                             @php
-                                $strengths = ['Safe Driving', 'Professionalism'];
-                                echo implode(', ', $strengths);
+                                $scoreVal = $result->score ?? 80;
+                                $compName = $result->competency->name ?? 'Safety';
+                                if ($scoreVal >= 85) {
+                                    $strengthsStr = $compName . ', Defensive Driving';
+                                } elseif ($scoreVal >= 75) {
+                                    $strengthsStr = 'Defensive Driving';
+                                } else {
+                                    $strengthsStr = 'Basic Vehicle Operation';
+                                }
                             @endphp
+                            <span style="color:var(--success);font-weight:600;font-size:0.85rem;">{{ $strengthsStr }}</span>
                         </td>
                         <td>
                             @php
-                                $weaknesses = ['Time Management'];
-                                echo implode(', ', $weaknesses);
+                                if ($scoreVal >= 85) {
+                                    $weaknessStr = 'None Identified';
+                                } elseif ($scoreVal >= 70) {
+                                    $weaknessStr = 'Time Management';
+                                } else {
+                                    $weaknessStr = $compName . ', GPS Navigation';
+                                }
                             @endphp
+                            <span style="color:{{ $scoreVal < 75 ? 'var(--danger)' : 'var(--text-muted)' }};font-size:0.85rem;">{{ $weaknessStr }}</span>
                         </td>
                         <td>
                             @php
-                                $gaps = ['Navigation'];
-                                echo implode(', ', $gaps);
+                                $targetScore = $result->competency->target_score ?? 85;
+                                $gapVal = max(0, round($targetScore - $scoreVal, 1));
                             @endphp
+                            @if($gapVal > 0)
+                                <span class="item-badge badge-warning">-{{ $gapVal }}% Gap</span>
+                            @else
+                                <span class="item-badge badge-success">No Gap</span>
+                            @endif
                         </td>
                         <td>{{ $result->assessed_at ? \Carbon\Carbon::parse($result->assessed_at)->format('M d, Y') : 'N/A' }}</td>
                         <td>
@@ -126,7 +145,7 @@
                         <td style="text-align:right;">
                             <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
                                 <a href="{{ route('admin.competency.assessments.driver.pdf', $result->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" title="View Assessment Document"><i class="fas fa-eye"></i></a>
-                                <button type="button" class="btn btn-sm btn-primary" title="Edit Assessment" onclick="openEditResultModal({{ $result->id }}, '{{ addslashes($result->driver_name) }}', {{ $result->score ?? 85 }}, '{{ $result->status }}')"><i class="fas fa-edit"></i></button>
+                                <button type="button" class="btn btn-sm btn-primary edit-result-btn" title="Edit Assessment" data-id="{{ $result->id }}" data-name="{{ $result->driver_name }}" data-score="{{ $result->score ?? 85 }}" data-status="{{ $result->status }}"><i class="fas fa-edit"></i></button>
                                 <a href="{{ route('admin.competency.assessments.driver.pdf', $result->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" title="Print Driver PDF"><i class="fas fa-print"></i></a>
                             </div>
                         </td>
@@ -194,20 +213,28 @@
     </div>
 </div>
 
-@endsection
-
-@push('scripts')
 <script>
-function openEditResultModal(id, name, score, status) {
-    var modal = document.getElementById('editResultModal');
-    if (!modal) return;
-    document.getElementById('editResultForm').action = '/admin/competency/assessments/' + id;
-    document.getElementById('editResultDriverName').value = name;
-    document.getElementById('editResultScore').value = score;
-    document.getElementById('editResultStatus').value = status;
-    modal.style.display = 'flex';
-    modal.classList.add('active');
-}
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.edit-result-btn');
+    if (!btn) return;
+    e.preventDefault();
+    const id = btn.getAttribute('data-id');
+    const name = btn.getAttribute('data-name');
+    const score = btn.getAttribute('data-score');
+    const status = btn.getAttribute('data-status');
+
+    const modal = document.getElementById('editResultModal');
+    if (modal) {
+        document.getElementById('editResultForm').action = '/admin/competency/assessments/' + id;
+        document.getElementById('editResultDriverName').value = name;
+        document.getElementById('editResultScore').value = score;
+        document.getElementById('editResultStatus').value = status;
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+        document.body.style.overflow = 'hidden';
+    }
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     const chartDefaults = {
@@ -244,4 +271,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endpush
+
+@endsection

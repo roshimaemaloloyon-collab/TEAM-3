@@ -1470,9 +1470,7 @@
     });
 </script>
 
-<script>
 @stack('scripts')
-</script>
 
 </body>
 </html>

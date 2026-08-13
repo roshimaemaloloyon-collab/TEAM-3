@@ -125,7 +125,7 @@
                         <td style="text-align:right;">
                             <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
                                 <a href="{{ route('admin.competency.assessments.driver.pdf', $plan->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" title="View Plan PDF Report"><i class="fas fa-file-pdf"></i></a>
-                                <button type="button" class="btn btn-sm btn-primary" title="Edit Plan In-Place" onclick="openEditPlanModal({{ $plan->id }}, '{{ addslashes($plan->driver->name ?? 'Driver') }}', '{{ addslashes($plan->plan_name) }}', {{ $plan->completion_percentage }}, '{{ $plan->status }}')"><i class="fas fa-edit"></i> Edit</button>
+                                <button type="button" class="btn btn-sm btn-primary edit-plan-btn" title="Edit Plan In-Place" data-id="{{ $plan->id }}" data-driver="{{ $plan->driver->name ?? 'Driver' }}" data-name="{{ $plan->plan_name }}" data-progress="{{ $plan->completion_percentage }}" data-status="{{ $plan->status }}"><i class="fas fa-edit"></i> Edit</button>
                             </div>
                         </td>
                     </tr>
@@ -239,18 +239,30 @@
     </div>
 </div>
 
-@endsection
-
-@push('scripts')
 <script>
-function openEditPlanModal(id, driverName, planName, progress, status) {
-    document.getElementById('editPlanForm').action = '/admin/competency/plans/' + id;
-    document.getElementById('editDriverName').value = driverName;
-    document.getElementById('editPlanName').value = planName;
-    document.getElementById('editProgress').value = progress;
-    document.getElementById('editStatus').value = status;
-    openModal('editPlanModal');
-}
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.edit-plan-btn');
+    if (!btn) return;
+    e.preventDefault();
+    const id = btn.getAttribute('data-id');
+    const driverName = btn.getAttribute('data-driver');
+    const planName = btn.getAttribute('data-name');
+    const progress = btn.getAttribute('data-progress');
+    const status = btn.getAttribute('data-status');
+
+    const modal = document.getElementById('editPlanModal');
+    if (modal) {
+        document.getElementById('editPlanForm').action = '/admin/competency/plans/' + id;
+        document.getElementById('editDriverName').value = driverName;
+        document.getElementById('editPlanName').value = planName;
+        document.getElementById('editProgress').value = progress;
+        document.getElementById('editStatus').value = status;
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+        document.body.style.overflow = 'hidden';
+    }
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     const chartDefaults = {
@@ -289,4 +301,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endpush
+
+@endsection

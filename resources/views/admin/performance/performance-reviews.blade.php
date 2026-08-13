@@ -125,7 +125,7 @@
                         <td style="text-align:right;">
                             <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
                                 <a href="{{ route('admin.drivers.profile', $driver->id) }}" class="btn btn-sm btn-secondary" title="View Profile"><i class="fas fa-eye"></i></a>
-                                <button type="button" class="btn btn-sm btn-primary" title="Edit Review In-Place" onclick="openEditReviewModal({{ $driver->id }}, '{{ addslashes($driver->full_name) }}', '{{ $driver->performance_score ?? 4.5 }}', '{{ $driver->status }}')"><i class="fas fa-edit"></i> Edit</button>
+                                <button type="button" class="btn btn-sm btn-primary edit-review-btn" title="Edit Review In-Place" data-id="{{ $driver->id }}" data-name="{{ $driver->full_name }}" data-score="{{ $driver->performance_score ?? 4.5 }}" data-status="{{ $driver->status }}"><i class="fas fa-edit"></i> Edit</button>
                             </div>
                         </td>
                     </tr>
@@ -247,16 +247,28 @@
     </div>
 </div>
 
-@push('scripts')
 <script>
-function openEditReviewModal(id, name, score, status) {
-    document.getElementById('editReviewForm').action = '/admin/performance/reviews/' + id;
-    document.getElementById('editDriverName').value = name;
-    document.getElementById('editPerformanceScore').value = score;
-    document.getElementById('editStatus').value = status === 'active' ? 'active' : 'review';
-    openModal('editReviewModal');
-}
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.edit-review-btn');
+    if (!btn) return;
+    e.preventDefault();
+    const id = btn.getAttribute('data-id');
+    const name = btn.getAttribute('data-name');
+    const score = btn.getAttribute('data-score');
+    const status = btn.getAttribute('data-status');
+
+    const modal = document.getElementById('editReviewModal');
+    if (modal) {
+        document.getElementById('editReviewForm').action = '/admin/performance/reviews/' + id;
+        document.getElementById('editDriverName').value = name;
+        document.getElementById('editPerformanceScore').value = score;
+        document.getElementById('editStatus').value = status === 'active' ? 'active' : 'review';
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+        document.body.style.overflow = 'hidden';
+    }
+});
 </script>
-@endpush
 
 @endsection

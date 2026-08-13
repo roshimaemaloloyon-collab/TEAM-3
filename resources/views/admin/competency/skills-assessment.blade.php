@@ -114,8 +114,9 @@
                         <td>{{ $assessment->assessed_at ? \Carbon\Carbon::parse($assessment->assessed_at)->format('M d, Y') : 'N/A' }}</td>
                         <td style="text-align:right;">
                             <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
-                                <a href="{{ route('admin.competency.assessments.driver.pdf', $assessment->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" title="View & Print Assessment PDF"><i class="fas fa-file-pdf"></i></a>
-                                <button type="button" class="btn btn-sm btn-primary" title="Edit Assessment In-Place" onclick="openEditAssessModal({{ $assessment->id }}, '{{ addslashes($assessment->driver_name) }}', {{ $assessment->score ?? 85 }}, '{{ $assessment->status }}')"><i class="fas fa-edit"></i> Edit</button>
+                                <a href="{{ route('admin.competency.assessments.driver.pdf', $assessment->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" title="View Assessment"><i class="fas fa-eye"></i></a>
+                                <button type="button" class="btn btn-sm btn-primary edit-assess-btn" title="Edit Assessment" data-id="{{ $assessment->id }}" data-name="{{ $assessment->driver_name }}" data-score="{{ $assessment->score ?? 85 }}" data-status="{{ $assessment->status }}"><i class="fas fa-edit"></i></button>
+                                <a href="{{ route('admin.competency.assessments.driver.pdf', $assessment->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" title="Print Assessment PDF"><i class="fas fa-print"></i></a>
                             </div>
                         </td>
                     </tr>
@@ -229,30 +230,28 @@
     </div>
 </div>
 
-@endsection
-
 <script>
-function openEditAssessModal(id, name, score, status) {
-    var modal = document.getElementById('editAssessModal');
-    if (!modal) return;
-    document.getElementById('editAssessForm').action = '/admin/competency/assessments/' + id;
-    document.getElementById('editDriverName').value = name;
-    document.getElementById('editScore').value = score;
-    document.getElementById('editStatus').value = status;
-    modal.style.display = 'flex';
-    modal.classList.add('active');
-}
-</script>
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.edit-assess-btn');
+    if (!btn) return;
+    e.preventDefault();
+    const id = btn.getAttribute('data-id');
+    const name = btn.getAttribute('data-name');
+    const score = btn.getAttribute('data-score');
+    const status = btn.getAttribute('data-status');
 
-@push('scripts')
-<script>
-function openEditAssessModal(id, name, score, status) {
-    document.getElementById('editAssessForm').action = '/admin/competency/assessments/' + id;
-    document.getElementById('editDriverName').value = name;
-    document.getElementById('editScore').value = score;
-    document.getElementById('editStatus').value = status;
-    openModal('editAssessModal');
-}
+    const modal = document.getElementById('editAssessModal');
+    if (modal) {
+        document.getElementById('editAssessForm').action = '/admin/competency/assessments/' + id;
+        document.getElementById('editDriverName').value = name;
+        document.getElementById('editScore').value = score;
+        document.getElementById('editStatus').value = status;
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+        document.body.style.overflow = 'hidden';
+    }
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     const chartDefaults = {
@@ -293,4 +292,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endpush
+
+@endsection
