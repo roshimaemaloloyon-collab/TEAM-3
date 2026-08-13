@@ -449,8 +449,6 @@ class DatabaseSeeder extends Seeder
                     'recorded_by' => $adminUser->id,
                 ]);
             }
-
-            }
         }
 
         $juanUser = User::where('name', 'like', '%Juan Dela Cruz%')->first() ?? $driverUsers->first();
