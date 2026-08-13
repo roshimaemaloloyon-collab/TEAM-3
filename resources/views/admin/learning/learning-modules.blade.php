@@ -216,6 +216,44 @@
     </div>
 </div>
 
+<!-- Assign Learning Module Modal -->
+<div id="assignLearningModuleModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;">
+    <div class="modal-box" style="background:var(--white);border-radius:1rem;width:90%;max-width:500px;box-shadow:0 20px 40px rgba(0,0,0,0.2);">
+        <form action="{{ route('admin.learning.assignments.store') }}" method="POST">
+            @csrf
+            <input type="hidden" name="learning_module_id" id="assignModuleIdInput">
+            <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.2rem;color:var(--primary);font-weight:700;margin:0;">Assign Learning Module</h2>
+                <button type="button" onclick="closeModal('assignLearningModuleModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
+            </div>
+            <div style="padding:1.25rem 1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Target Driver</label>
+                    <select name="driver_id" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                        @if(isset($allDrivers))
+                            @foreach($allDrivers as $d)
+                                <option value="{{ $d->id }}">{{ $d->full_name }} ({{ $d->formatted_id }})</option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Module Title</label>
+                    <input type="text" id="assignModuleTitleInput" readonly style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:#f1f5f9;color:var(--text-dark);">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Target Due Date</label>
+                    <input type="date" name="due_date" value="{{ now()->addDays(14)->format('Y-m-d') }}" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                </div>
+            </div>
+            <div style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('assignLearningModuleModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Assign Module</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 // JSON payload of all learning modules with assignment counts
 const allModules = {!! json_encode($allModulesWithCounts ?? []) !!};
@@ -292,7 +330,7 @@ function openPositionModulesModal(positionName) {
             <td style="text-align:right;">
                 <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
                     <a href="/admin/learning/assessments" class="btn btn-sm btn-secondary" title="View Assessment Results"><i class="fas fa-eye"></i></a>
-                    <a href="/admin/learning/assignments" class="btn btn-sm btn-primary" title="Assign to Driver"><i class="fas fa-user-plus"></i> Assign</a>
+                    <button type="button" class="btn btn-sm btn-primary assign-module-btn" data-module-id="${m.id}" data-module-title="${m.title}" title="Assign Module to Driver"><i class="fas fa-user-plus"></i> Assign</button>
                 </div>
             </td>
         `;
@@ -320,11 +358,29 @@ function filterModalModules() {
 }
 
 document.addEventListener('click', function(e) {
-    const btn = e.target.closest('.btn-view-position');
-    if (!btn) return;
-    e.preventDefault();
-    const posName = btn.getAttribute('data-position');
-    openPositionModulesModal(posName);
+    const viewBtn = e.target.closest('.btn-view-position');
+    if (viewBtn) {
+        e.preventDefault();
+        const posName = viewBtn.getAttribute('data-position');
+        openPositionModulesModal(posName);
+        return;
+    }
+
+    const assignBtn = e.target.closest('.assign-module-btn');
+    if (assignBtn) {
+        e.preventDefault();
+        const moduleId = assignBtn.getAttribute('data-module-id');
+        const moduleTitle = assignBtn.getAttribute('data-module-title');
+
+        const assignModal = document.getElementById('assignLearningModuleModal');
+        if (assignModal) {
+            document.getElementById('assignModuleIdInput').value = moduleId;
+            document.getElementById('assignModuleTitleInput').value = moduleTitle;
+            assignModal.style.display = 'flex';
+            assignModal.style.visibility = 'visible';
+            assignModal.style.opacity = '1';
+        }
+    }
 });
 
 // Auto-open modal if position query param is in URL

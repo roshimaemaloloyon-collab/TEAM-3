@@ -245,6 +245,8 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
         })->name('index');
 
         Route::get('/modules', [App\Http\Controllers\Learning\LearningModulesController::class, 'index'])->name('modules');
+        Route::get('/assignments', [App\Http\Controllers\Learning\LearningModulesController::class, 'assignments'])->name('assignments');
+        Route::post('/assignments', [App\Http\Controllers\Learning\LearningModulesController::class, 'storeAssignment'])->name('assignments.store');
         Route::get('/assessments', [App\Http\Controllers\Learning\AssessmentsController::class, 'index'])->name('assessments');
         Route::get('/certificates', [App\Http\Controllers\Learning\CertificatesController::class, 'index'])->name('certificates');
         Route::get('/reports', [App\Http\Controllers\Learning\LearningReportsController::class, 'index'])->name('reports');

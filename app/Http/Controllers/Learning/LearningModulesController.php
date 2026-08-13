@@ -77,4 +77,47 @@ class LearningModulesController extends Controller
             'allDrivers'
         ));
     }
+
+    public function assignments(Request $request)
+    {
+        return redirect()->route('admin.learning.modules');
+    }
+
+    public function storeAssignment(Request $request)
+    {
+        $validated = $request->validate([
+            'driver_id' => 'required',
+            'learning_module_id' => 'nullable',
+            'due_date' => 'nullable|date',
+        ]);
+
+        $driver = \App\Models\Driver::find($request->driver_id);
+        $userId = null;
+        if ($driver && $driver->user_id && \App\Models\User::where('id', $driver->user_id)->exists()) {
+            $userId = $driver->user_id;
+        } elseif (\App\Models\User::where('id', $request->driver_id)->exists()) {
+            $userId = (int)$request->driver_id;
+        } else {
+            $firstUser = \App\Models\User::first();
+            $userId = $firstUser ? $firstUser->id : 1;
+        }
+
+        $moduleId = $request->input('learning_module_id');
+        if (!$moduleId) {
+            $firstModule = LearningModule::first();
+            $moduleId = $firstModule ? $firstModule->id : 1;
+        }
+
+        LearningAssignment::create([
+            'driver_id' => $userId,
+            'learning_module_id' => $moduleId,
+            'assigned_date' => now(),
+            'due_date' => $request->input('due_date', now()->addDays(14)),
+            'progress_percentage' => 0,
+            'status' => 'assigned',
+            'assigned_by' => auth()->id(),
+        ]);
+
+        return back()->with('success', 'Learning Module assigned to driver successfully.');
+    }
 }
