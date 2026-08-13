@@ -19,8 +19,8 @@
         <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">Maintain historical competency assessment records.</p>
     </div>
     <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
-        <button class="btn btn-secondary" onclick="exportReport('pdf')"><i class="fas fa-file-pdf"></i> Export PDF</button>
-        <button class="btn btn-secondary" onclick="exportReport('excel')"><i class="fas fa-file-excel"></i> Export Excel</button>
+        <a href="{{ route('admin.competency.history.export', ['format' => 'pdf', 'record_type' => request('record_type')]) }}" target="_blank" class="btn btn-secondary"><i class="fas fa-file-pdf"></i> Export PDF</a>
+        <a href="{{ route('admin.competency.history.export', ['format' => 'excel', 'record_type' => request('record_type')]) }}" class="btn btn-secondary"><i class="fas fa-file-excel"></i> Export Excel</a>
     </div>
 </div>
 
