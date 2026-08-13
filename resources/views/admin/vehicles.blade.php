@@ -117,7 +117,7 @@
                     <td>{{ $driver->route_assignment ?? 'Main Route' }}</td>
                     <td>
                         @if($index % 7 == 0)
-                            <span class="status-badge" style="background:#ffedd5;color:#c2410c;">🛠 Under Maintenance</span>
+                            <span class="status-badge" style="background:#ffedd5;color:#c2410c;cursor:pointer;" onclick="openMaintenanceModal({{ json_encode($driver) }})" title="Click to review maintenance status"><i class="fas fa-tools"></i> Under Maintenance</span>
                         @else
                             <span class="status-badge" style="background:#d1fae5;color:#065f46;">🟢 Active & Operational</span>
                         @endif
@@ -125,6 +125,7 @@
                     <td style="text-align:center;">
                         <div style="display:flex;gap:0.35rem;justify-content:center;">
                             <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-vehicle']) }}" class="icon-btn" title="Vehicle Details"><i class="fas fa-eye"></i></a>
+                            <button class="icon-btn" title="Review & Update Maintenance Status" style="color:#ea580c;" onclick="openMaintenanceModal({{ json_encode($driver) }})"><i class="fas fa-tools"></i></button>
                             <button class="icon-btn" title="Reassign Driver" onclick="openReassignModal({{ json_encode($driver) }})"><i class="fas fa-sync-alt"></i></button>
                         </div>
                     </td>
@@ -139,6 +140,46 @@
     </div>
     <div style="margin-top:1.25rem;">
         {{ $drivers->links() }}
+    </div>
+</div>
+
+<!-- Review & Update Vehicle Maintenance Modal -->
+<div class="modal-overlay" id="reviewMaintenanceModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:550px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <form id="maintenanceForm" onsubmit="event.preventDefault(); alert('Vehicle maintenance status updated to Active & Operational!'); closeModal('reviewMaintenanceModal'); location.reload();">
+            <div class="modal-header" style="padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#fff7ed;border-top-left-radius:1rem;border-top-right-radius:1rem;">
+                <h2 style="font-size:1.2rem;color:#c2410c;font-family:'Poppins',sans-serif;margin:0;font-weight:700;"><i class="fas fa-tools" style="margin-right:0.5rem;"></i> Vehicle Maintenance Review</h2>
+                <button type="button" onclick="closeModal('reviewMaintenanceModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <div style="display:flex;flex-direction:column;gap:1rem;">
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Assigned Driver</label>
+                        <input type="text" id="maintDriverName" readonly style="width:100%;padding:0.6rem;background:#f1f5f9;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;font-weight:600;">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Vehicle Model & Assignment</label>
+                        <input type="text" id="maintVehicleModel" readonly style="width:100%;padding:0.6rem;background:#f1f5f9;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;font-weight:600;">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Update Vehicle Maintenance Status *</label>
+                        <select id="maintStatusSelect" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;font-weight:600;">
+                            <option value="operational" style="color:#059669;">🟢 Active & Operational (Passed Maintenance Inspection)</option>
+                            <option value="maintenance" style="color:#c2410c;">🛠 Under Maintenance (In Workshop / Repair)</option>
+                            <option value="out_of_service" style="color:#dc2626;">🚨 Out of Service (Awaiting Parts)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Maintenance Remarks & Diagnostic Findings</label>
+                        <textarea id="maintRemarks" rows="3" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;" placeholder="Engine oil change, tire alignment, and brake pad inspection completed. Vehicle is cleared for route dispatch."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('reviewMaintenanceModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background:#059669;border-color:#059669;"><i class="fas fa-check-circle"></i> Save & Mark Operational</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -261,6 +302,13 @@ function openReassignModal(driver) {
     document.getElementById('reassignCurrentVehicle').value = driver.vehicle_assignment || '';
     document.getElementById('reassignVehicleType').value = driver.vehicle_type || 'Sedan';
     openModal('reassignVehicleModal');
+}
+
+function openMaintenanceModal(driver) {
+    document.getElementById('maintDriverName').value = driver.first_name + ' ' + driver.last_name + ' (' + (driver.driver_id || '#DRV-2026') + ')';
+    document.getElementById('maintVehicleModel').value = (driver.vehicle_assignment || 'Hyundai Tucson') + ' (' + (driver.vehicle_type || 'Sedan') + ')';
+    document.getElementById('maintRemarks').value = 'Routine engine oil change, brake pad inspection, and wheel alignment completed. Cleared for active route dispatch.';
+    openModal('reviewMaintenanceModal');
 }
 </script>
 @endsection

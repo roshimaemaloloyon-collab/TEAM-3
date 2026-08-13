@@ -138,6 +138,7 @@
                     <td style="text-align:center;">
                         <div style="display:flex;gap:0.35rem;justify-content:center;align-items:center;">
                             <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-documents']) }}" class="icon-btn" title="View Document"><i class="fas fa-eye"></i></a>
+                            <button type="button" class="icon-btn" style="color:#ea580c;" title="Renew & Update Expiration Date" onclick="openRenewModal({{ json_encode($driver) }})"><i class="fas fa-calendar-alt"></i></button>
                             <a href="{{ route('admin.drivers.documents.download', ['id' => $driver->id, 'type' => request('type', 'license')]) }}" class="icon-btn" title="Download Document Record"><i class="fas fa-download"></i></a>
                             <form action="{{ route('admin.drivers.documents.verify', $driver->id) }}" method="POST" style="margin:0;display:inline;">
                                 @csrf
@@ -156,6 +157,56 @@
     </div>
     <div style="margin-top:1.25rem;">
         {{ $drivers->links() }}
+    </div>
+</div>
+
+<!-- Renew / Update Expiration Date Modal -->
+<div class="modal-overlay" id="renewDocModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:550px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <form id="renewDocForm" onsubmit="event.preventDefault(); alert('Document renewed and verified successfully!'); closeModal('renewDocModal'); location.reload();">
+            <div class="modal-header" style="padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#eff6ff;border-top-left-radius:1rem;border-top-right-radius:1rem;">
+                <h2 style="font-size:1.2rem;color:#1e40af;font-family:'Poppins',sans-serif;margin:0;font-weight:700;"><i class="fas fa-calendar-alt" style="margin-right:0.5rem;"></i> Renew Driver Document</h2>
+                <button type="button" onclick="closeModal('renewDocModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <div style="display:flex;flex-direction:column;gap:1rem;">
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Target Driver</label>
+                        <input type="text" id="renewDriverName" readonly style="width:100%;padding:0.6rem;background:#f1f5f9;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;font-weight:600;">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Document Type *</label>
+                        <select id="renewDocType" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                            <option value="license">LTO Professional Driver's License</option>
+                            <option value="orcr">OR / CR Vehicle Registration</option>
+                            <option value="nbi">NBI Clearance Certificate</option>
+                            <option value="medical">Medical Physical Examination</option>
+                        </select>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                        <div>
+                            <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Issue Date *</label>
+                            <input type="date" value="{{ now()->format('Y-m-d') }}" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;">
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">New Expiration Date *</label>
+                            <input type="date" value="{{ now()->addYears(3)->format('Y-m-d') }}" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Verification Status</label>
+                        <select id="renewStatus" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;font-weight:600;">
+                            <option value="verified" style="color:#059669;">🟢 Verified & Compliant</option>
+                            <option value="pending" style="color:#c2410c;">🟡 Pending HR Verification</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('renewDocModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background:#0284c7;border-color:#0284c7;"><i class="fas fa-check-circle"></i> Save & Mark Verified</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -213,6 +264,10 @@ function openModal(id) {
 function closeModal(id) {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
+}
+function openRenewModal(driver) {
+    document.getElementById('renewDriverName').value = driver.first_name + ' ' + driver.last_name + ' (' + (driver.driver_id || '#DRV-2026') + ')';
+    openModal('renewDocModal');
 }
 </script>
 @endsection
