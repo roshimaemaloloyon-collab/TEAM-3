@@ -65,6 +65,16 @@ class LearningModulesController extends Controller
             ->groupBy('category')
             ->get();
 
-        return view('admin.learning.learning-modules', compact('modules', 'stats', 'progressData', 'completionData'));
+        $allModulesWithCounts = LearningModule::withCount('assignments')->get();
+        $allDrivers = \App\Models\Driver::query()->notArchived()->orderBy('first_name')->get();
+
+        return view('admin.learning.learning-modules', compact(
+            'modules',
+            'stats',
+            'progressData',
+            'completionData',
+            'allModulesWithCounts',
+            'allDrivers'
+        ));
     }
 }
