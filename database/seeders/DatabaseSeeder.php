@@ -61,6 +61,9 @@ class DatabaseSeeder extends Seeder
             ['first' => 'Pedro', 'last' => 'Penduko', 'middle' => 'Garcia', 'v_type' => 'Motorcycle', 'v_name' => 'Honda Click 150i'],
             ['first' => 'Ricardo', 'last' => 'Dalisay', 'middle' => 'Valdez', 'v_type' => 'SUV', 'v_name' => 'Mitsubishi Montero Sport'],
             ['first' => 'Danilo', 'last' => 'Reyes', 'middle' => 'Santos', 'v_type' => 'Motorcycle', 'v_name' => 'Honda ADV 160'],
+            ['first' => 'Joselito', 'last' => 'Golilao', 'middle' => 'Rada', 'v_type' => 'Sedan', 'v_name' => 'Hyundai Tucson'],
+            ['first' => 'Elena', 'last' => 'Bautista', 'middle' => 'Cruz', 'v_type' => 'Van', 'v_name' => 'Nissan Urvan NV350'],
+            ['first' => 'Ramon', 'last' => 'Mendoza', 'middle' => 'Flores', 'v_type' => 'SUV', 'v_name' => 'Toyota Fortuner 2.4 V'],
         ];
 
         $driverUsers = collect();
