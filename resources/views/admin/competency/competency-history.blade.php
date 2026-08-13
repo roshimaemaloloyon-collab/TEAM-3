@@ -106,9 +106,8 @@
                         </td>
                         <td style="text-align:right;">
                             <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                                <button class="btn btn-sm btn-secondary" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Archive"><i class="fas fa-archive"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Restore"><i class="fas fa-undo"></i></button>
+                                <a href="{{ route('admin.competency.assessments.driver.pdf', $history->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" title="View Official Assessment PDF"><i class="fas fa-eye"></i></a>
+                                <a href="{{ route('admin.competency.history.export') }}" class="btn btn-sm btn-primary" title="Export History"><i class="fas fa-file-export"></i></a>
                             </div>
                         </td>
                     </tr>

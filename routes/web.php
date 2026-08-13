@@ -225,6 +225,7 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
 
         Route::get('/results', [App\Http\Controllers\Competency\AssessmentResultsController::class, 'index'])->name('results');
         Route::get('/gap-analysis', [App\Http\Controllers\Competency\GapAnalysisController::class, 'index'])->name('gap-analysis');
+        Route::get('/gap-analysis/export-pdf', [App\Http\Controllers\Competency\GapAnalysisController::class, 'exportGapPdf'])->name('gap-analysis.pdf');
 
         Route::get('/plans', [App\Http\Controllers\Competency\DevelopmentPlanController::class, 'index'])->name('plans');
         Route::post('/plans', [App\Http\Controllers\Competency\DevelopmentPlanController::class, 'store'])->name('plans.store');

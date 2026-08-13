@@ -109,9 +109,9 @@
                         </td>
                         <td style="text-align:right;">
                             <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                                <button class="btn btn-sm btn-secondary" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Download PDF"><i class="fas fa-file-pdf"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Download Excel"><i class="fas fa-file-excel"></i></button>
+                                <a href="{{ route('admin.competency.reports.export', ['format' => 'pdf']) }}" target="_blank" class="btn btn-sm btn-secondary" title="View Report"><i class="fas fa-eye"></i></a>
+                                <a href="{{ route('admin.competency.reports.export', ['format' => 'pdf']) }}" target="_blank" class="btn btn-sm btn-primary" title="Download PDF"><i class="fas fa-file-pdf"></i></a>
+                                <a href="{{ route('admin.competency.reports.export', ['format' => 'excel']) }}" target="_blank" class="btn btn-sm btn-primary" title="Download Excel"><i class="fas fa-file-excel"></i></a>
                                 <button class="btn btn-sm btn-secondary" title="Print" onclick="window.print()"><i class="fas fa-print"></i></button>
                             </div>
                         </td>

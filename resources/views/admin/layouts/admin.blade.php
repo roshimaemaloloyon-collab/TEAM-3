@@ -541,6 +541,54 @@
             background: var(--beige);
         }
 
+        /* Print Media Styles for Professional Document Export */
+        @media print {
+            #sidebar, .sidebar, .header-bar, .breadcrumb, .filter-bar, .btn, .modal-overlay, .quick-actions, #mobileOverlay, nav, header {
+                display: none !important;
+            }
+            body, html {
+                background: #ffffff !important;
+                color: #000000 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+            .main-content, main, #mainContent, .content-area {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-shadow: none !important;
+            }
+            .summary-grid, .table-card, .charts-grid {
+                box-shadow: none !important;
+                border: 1px solid #e2e8f0 !important;
+                margin-bottom: 1.5rem !important;
+                page-break-inside: avoid;
+            }
+            .data-table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            .data-table th, .data-table td {
+                border: 1px solid #cbd5e1 !important;
+                padding: 8px 10px !important;
+                color: #0f172a !important;
+                font-size: 11px !important;
+            }
+            .data-table th {
+                background-color: #063151 !important;
+                color: #ffffff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .item-badge {
+                border: 1px solid #cbd5e1 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+
         /* Summary Cards */
         .summary-grid {
             display: grid;
