@@ -450,28 +450,26 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
 
-            \App\Models\CompetencyDevelopmentPlan::create([
-                'driver_id' => $dUser->id,
-                'plan_name' => fake()->randomElement([
-                    'Safe Driving Improvement Plan',
-                    'Customer Service Enhancement',
-                    'Communication Skills Development',
-                    'Navigation Proficiency Plan',
-                    'Professionalism Training',
-                ]),
-                'description' => fake()->sentence(),
-                'assigned_competencies' => $competencies->random(3)->pluck('id')->toArray(),
-                'assigned_trainings' => Training::inRandomOrder()->take(2)->pluck('id')->toArray(),
-                'assigned_learning_modules' => Training::inRandomOrder()->take(2)->pluck('id')->toArray(),
-                'coaching_sessions' => fake()->numberBetween(1, 5),
-                'development_objectives' => fake()->sentence(),
-                'completion_percentage' => fake()->numberBetween(0, 100),
-                'target_completion_date' => fake()->dateTimeBetween('+1 month', '+6 months'),
-                'hr_remarks' => fake()->optional()->sentence(),
-                'status' => fake()->randomElement(['active', 'completed', 'on_hold', 'cancelled']),
-                'created_by' => $adminUser->id,
-                'updated_by' => $adminUser->id,
-            ]);
+            }
         }
+
+        $juanUser = User::where('name', 'like', '%Juan Dela Cruz%')->first() ?? $driverUsers->first();
+
+        \App\Models\CompetencyDevelopmentPlan::create([
+            'driver_id' => $juanUser ? $juanUser->id : 1,
+            'plan_name' => 'Advanced Defensive Driving & Safety Protocols',
+            'description' => 'Comprehensive competency development plan for driver safety enhancement.',
+            'assigned_competencies' => $competencies->random(min(3, $competencies->count()))->pluck('id')->toArray(),
+            'assigned_trainings' => Training::inRandomOrder()->take(2)->pluck('id')->toArray(),
+            'assigned_learning_modules' => Training::inRandomOrder()->take(2)->pluck('id')->toArray(),
+            'coaching_sessions' => 3,
+            'development_objectives' => 'Enhance defensive driving awareness and emergency handling.',
+            'completion_percentage' => 85,
+            'target_completion_date' => now()->addMonths(2),
+            'hr_remarks' => 'Driver is performing well in practical exercises.',
+            'status' => 'active',
+            'created_by' => $adminUser->id,
+            'updated_by' => $adminUser->id,
+        ]);
     }
 }

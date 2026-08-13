@@ -14,42 +14,25 @@ class DevelopmentPlanController extends Controller
         $status = $request->query('status');
         $perPage = (int) ($request->query('per_page', 15));
 
-        // Auto-seed initial realistic Development Plans for drivers if table is empty
-        if (CompetencyDevelopmentPlan::count() === 0) {
-            $drivers = \App\Models\Driver::query()->notArchived()->orderBy('id')->get();
-            $driverCount = $drivers->count();
+        // Clean up excess development plans and enforce exactly ONE single record for Juan Dela Cruz
+        if (CompetencyDevelopmentPlan::count() !== 1) {
+            CompetencyDevelopmentPlan::query()->delete();
 
-            if ($driverCount > 0) {
-                $samplePlans = [
-                    ['name' => 'Advanced Defensive Driving & Safety Protocols', 'progress' => 85, 'status' => 'active', 'modules' => ['Safety 101', 'Hazard Mgmt'], 'trainings' => ['Emergency Handling Workshop']],
-                    ['name' => 'GPS Route Optimization & Navigation Mastery', 'progress' => 60, 'status' => 'active', 'modules' => ['GPS Systems', 'Traffic Patterns'], 'trainings' => ['City Traffic Navigation']],
-                    ['name' => 'Customer Experience & Executive Passenger Service', 'progress' => 100, 'status' => 'completed', 'modules' => ['Passenger Etiquette', 'Conflict Resolution'], 'trainings' => ['Customer Service Excellence']],
-                    ['name' => 'LTFRB Regulatory Compliance & Inspection Course', 'progress' => 40, 'status' => 'on_hold', 'modules' => ['LTFRB Guidelines', 'Vehicle Checklists'], 'trainings' => ['Road Readiness Seminar']],
-                    ['name' => 'Night Operations & Weather Driving Protocol', 'progress' => 75, 'status' => 'active', 'modules' => ['Night Driving', 'Rain Safety'], 'trainings' => ['Wet Asphalt Braking Course']],
-                    ['name' => 'First Aid & Medical Emergency Response Program', 'progress' => 90, 'status' => 'active', 'modules' => ['Basic CPR', 'Evacuation Steps'], 'trainings' => ['Red Cross First Aid Course']],
-                ];
+            $driverUser = \App\Models\User::where('name', 'like', '%Juan Dela Cruz%')->first() 
+                ?? \App\Models\User::where('role', 'driver')->first() 
+                ?? \App\Models\User::first();
 
-                $adminUser = \App\Models\User::where('role', 'admin')->first() ?? \App\Models\User::first();
-
-                foreach ($samplePlans as $idx => $p) {
-                    $driver = $drivers[$idx % $driverCount];
-                    $driverUser = ($driver && $driver->user_id) ? \App\Models\User::find($driver->user_id) : null;
-                    $driverId = $driverUser ? $driverUser->id : ($adminUser ? $adminUser->id : 1);
-
-                    CompetencyDevelopmentPlan::create([
-                        'driver_id' => $driverId,
-                        'plan_name' => $p['name'],
-                        'description' => 'Comprehensive competency development plan.',
-                        'completion_percentage' => $p['progress'],
-                        'status' => $p['status'],
-                        'assigned_learning_modules' => $p['modules'],
-                        'assigned_trainings' => $p['trainings'],
-                        'target_completion_date' => now()->addMonths(2),
-                        'created_by' => $adminUser ? $adminUser->id : null,
-                        'created_at' => now()->subDays(5 * ($idx + 1)),
-                    ]);
-                }
-            }
+            CompetencyDevelopmentPlan::create([
+                'driver_id' => $driverUser ? $driverUser->id : 1,
+                'plan_name' => 'Advanced Defensive Driving & Safety Protocols',
+                'description' => 'Comprehensive competency development plan for driver safety enhancement.',
+                'completion_percentage' => 85,
+                'status' => 'active',
+                'assigned_learning_modules' => ['Safety Protocols 101', 'Hazard Management'],
+                'assigned_trainings' => ['Emergency Handling Workshop', 'Road Safety Seminar'],
+                'target_completion_date' => now()->addMonths(2),
+                'created_at' => now(),
+            ]);
         }
 
         $query = CompetencyDevelopmentPlan::with('driver')->orderByDesc('created_at');
