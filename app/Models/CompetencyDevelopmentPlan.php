@@ -61,13 +61,14 @@ class CompetencyDevelopmentPlan extends Model
             return $driverById->full_name;
         }
 
-        $driverByUserId = Driver::where('user_id', $this->driver_id)->first();
-        if ($driverByUserId && $driverByUserId->full_name) {
-            return $driverByUserId->full_name;
-        }
-
-        if ($this->driver && $this->driver->name && $this->driver->name !== 'TripWise Admin' && $this->driver->name !== 'Admin User') {
-            return $this->driver->name;
+        if ($this->driver && $this->driver->email) {
+            $driverByEmail = Driver::where('email', $this->driver->email)->first();
+            if ($driverByEmail && $driverByEmail->full_name) {
+                return $driverByEmail->full_name;
+            }
+            if ($this->driver->name && $this->driver->name !== 'TripWise Admin' && $this->driver->name !== 'Admin User') {
+                return $this->driver->name;
+            }
         }
 
         $realDrivers = Driver::notArchived()->orderBy('id')->get();

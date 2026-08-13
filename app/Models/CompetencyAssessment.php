@@ -55,15 +55,15 @@ class CompetencyAssessment extends Model
             return $driverById->full_name;
         }
 
-        // 3. Query Driver model by user_id
-        $driverByUserId = Driver::where('user_id', $this->driver_id)->first();
-        if ($driverByUserId && $driverByUserId->full_name) {
-            return $driverByUserId->full_name;
-        }
-
-        // 4. Fallback to User model if name is real user name and not TripWise Admin
-        if ($this->driver && $this->driver->name && $this->driver->name !== 'TripWise Admin' && $this->driver->name !== 'Admin User') {
-            return $this->driver->name;
+        // 3. Query Driver model by email matching User email
+        if ($this->driver && $this->driver->email) {
+            $driverByEmail = Driver::where('email', $this->driver->email)->first();
+            if ($driverByEmail && $driverByEmail->full_name) {
+                return $driverByEmail->full_name;
+            }
+            if ($this->driver->name && $this->driver->name !== 'TripWise Admin' && $this->driver->name !== 'Admin User') {
+                return $this->driver->name;
+            }
         }
 
         // 5. Fallback: match from active registered drivers list by index
