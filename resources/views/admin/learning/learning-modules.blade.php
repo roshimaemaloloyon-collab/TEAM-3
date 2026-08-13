@@ -229,10 +229,10 @@
             <div style="padding:1.25rem 1.5rem;">
                 <div style="margin-bottom:1rem;">
                     <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Target Driver</label>
-                    <select name="driver_id" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
+                    <select name="driver_id" id="assignDriverSelect" required style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;background:var(--white);color:var(--text-dark);">
                         @if(isset($allDrivers))
                             @foreach($allDrivers as $d)
-                                <option value="{{ $d->id }}">{{ $d->full_name }} ({{ $d->formatted_id }})</option>
+                                <option value="{{ $d->id }}" data-vtype="{{ $d->vehicle_type }}">{{ $d->full_name }} ({{ $d->formatted_id }}) — {{ $d->vehicle_type }} ({{ $d->vehicle_assignment }})</option>
                             @endforeach
                         @endif
                     </select>
@@ -257,6 +257,15 @@
 <script>
 // JSON payload of all learning modules with assignment counts
 const allModules = {!! json_encode($allModulesWithCounts ?? []) !!};
+const allDriversList = {!! json_encode($allDrivers->map(function($d) {
+    return [
+        'id' => $d->id,
+        'name' => $d->full_name,
+        'formatted_id' => $d->formatted_id,
+        'vtype' => $d->vehicle_type,
+        'vname' => $d->vehicle_assignment,
+    ];
+}) ?? []) !!};
 
 function filterPositions() {
     const searchVal = document.getElementById('positionSearchInput').value.toLowerCase();
@@ -278,7 +287,38 @@ function filterPositions() {
     });
 }
 
+let currentPositionName = 'MC TAXI DRIVER';
+
+function populateDriverSelect(positionName) {
+    const select = document.getElementById('assignDriverSelect');
+    if (!select) return;
+    select.innerHTML = '';
+
+    const posUpper = (positionName || '').toUpperCase();
+    const isMcTaxi = posUpper.includes('MC TAXI');
+    const is4Wheel = posUpper.includes('4-WHEEL');
+
+    let filteredDrivers = allDriversList;
+    if (isMcTaxi) {
+        filteredDrivers = allDriversList.filter(d => (d.vtype || '').toLowerCase() === 'motorcycle');
+    } else if (is4Wheel) {
+        filteredDrivers = allDriversList.filter(d => (d.vtype || '').toLowerCase() !== 'motorcycle');
+    }
+
+    if (filteredDrivers.length === 0) {
+        filteredDrivers = allDriversList;
+    }
+
+    filteredDrivers.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d.id;
+        opt.innerText = `${d.name} (${d.formatted_id}) — ${d.vtype || 'Driver'} (${d.vname || 'Assigned Vehicle'})`;
+        select.appendChild(opt);
+    });
+}
+
 function openPositionModulesModal(positionName) {
+    currentPositionName = positionName;
     const modal = document.getElementById('positionModulesModal');
     if (!modal) return;
 
@@ -374,6 +414,7 @@ document.addEventListener('click', function(e) {
 
         const assignModal = document.getElementById('assignLearningModuleModal');
         if (assignModal) {
+            populateDriverSelect(currentPositionName);
             document.getElementById('assignModuleIdInput').value = moduleId;
             document.getElementById('assignModuleTitleInput').value = moduleTitle;
             assignModal.style.display = 'flex';
