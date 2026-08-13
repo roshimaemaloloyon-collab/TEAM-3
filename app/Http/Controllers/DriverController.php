@@ -200,15 +200,13 @@ class DriverController extends Controller
         $perPage = $request->input('per_page', 10);
         $drivers = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
 
-        // Seed initial data if database is empty so page looks great out of the box
-        if ($totalDrivers === 0) {
-            $this->seedSampleDrivers();
-            return redirect()->route('admin.drivers.index');
+        // Redirect to page 1 if requested page exceeds lastPage
+        if ($drivers->currentPage() > $drivers->lastPage() && $drivers->lastPage() > 0) {
+            return redirect()->route('admin.drivers.index', array_merge($request->query(), ['page' => 1]));
         }
 
-        // Refresh sample data if all drivers still have external photo URLs
-        if ($drivers->total() > 0 && $drivers->first()->photo && str_contains($drivers->first()->photo, 'unsplash')) {
-            Driver::query()->delete();
+        // Seed initial data if database is empty so page looks great out of the box
+        if ($totalDrivers === 0) {
             $this->seedSampleDrivers();
             return redirect()->route('admin.drivers.index');
         }
