@@ -133,7 +133,7 @@
                             $action = 'Skill Maintenance';
                         }
 
-                        $driverName = $assessment->driver->name ?? 'Driver #' . $assessment->driver_id;
+                        $driverName = $assessment->driver_name;
                         $compName = $assessment->competency->name ?? 'Operational Safety';
                     @endphp
                     <tr>

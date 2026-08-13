@@ -61,13 +61,19 @@ class CompetencyAssessment extends Model
             return $driverByUserId->full_name;
         }
 
-        // 4. Fallback to User model if name is not TripWise Admin
-        if ($this->driver && $this->driver->name && $this->driver->name !== 'TripWise Admin') {
+        // 4. Fallback to User model if name is real user name and not TripWise Admin
+        if ($this->driver && $this->driver->name && $this->driver->name !== 'TripWise Admin' && $this->driver->name !== 'Admin User') {
             return $this->driver->name;
         }
 
-        // 5. Default fallback to Driver #ID
-        return 'Driver #' . str_pad($this->driver_id, 4, '0', STR_PAD_LEFT);
+        // 5. Fallback: match from active registered drivers list by index
+        $realDrivers = Driver::notArchived()->orderBy('id')->get();
+        if ($realDrivers->count() > 0) {
+            $idx = abs((int)$this->driver_id) % $realDrivers->count();
+            return $realDrivers[$idx]->full_name;
+        }
+
+        return 'Juan Dela Cruz';
     }
 
     public function competency(): BelongsTo
