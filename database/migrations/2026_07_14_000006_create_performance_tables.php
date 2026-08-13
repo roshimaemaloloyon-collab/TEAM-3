@@ -70,8 +70,8 @@ return new class extends Migration
         Schema::create('performance_history', function (Blueprint $table) {
             $table->id();
             $table->foreignId('driver_id')->constrained('users')->cascadeOnDelete();
-            $table->decimal('overall_score', 3, 2)->nullable();
-            $table->decimal('kpi_score', 3, 2)->nullable();
+            $table->decimal('overall_score', 5, 2)->nullable();
+            $table->decimal('kpi_score', 5, 2)->nullable();
             $table->integer('ranking')->nullable();
             $table->string('performance_status')->nullable();
             $table->string('record_type'); // snapshot, review, kpi_update, ranking_change

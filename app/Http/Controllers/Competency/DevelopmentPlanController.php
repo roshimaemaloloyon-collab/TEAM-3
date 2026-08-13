@@ -29,9 +29,12 @@ class DevelopmentPlanController extends Controller
                     ['name' => 'First Aid & Medical Emergency Response Program', 'progress' => 90, 'status' => 'active', 'modules' => ['Basic CPR', 'Evacuation Steps'], 'trainings' => ['Red Cross First Aid Course']],
                 ];
 
+                $adminUser = \App\Models\User::where('role', 'admin')->first() ?? \App\Models\User::first();
+
                 foreach ($samplePlans as $idx => $p) {
                     $driver = $drivers[$idx % $driverCount];
-                    $driverId = $driver->user_id ?? $driver->id;
+                    $driverUser = ($driver && $driver->user_id) ? \App\Models\User::find($driver->user_id) : null;
+                    $driverId = $driverUser ? $driverUser->id : ($adminUser ? $adminUser->id : 1);
 
                     CompetencyDevelopmentPlan::create([
                         'driver_id' => $driverId,
@@ -42,6 +45,7 @@ class DevelopmentPlanController extends Controller
                         'assigned_learning_modules' => $p['modules'],
                         'assigned_trainings' => $p['trainings'],
                         'target_completion_date' => now()->addMonths(2),
+                        'created_by' => $adminUser ? $adminUser->id : null,
                         'created_at' => now()->subDays(5 * ($idx + 1)),
                     ]);
                 }

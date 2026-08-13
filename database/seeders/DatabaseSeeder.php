@@ -15,6 +15,7 @@ use App\Models\CompetencyAssessment;
 use App\Models\CompetencyHistory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,7 +23,7 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        \DB::statement('PRAGMA foreign_keys = OFF');
+        Schema::disableForeignKeyConstraints();
         \DB::table('notifications')->truncate();
         \DB::table('peer_evaluations')->truncate();
         \DB::table('performances')->truncate();
@@ -40,13 +41,11 @@ class DatabaseSeeder extends Seeder
         \DB::table('report_exports')->truncate();
         \DB::table('report_history')->truncate();
         \DB::table('analytics_data')->truncate();
-        \DB::table('performance_history')->truncate();
         \DB::table('competencies')->truncate();
         \DB::table('competency_assessments')->truncate();
         \DB::table('competency_development_plans')->truncate();
         \DB::table('competency_history')->truncate();
-        \DB::table('sqlite_sequence')->where('name', 'drivers')->update(['seq' => 0]);
-        \DB::statement('PRAGMA foreign_keys = ON');
+        Schema::enableForeignKeyConstraints();
 
         $adminUser = User::factory()->create([
             'name' => 'Admin User',
