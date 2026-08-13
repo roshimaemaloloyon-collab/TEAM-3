@@ -48,28 +48,97 @@ class DatabaseSeeder extends Seeder
         Schema::enableForeignKeyConstraints();
 
         $adminUser = User::factory()->create([
-            'name' => 'Admin User',
+            'name' => 'TripWise Admin',
             'email' => 'admin@tripwise.app',
             'password' => bcrypt('password'),
             'role' => 'admin',
             'status' => 'active',
         ]);
 
-        $defaultDriverUser = User::factory()->create([
-            'name' => 'Juan Dela Cruz',
-            'email' => 'driver@tripwise.app',
-            'password' => bcrypt('password'),
-            'role' => 'driver',
-            'status' => 'active',
-        ]);
+        $filipinoDriverNames = [
+            ['first' => 'Juan', 'last' => 'Dela Cruz', 'middle' => 'Perez'],
+            ['first' => 'Maria', 'last' => 'Santos', 'middle' => 'Reyes'],
+            ['first' => 'Pedro', 'last' => 'Penduko', 'middle' => 'Garcia'],
+            ['first' => 'Ricardo', 'last' => 'Dalisay', 'middle' => 'Valdez'],
+            ['first' => 'Antonio', 'last' => 'Luna', 'middle' => 'Novicio'],
+            ['first' => 'Fernando', 'last' => 'Poe', 'middle' => 'Jose'],
+            ['first' => 'Jose', 'last' => 'Rizal', 'middle' => 'Mercado'],
+            ['first' => 'Andres', 'last' => 'Bonifacio', 'middle' => 'Castro'],
+            ['first' => 'Emilio', 'last' => 'Aguinaldo', 'middle' => 'Famy'],
+            ['first' => 'Apolinario', 'last' => 'Mabini', 'middle' => 'Maranan'],
+            ['first' => 'Melchora', 'last' => 'Aquino', 'middle' => 'Ramos'],
+            ['first' => 'Gabriela', 'last' => 'Silang', 'middle' => 'Cariño'],
+            ['first' => 'Rodrigo', 'last' => 'Duterte', 'middle' => 'Roa'],
+            ['first' => 'Manny', 'last' => 'Pacquiao', 'middle' => 'Dapidran'],
+            ['first' => 'Ramon', 'last' => 'Magsaysay', 'middle' => 'Del Fierro'],
+            ['first' => 'Manuel', 'last' => 'Quezon', 'middle' => 'Luis'],
+            ['first' => 'Sergio', 'last' => 'Osmeña', 'middle' => 'Suico'],
+            ['first' => 'Carlos', 'last' => 'Garcia', 'middle' => 'Polestico'],
+            ['first' => 'Diosdado', 'last' => 'Macapagal', 'middle' => 'Pangan'],
+            ['first' => 'Corazon', 'last' => 'Aquino', 'middle' => 'Cojuango'],
+            ['first' => 'Fidel', 'last' => 'Ramos', 'middle' => 'Valdez'],
+            ['first' => 'Joseph', 'last' => 'Estrada', 'middle' => 'Ejercito'],
+            ['first' => 'Gloria', 'last' => 'Arroyo', 'middle' => 'Macapagal'],
+            ['first' => 'Benigno', 'last' => 'Aquino', 'middle' => 'Simeon'],
+            ['first' => 'Ferdinand', 'last' => 'Marcos', 'middle' => 'Edralin'],
+            ['first' => 'Miriam', 'last' => 'Defensor', 'middle' => 'Palma'],
+            ['first' => 'Francisco', 'last' => 'Baltazar', 'middle' => 'Florante'],
+            ['first' => 'Juan', 'last' => 'Luna', 'middle' => 'Novicio'],
+            ['first' => 'Marcelo', 'last' => 'Del Pilar', 'middle' => 'Hilario'],
+            ['first' => 'Gregorio', 'last' => 'Del Pilar', 'middle' => 'Sempio'],
+            ['first' => 'Lapu', 'last' => 'Lapu', 'middle' => 'Mactan'],
+            ['first' => 'Sultan', 'last' => 'Kudarat', 'middle' => 'Maguindanao'],
+            ['first' => 'Epifanio', 'last' => 'Delos Santos', 'middle' => 'Cristobal'],
+            ['first' => 'Jose', 'last' => 'Abad Santos', 'middle' => 'Basco'],
+            ['first' => 'Artemio', 'last' => 'Ricarte', 'middle' => 'Garcia'],
+        ];
 
-        $users = User::factory(30)->create();
-        $drivers = Driver::factory(35)->create();
+        $driverUsers = collect();
+        $drivers = collect();
 
-        // Connect driver users with performance, KPI, and Performance Review records
-        $driverUsers = User::where('role', 'driver')->get();
-        if ($driverUsers->isEmpty()) {
-            $driverUsers = collect([$defaultDriverUser]);
+        foreach ($filipinoDriverNames as $idx => $nameInfo) {
+            $fullName = $nameInfo['first'] . ' ' . $nameInfo['last'];
+            $email = strtolower($nameInfo['first'] . '.' . str_replace(' ', '', $nameInfo['last'])) . '@tripwise.app';
+
+            $user = User::create([
+                'name' => $fullName,
+                'email' => $email,
+                'password' => bcrypt('password'),
+                'role' => 'driver',
+                'status' => 'active',
+            ]);
+            $driverUsers->push($user);
+
+            $driver = Driver::create([
+                'user_id' => $user->id,
+                'driver_id' => '#DRV-2026-' . str_pad($idx + 1, 4, '0', STR_PAD_LEFT),
+                'first_name' => $nameInfo['first'],
+                'middle_name' => $nameInfo['middle'],
+                'last_name' => $nameInfo['last'],
+                'photo' => null,
+                'birth_date' => '1990-05-15',
+                'gender' => ($idx % 3 === 0) ? 'Female' : 'Male',
+                'civil_status' => 'Married',
+                'address' => 'Metro Manila, Philippines',
+                'contact_number' => '0917' . sprintf('%07d', $idx + 1000000),
+                'email' => $email,
+                'emergency_contact_person' => 'Family Contact',
+                'emergency_contact_number' => '0918' . sprintf('%07d', $idx + 1000000),
+                'date_hired' => '2024-01-15',
+                'branch' => ['Central Branch', 'North Branch', 'South Branch', 'East Branch', 'West Branch'][$idx % 5],
+                'vehicle_assignment' => ['Toyota Fortuner', 'Honda Civic', 'Mitsubishi Montero', 'Hyundai Tucson', 'Nissan Terra', 'Yamaha NMAX', 'Toyota Hiace'][$idx % 7],
+                'vehicle_type' => ['SUV', 'Sedan', 'Van', 'Motorcycle'][$idx % 4],
+                'route_assignment' => ['Central Route', 'North Route', 'South Route', 'East Route', 'West Route'][$idx % 5],
+                'status' => ['active', 'active', 'active', 'review', 'active'][$idx % 5],
+                'performance_score' => number_format(3.5 + ($idx % 15) * 0.1, 1),
+                'trips_count' => 150 + ($idx * 45),
+                'complaints_count' => $idx % 3,
+                'username' => strtolower($nameInfo['first'] . $nameInfo['last']),
+                'role' => 'Driver',
+                'license_number' => 'N01-' . sprintf('%08d', $idx + 12345678),
+                'license_expiration' => '2028-12-31',
+            ]);
+            $drivers->push($driver);
         }
 
         $kpiNames = [
@@ -155,7 +224,6 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        Performance::factory(20)->create();
         $trainings = Training::factory(25)->create();
 
         foreach ($driverUsers as $dUser) {
