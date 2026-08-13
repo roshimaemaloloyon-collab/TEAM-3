@@ -32,7 +32,7 @@ return new class extends Migration
             $table->string('vehicle_type')->default('Sedan');
             $table->string('route_assignment')->default('North Route');
             $table->enum('status', ['active', 'inactive', 'review', 'suspended', 'archived'])->default('active');
-            $table->decimal('performance_score', 3, 1)->default(4.5);
+            $table->decimal('performance_score', 3, 1)->default(0.0);
             $table->integer('trips_count')->default(0);
             $table->integer('complaints_count')->default(0);
             $table->string('username')->nullable();

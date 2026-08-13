@@ -252,6 +252,7 @@ class DriverController extends Controller
         $latestId = Driver::max('id') + 1;
         $validated['driver_id'] = '#DRV-2026-' . str_pad($latestId, 4, '0', STR_PAD_LEFT);
         $validated['status'] = strtolower($request->input('status', 'active'));
+        $validated['performance_score'] = 0.0;
 
         if ($request->hasFile('photo')) {
             $path = $request->file('photo')->store('drivers', 'public');
