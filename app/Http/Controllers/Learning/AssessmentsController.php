@@ -47,4 +47,40 @@ class AssessmentsController extends Controller
 
         return view('admin.learning.assessments', compact('assessments', 'stats', 'quizPerformance', 'passFailData'));
     }
+
+    public function retake($id)
+    {
+        $assessment = LearningAssessment::findOrFail($id);
+        if ($assessment->attempt < $assessment->max_attempts) {
+            $assessment->increment('attempt');
+            $assessment->status = 'pending';
+            $assessment->save();
+            return back()->with('success', 'Assessment attempt reset for ' . ($assessment->driver->name ?? 'Driver') . '. Status set to Pending.');
+        }
+
+        return back()->with('error', 'Maximum attempts reached for this assessment.');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $assessment = LearningAssessment::findOrFail($id);
+        $request->validate([
+            'score' => 'required|numeric|min:0|max:100',
+            'status' => 'required|string',
+        ]);
+
+        $assessment->score = $request->score;
+        $assessment->status = $request->status;
+        $assessment->save();
+
+        return back()->with('success', 'Assessment result updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $assessment = LearningAssessment::findOrFail($id);
+        $assessment->delete();
+
+        return back()->with('success', 'Assessment record archived/deleted successfully.');
+    }
 }

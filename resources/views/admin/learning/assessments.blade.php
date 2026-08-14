@@ -105,11 +105,35 @@
                             </span>
                         </td>
                         <td style="text-align:right;">
-                            <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                                <button class="btn btn-sm btn-secondary" title="View Results"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Retake Assessment"><i class="fas fa-redo"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Edit"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger" title="Archive"><i class="fas fa-archive"></i></button>
+                            <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
+                                <button class="btn btn-sm btn-secondary" title="View Results" style="color:#dc2626;border-color:#fca5a5;" onclick="openViewAssessmentModal({{ json_encode([
+                                    'id' => '#ASM-' . str_pad($assessment->id, 5, '0', STR_PAD_LEFT),
+                                    'driver' => $assessment->driver->name ?? 'N/A',
+                                    'module' => $assessment->module->title ?? 'N/A',
+                                    'score' => $assessment->score ?? 'N/A',
+                                    'passing_score' => $assessment->passing_score,
+                                    'attempt' => $assessment->attempt . ' / ' . $assessment->max_attempts,
+                                    'status' => ucfirst(str_replace('_', ' ', $assessment->status)),
+                                    'completed_at' => $assessment->completed_at ? $assessment->completed_at->format('M d, Y h:i A') : 'In Progress'
+                                ]) }})"><i class="fas fa-eye"></i></button>
+
+                                <form action="{{ route('admin.learning.assessments.retake', $assessment->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Allow {{ $assessment->driver->name ?? 'driver' }} to retake this assessment?');">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-primary" style="background:#ef4444;border-color:#ef4444;" title="Retake Assessment"><i class="fas fa-redo"></i></button>
+                                </form>
+
+                                <button class="btn btn-sm btn-primary" style="background:#ef4444;border-color:#ef4444;" title="Edit Assessment" onclick="openEditAssessmentModal({{ json_encode([
+                                    'id' => $assessment->id,
+                                    'driver' => $assessment->driver->name ?? 'N/A',
+                                    'score' => $assessment->score,
+                                    'status' => $assessment->status
+                                ]) }})"><i class="fas fa-edit"></i></button>
+
+                                <form action="{{ route('admin.learning.assessments.destroy', $assessment->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to archive/delete this assessment record?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger" style="background:#dc2626;border-color:#dc2626;" title="Archive / Delete Record"><i class="fas fa-trash"></i></button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -121,6 +145,84 @@
     </div>
     <div style="margin-top:1rem;">
         {{ $assessments->links() }}
+    </div>
+</div>
+
+<!-- View Results Modal -->
+<div id="viewAssessmentModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:550px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <div class="modal-header" style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#f0f9ff;border-top-left-radius:1rem;border-top-right-radius:1rem;">
+            <h2 style="font-size:1.2rem;color:#0369a1;font-family:'Poppins',sans-serif;margin:0;font-weight:700;"><i class="fas fa-clipboard-check" style="margin-right:0.5rem;"></i> Assessment Results Details</h2>
+            <button type="button" onclick="closeModal('viewAssessmentModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:1.5rem;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;background:#f8fafc;padding:1rem;border-radius:0.5rem;border:1px solid #e2e8f0;">
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Assessment Ref</span>
+                    <strong id="modalAsmId" style="font-size:0.95rem;color:var(--primary);">#ASM-00001</strong>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Driver Name</span>
+                    <strong id="modalDriverName" style="font-size:0.95rem;">Juan Dela Cruz</strong>
+                </div>
+                <div style="grid-column:span 2;">
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Learning Module</span>
+                    <span id="modalModuleTitle" style="font-size:0.9rem;font-weight:600;color:#0369a1;">Module Name</span>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Score / Passing</span>
+                    <span id="modalScoreVal" style="font-size:0.95rem;font-weight:700;color:#059669;">85 / 75</span>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Attempt Status</span>
+                    <span id="modalStatusBadge" class="item-badge badge-success">Passed</span>
+                </div>
+                <div style="grid-column:span 2;">
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Completed Date & Time</span>
+                    <span id="modalCompletedAt" style="font-size:0.85rem;color:var(--text-dark);">Aug 14, 2026</span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('viewAssessmentModal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Assessment Modal -->
+<div id="editAssessmentModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <form id="editAssessmentForm" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="modal-header" style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Edit Assessment Record</h2>
+                <button type="button" onclick="closeModal('editAssessmentModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Driver Name</label>
+                    <input type="text" id="editDriverName" readonly style="width:100%;padding:0.6rem;background:#f1f5f9;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Score (0 - 100)</label>
+                    <input type="number" name="score" id="editScore" min="0" max="100" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Status</label>
+                    <select name="status" id="editStatus" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                        <option value="passed">Passed</option>
+                        <option value="failed">Failed</option>
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('editAssessmentModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background:#ef4444;border-color:#ef4444;"><i class="fas fa-check"></i> Save Changes</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -139,6 +241,44 @@
         </div>
     </div>
 </div>
+
+<script>
+window.openModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.style.display = 'flex';
+        el.style.visibility = 'visible';
+        el.style.opacity = '1';
+        document.body.style.overflow = 'hidden';
+    }
+};
+
+window.closeModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+};
+
+window.openViewAssessmentModal = function(data) {
+    document.getElementById('modalAsmId').innerText = data.id;
+    document.getElementById('modalDriverName').innerText = data.driver;
+    document.getElementById('modalModuleTitle').innerText = data.module;
+    document.getElementById('modalScoreVal').innerText = data.score + ' (Passing: ' + data.passing_score + ')';
+    document.getElementById('modalStatusBadge').innerText = data.status;
+    document.getElementById('modalCompletedAt').innerText = data.completed_at;
+    window.openModal('viewAssessmentModal');
+};
+
+window.openEditAssessmentModal = function(data) {
+    document.getElementById('editAssessmentForm').action = '/admin/learning/assessments/' + data.id;
+    document.getElementById('editDriverName').value = data.driver;
+    document.getElementById('editScore').value = data.score;
+    document.getElementById('editStatus').value = data.status;
+    window.openModal('editAssessmentModal');
+};
+</script>
 
 @endsection
 

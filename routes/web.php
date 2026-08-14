@@ -248,6 +248,9 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
         Route::get('/assignments', [App\Http\Controllers\Learning\LearningModulesController::class, 'assignments'])->name('assignments');
         Route::post('/assignments', [App\Http\Controllers\Learning\LearningModulesController::class, 'storeAssignment'])->name('assignments.store');
         Route::get('/assessments', [App\Http\Controllers\Learning\AssessmentsController::class, 'index'])->name('assessments');
+        Route::post('/assessments/{id}/retake', [App\Http\Controllers\Learning\AssessmentsController::class, 'retake'])->name('assessments.retake');
+        Route::put('/assessments/{id}', [App\Http\Controllers\Learning\AssessmentsController::class, 'update'])->name('assessments.update');
+        Route::delete('/assessments/{id}', [App\Http\Controllers\Learning\AssessmentsController::class, 'destroy'])->name('assessments.destroy');
         Route::get('/certificates', [App\Http\Controllers\Learning\CertificatesController::class, 'index'])->name('certificates');
         Route::get('/reports', [App\Http\Controllers\Learning\LearningReportsController::class, 'index'])->name('reports');
         Route::get('/analytics', [App\Http\Controllers\Learning\LearningAnalyticsController::class, 'index'])->name('analytics');
