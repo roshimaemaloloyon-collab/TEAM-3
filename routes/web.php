@@ -275,6 +275,8 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
         Route::put('/attendance/{id}', [App\Http\Controllers\Training\TrainingAttendanceController::class, 'update'])->name('attendance.update');
         Route::get('/attendance/export', [App\Http\Controllers\Training\TrainingAttendanceController::class, 'export'])->name('attendance.export');
         Route::get('/evaluations', [App\Http\Controllers\Training\TrainingEvaluationController::class, 'index'])->name('evaluations');
+        Route::put('/evaluations/{id}', [App\Http\Controllers\Training\TrainingEvaluationController::class, 'update'])->name('evaluations.update');
+        Route::delete('/evaluations/{id}', [App\Http\Controllers\Training\TrainingEvaluationController::class, 'destroy'])->name('evaluations.destroy');
         Route::get('/reports', [App\Http\Controllers\Training\TrainingReportsController::class, 'index'])->name('reports');
         Route::get('/analytics', [App\Http\Controllers\Training\TrainingAnalyticsController::class, 'index'])->name('analytics');
         Route::get('/history', [App\Http\Controllers\Training\TrainingHistoryController::class, 'index'])->name('history');

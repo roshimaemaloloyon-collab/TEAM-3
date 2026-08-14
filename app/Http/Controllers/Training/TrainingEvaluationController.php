@@ -68,4 +68,31 @@ class TrainingEvaluationController extends Controller
 
         return view('admin.training.evaluation', compact('evaluations', 'stats', 'evaluationTrend', 'satisfactionByCategory'));
     }
+
+    public function update(Request $request, $id)
+    {
+        $evaluation = TrainingEvaluation::findOrFail($id);
+        $request->validate([
+            'overall_rating' => 'required|numeric|min:1|max:5',
+            'driver_feedback' => 'nullable|string',
+            'recommendations' => 'nullable|string',
+            'status' => 'required|string',
+        ]);
+
+        $evaluation->overall_rating = $request->overall_rating;
+        $evaluation->driver_feedback = $request->driver_feedback;
+        $evaluation->recommendations = $request->recommendations;
+        $evaluation->status = $request->status;
+        $evaluation->save();
+
+        return back()->with('success', 'Training evaluation record updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $evaluation = TrainingEvaluation::findOrFail($id);
+        $evaluation->delete();
+
+        return back()->with('success', 'Training evaluation record archived/deleted successfully.');
+    }
 }
