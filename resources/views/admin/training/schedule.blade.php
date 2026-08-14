@@ -287,98 +287,48 @@ window.closeModal = function(id) {
 };
 
 window.openViewTrainingModal = function(data) {
-    document.getElementById('trnModalId').innerText = data.id;
-    document.getElementById('trnModalTitle').innerText = data.title;
-    document.getElementById('trnModalCategory').innerText = data.category;
-    document.getElementById('trnModalTrainer').innerText = data.instructor;
-    document.getElementById('trnModalVenue').innerText = data.venue;
-    document.getElementById('trnModalSchedule').innerText = data.schedule;
-    document.getElementById('trnModalSlots').innerText = data.slots + ' Available Slots';
+    if (!data) return;
+    const idEl = document.getElementById('trnModalId');
+    const titleEl = document.getElementById('trnModalTitle');
+    const catEl = document.getElementById('trnModalCategory');
+    const trainerEl = document.getElementById('trnModalTrainer');
+    const venueEl = document.getElementById('trnModalVenue');
+    const schedEl = document.getElementById('trnModalSchedule');
+    const slotsEl = document.getElementById('trnModalSlots');
+
+    if (idEl) idEl.innerText = data.id || '#TRN-00001';
+    if (titleEl) titleEl.innerText = data.title || 'Training Session';
+    if (catEl) catEl.innerText = data.category || 'General';
+    if (trainerEl) trainerEl.innerText = data.instructor || 'Staff Trainer';
+    if (venueEl) venueEl.innerText = data.venue || 'Main Training Facility';
+    if (schedEl) schedEl.innerText = data.schedule || 'Scheduled';
+    if (slotsEl) slotsEl.innerText = (data.slots || '30') + ' Available Slots';
+
     window.openModal('viewTrainingModal');
 };
 
 window.openEditTrainingModal = function(data) {
-    document.getElementById('editTrainingForm').action = '/admin/training/schedule/' + data.id;
-    document.getElementById('editTrnTitle').value = data.title;
-    document.getElementById('editTrnCategory').value = data.category;
-    document.getElementById('editTrnInstructor').value = data.instructor;
-    document.getElementById('editTrnVenue').value = data.venue || '';
-    document.getElementById('editTrnCapacity').value = data.capacity;
-    document.getElementById('editTrnStatus').value = data.status;
+    if (!data) return;
+    const form = document.getElementById('editTrainingForm');
+    if (form) form.action = '/admin/training/schedule/' + data.id;
+
+    const titleEl = document.getElementById('editTrnTitle');
+    const catEl = document.getElementById('editTrnCategory');
+    const instEl = document.getElementById('editTrnInstructor');
+    const venueEl = document.getElementById('editTrnVenue');
+    const capEl = document.getElementById('editTrnCapacity');
+    const statEl = document.getElementById('editTrnStatus');
+
+    if (titleEl) titleEl.value = data.title || '';
+    if (catEl) catEl.value = data.category || 'technical';
+    if (instEl) instEl.value = data.instructor || '';
+    if (venueEl) venueEl.value = data.venue || '';
+    if (capEl) capEl.value = data.capacity || 30;
+    if (statEl) statEl.value = data.status || 'upcoming';
+
     window.openModal('editTrainingModal');
 };
-</script>
 
-<!-- Calendar View -->
-<div class="table-card" style="margin-top:1.5rem;">
-    <h3 style="margin:0 0 1rem;"><i class="fas fa-calendar"></i> Training Calendar</h3>
-    <div style="overflow-x:auto;">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Month</th>
-                    <th>Week</th>
-                    <th>Day</th>
-                    <th>Training</th>
-                    <th>Time</th>
-                    <th>Instructor</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                    $calendarData = [
-                        ['month'=>'July 2026','week'=>'Week 3','day'=>'15','training'=>'Defensive Driving Workshop','time'=>'9:00 AM','instructor'=>'Internal SecOps','status'=>'upcoming'],
-                        ['month'=>'July 2026','week'=>'Week 4','day'=>'22','training'=>'First Aid Certification','time'=>'1:00 PM','instructor'=>'Red Cross','status'=>'upcoming'],
-                        ['month'=>'August 2026','week'=>'Week 1','day'=>'05','training'=>'Eco-Driving Techniques','time'=>'10:00 AM','instructor'=>'Fleet Mgmt','status'=>'upcoming'],
-                    ];
-                @endphp
-                @foreach($calendarData as $event)
-                <tr>
-                    <td>{{ $event['month'] }}</td>
-                    <td>{{ $event['week'] }}</td>
-                    <td><strong>{{ $event['day'] }}</strong></td>
-                    <td><strong>{{ $event['training'] }}</strong></td>
-                    <td>{{ $event['time'] }}</td>
-                    <td>{{ $event['instructor'] }}</td>
-                    <td>
-                        <span class="item-badge badge-info">{{ ucfirst($event['status']) }}</span>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- Charts -->
-<div class="charts-grid" style="margin-top:1.5rem;">
-    <div class="chart-card">
-        <h3><i class="fas fa-chart-bar"></i> Training Schedule</h3>
-        <div class="chart-wrapper">
-            <canvas id="trainingScheduleChart"></canvas>
-        </div>
-    </div>
-    <div class="chart-card">
-        <h3><i class="fas fa-chart-pie"></i> Training Status Distribution</h3>
-        <div class="chart-wrapper">
-            <canvas id="trainingStatusChart"></canvas>
-        </div>
-    </div>
-</div>
-
-@endsection
-
-@section('scripts')
-<script>
-function openModal(id) { document.getElementById(id).classList.add('active'); }
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toastMessage').textContent = message;
-    toast.style.display = 'flex';
-    setTimeout(() => { toast.style.display = 'none'; }, 3000);
-}
 document.addEventListener('DOMContentLoaded', function() {
     const chartDefaults = {
         responsive: true,
@@ -386,28 +336,35 @@ document.addEventListener('DOMContentLoaded', function() {
         plugins: { legend: { labels: { font: { family: "'Poppins', sans-serif" } } } }
     };
 
-    new Chart(document.getElementById('trainingScheduleChart'), {
-        type: 'bar',
-        data: {
-            labels: {!! json_encode($scheduleData->pluck('month_num')->toArray()) !!},
-            datasets: [{
-                label: 'Trainings Scheduled',
-                data: {!! json_encode($scheduleData->pluck('total')->toArray()) !!},
-                backgroundColor: '#10b981',
-                borderRadius: 8
-            }]
-        },
-        options: { ...chartDefaults, scales: { y: { beginAtZero: true } } }
-    });
+    const schedChartEl = document.getElementById('trainingScheduleChart');
+    if (schedChartEl && typeof Chart !== 'undefined') {
+        new Chart(schedChartEl, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($scheduleData->pluck('month_num')->toArray()) !!},
+                datasets: [{
+                    label: 'Trainings Scheduled',
+                    data: {!! json_encode($scheduleData->pluck('total')->toArray()) !!},
+                    backgroundColor: '#10b981',
+                    borderRadius: 8
+                }]
+            },
+            options: { ...chartDefaults, scales: { y: { beginAtZero: true } } }
+        });
+    }
 
-    new Chart(document.getElementById('trainingStatusChart'), {
-        type: 'doughnut',
-        data: {
-            labels: {!! json_encode($statusData->pluck('status')->toArray()) !!},
-            datasets: [{ data: {!! json_encode($statusData->pluck('total')->toArray()) !!}, backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#6366f1'] }]
-        },
-        options: { ...chartDefaults, plugins: { legend: { position: 'bottom', labels: { font: { family: "'Poppins', sans-serif" } } } } }
-    });
+    const statChartEl = document.getElementById('trainingStatusChart');
+    if (statChartEl && typeof Chart !== 'undefined') {
+        new Chart(statChartEl, {
+            type: 'doughnut',
+            data: {
+                labels: {!! json_encode($statusData->pluck('status')->toArray()) !!},
+                datasets: [{ data: {!! json_encode($statusData->pluck('total')->toArray()) !!}, backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#6366f1'] }]
+            },
+            options: { ...chartDefaults, plugins: { legend: { position: 'bottom', labels: { font: { family: "'Poppins', sans-serif" } } } } }
+        });
+    }
 });
 </script>
+
 @endsection
