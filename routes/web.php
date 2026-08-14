@@ -272,6 +272,8 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
         Route::post('/schedule/{id}/cancel', [App\Http\Controllers\Training\TrainingScheduleController::class, 'cancel'])->name('schedule.cancel');
         Route::delete('/schedule/{id}', [App\Http\Controllers\Training\TrainingScheduleController::class, 'destroy'])->name('schedule.destroy');
         Route::get('/attendance', [App\Http\Controllers\Training\TrainingAttendanceController::class, 'index'])->name('attendance');
+        Route::put('/attendance/{id}', [App\Http\Controllers\Training\TrainingAttendanceController::class, 'update'])->name('attendance.update');
+        Route::get('/attendance/export', [App\Http\Controllers\Training\TrainingAttendanceController::class, 'export'])->name('attendance.export');
         Route::get('/evaluations', [App\Http\Controllers\Training\TrainingEvaluationController::class, 'index'])->name('evaluations');
         Route::get('/reports', [App\Http\Controllers\Training\TrainingReportsController::class, 'index'])->name('reports');
         Route::get('/analytics', [App\Http\Controllers\Training\TrainingAnalyticsController::class, 'index'])->name('analytics');
