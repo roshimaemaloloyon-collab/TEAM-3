@@ -115,22 +115,22 @@
                                         'compliance' => min(100, round($baseScore - (($history->id * 2) % 5) + 3, 1)),
                                     ];
                                 @endphp
-                                <button type="button" class="btn btn-sm btn-secondary" title="View Assessment Breakdown" onclick="openAssessmentDetailModal({{ json_encode([
-                                    'driver_name' => $history->driver_name,
-                                    'date' => $history->recorded_at ? \Carbon\Carbon::parse($history->recorded_at)->format('M d, Y') : 'Aug 10, 2026',
-                                    'score' => $history->formatted_score,
-                                    'status' => ucfirst(str_replace('_', ' ', $history->record_type)),
-                                    'assessed_by' => $history->recorder->name ?? 'TripWise Admin',
-                                    'notes' => $history->notes ?? 'Evaluated on key TNVS competencies including road safety, GPS navigation, and passenger service.',
-                                    'breakdown' => $breakdownScores,
-                                ]) }})"><i class="fas fa-eye"></i></button>
+                                <button type="button" class="btn btn-sm btn-secondary" title="View Assessment Breakdown" onclick="if(window.openAssessmentDetailModal){ window.openAssessmentDetailModal({{ json_encode([
+                                     'driver_name' => $history->driver_name,
+                                     'date' => $history->recorded_at ? \Carbon\Carbon::parse($history->recorded_at)->format('M d, Y') : 'Aug 10, 2026',
+                                     'score' => $history->formatted_score,
+                                     'status' => ucfirst(str_replace('_', ' ', $history->record_type)),
+                                     'assessed_by' => $history->recorder->name ?? 'TripWise Admin',
+                                     'notes' => $history->notes ?? 'Evaluated on key TNVS competencies including road safety, GPS navigation, and passenger service.',
+                                     'breakdown' => $breakdownScores,
+                                 ]) }}); } else { const m = document.getElementById('assessmentDetailModal'); if(m){ m.style.display='flex'; m.style.visibility='visible'; m.style.opacity='1'; } }"><i class="fas fa-eye"></i></button>
                                 <a href="{{ route('admin.competency.history.export', ['format' => 'pdf', 'record_type' => $history->record_type, 'driver_id' => $history->driver_id]) }}" target="_blank" class="btn btn-sm btn-secondary" style="color:#dc2626;border-color:#fca5a5;" title="Download Driver PDF"><i class="fas fa-file-pdf"></i></a>
-                                <button type="button" class="btn btn-sm btn-primary" title="Execute Action / Development Plan" onclick="openHistoryActionModal({{ json_encode([
-                                    'id' => $history->id,
-                                    'driver_name' => $history->driver_name,
-                                    'driver_id' => $history->driver_id,
-                                    'score' => $history->formatted_score
-                                ]) }})"><i class="fas fa-external-link-alt"></i></button>
+                                <button type="button" class="btn btn-sm btn-primary" title="Execute Action / Development Plan" onclick="if(window.openHistoryActionModal){ window.openHistoryActionModal({{ json_encode([
+                                     'id' => $history->id,
+                                     'driver_name' => $history->driver_name,
+                                     'driver_id' => $history->driver_id,
+                                     'score' => $history->formatted_score
+                                 ]) }}); } else { const m = document.getElementById('historyActionModal'); if(m){ m.style.display='flex'; m.style.visibility='visible'; m.style.opacity='1'; } }"><i class="fas fa-external-link-alt"></i></button>
                             </div>
                         </td>
                     </tr>
@@ -241,55 +241,7 @@
     </div>
 </div>
 
-@endsection
-
-@section('scripts')
 <script>
-function exportReport(format) { showToast('Exporting ' + format.toUpperCase() + ' report...'); }
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toastMessage').textContent = message;
-    toast.style.display = 'flex';
-    setTimeout(() => { toast.style.display = 'none'; }, 3000);
-}
-document.addEventListener('DOMContentLoaded', function() {
-    const chartDefaults = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { labels: { font: { family: "'Poppins', sans-serif" } } } }
-    };
-
-    new Chart(document.getElementById('compTimelineChart'), {
-        type: 'line',
-        data: {
-            labels: {!! json_encode($timelineData->pluck('month_num')->toArray()) !!},
-            datasets: [{
-                label: 'Competency Score',
-                data: {!! json_encode($timelineData->pluck('total')->toArray()) !!},
-                borderColor: '#F44336',
-                backgroundColor: 'rgba(244,67,54,0.1)',
-                fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#F44336'
-            }]
-        },
-        options: { ...chartDefaults, plugins: { legend: { display: false } } }
-    });
-
-    new Chart(document.getElementById('compHistoryChart'), {
-        type: 'line',
-        data: {
-            labels: {!! json_encode($trendData->pluck('month_num')->toArray()) !!},
-            datasets: [{
-                label: 'Historical Score',
-                data: {!! json_encode($trendData->pluck('avg_score')->toArray()) !!},
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59,130,246,0.1)',
-                fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#3b82f6'
-            }]
-        },
-        options: { ...chartDefaults, plugins: { legend: { display: false } } }
-    });
-});
-
 window.openModal = function(id) {
     const el = document.getElementById(id);
     if (el) {
@@ -309,46 +261,55 @@ window.closeModal = function(id) {
 };
 
 window.openAssessmentDetailModal = function(data) {
-    document.getElementById('detailDriverName').innerText = data.driver_name;
-    document.getElementById('detailDate').innerText = data.date;
-    document.getElementById('detailAssessedBy').innerText = data.assessed_by;
-
+    if (!data) return;
+    const nameEl = document.getElementById('detailDriverName');
+    const dateEl = document.getElementById('detailDate');
+    const assessorEl = document.getElementById('detailAssessedBy');
     const statusEl = document.getElementById('detailStatus');
-    statusEl.innerText = data.status;
-    statusEl.className = 'item-badge';
-    const statusLower = data.status.toLowerCase();
-    if (statusLower === 'assessment' || statusLower === 'assessed') {
-        statusEl.classList.add('badge-success');
-    } else if (statusLower === 'review') {
-        statusEl.classList.add('badge-info');
-    } else {
-        statusEl.classList.add('badge-warning');
+    const scoreEl = document.getElementById('detailScore');
+
+    if (nameEl) nameEl.innerText = data.driver_name || 'Juan Dela Cruz';
+    if (dateEl) dateEl.innerText = data.date || 'Aug 10, 2026';
+    if (assessorEl) assessorEl.innerText = data.assessed_by || 'TripWise Admin';
+    if (scoreEl) scoreEl.innerText = data.score || '85.00%';
+
+    if (statusEl) {
+        statusEl.innerText = data.status || 'Assessed';
+        statusEl.className = 'item-badge';
+        const statusLower = (data.status || '').toLowerCase();
+        if (statusLower === 'assessment' || statusLower === 'assessed') {
+            statusEl.classList.add('badge-success');
+        } else if (statusLower === 'review') {
+            statusEl.classList.add('badge-info');
+        } else {
+            statusEl.classList.add('badge-warning');
+        }
     }
 
-    document.getElementById('detailScore').innerText = data.score;
-
     const container = document.getElementById('breakdownContainer');
-    const areas = [
-        { label: 'Defensive Driving & Road Safety', key: 'driving', color: '#059669' },
-        { label: 'GPS Route Optimization & Navigation', key: 'navigation', color: '#0284c7' },
-        { label: 'Passenger Service & Conflict Resolution', key: 'service', color: '#d97706' },
-        { label: 'LTFRB Regulatory & Traffic Law Compliance', key: 'compliance', color: '#7c3aed' },
-    ];
-    let html = '';
-    areas.forEach(function(area) {
-        const val = (data.breakdown && data.breakdown[area.key]) ? data.breakdown[area.key] : 0;
-        const barColor = val >= 85 ? area.color : (val >= 70 ? '#f59e0b' : '#ef4444');
-        html += '<div>';
-        html += '<div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:0.2rem;">';
-        html += '<span>' + area.label + '</span>';
-        html += '<strong>' + val.toFixed(1) + '%</strong>';
-        html += '</div>';
-        html += '<div style="width:100%;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;">';
-        html += '<div style="width:' + Math.min(val, 100) + '%;height:100%;background:' + barColor + ';border-radius:4px;transition:width 0.5s ease;"></div>';
-        html += '</div>';
-        html += '</div>';
-    });
-    container.innerHTML = html;
+    if (container) {
+        const areas = [
+            { label: 'Defensive Driving & Road Safety', key: 'driving', color: '#059669' },
+            { label: 'GPS Route Optimization & Navigation', key: 'navigation', color: '#0284c7' },
+            { label: 'Passenger Service & Conflict Resolution', key: 'service', color: '#d97706' },
+            { label: 'LTFRB Regulatory & Traffic Law Compliance', key: 'compliance', color: '#7c3aed' },
+        ];
+        let html = '';
+        areas.forEach(function(area) {
+            const val = (data.breakdown && data.breakdown[area.key]) ? data.breakdown[area.key] : 80;
+            const barColor = val >= 85 ? area.color : (val >= 70 ? '#f59e0b' : '#ef4444');
+            html += '<div>';
+            html += '<div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:0.2rem;">';
+            html += '<span>' + area.label + '</span>';
+            html += '<strong>' + val.toFixed(1) + '%</strong>';
+            html += '</div>';
+            html += '<div style="width:100%;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;">';
+            html += '<div style="width:' + Math.min(val, 100) + '%;height:100%;background:' + barColor + ';border-radius:4px;transition:width 0.5s ease;"></div>';
+            html += '</div>';
+            html += '</div>';
+        });
+        container.innerHTML = html;
+    }
 
     window.openModal('assessmentDetailModal');
 };
@@ -356,40 +317,87 @@ window.openAssessmentDetailModal = function(data) {
 let currentSelectedDriver = {};
 
 window.openHistoryActionModal = function(data) {
-    currentSelectedDriver = data;
-    document.getElementById('actionDriverName').value = data.driver_name + ' (Score: ' + data.score + ')';
+    currentSelectedDriver = data || {};
+    const inputEl = document.getElementById('actionDriverName');
+    if (inputEl) {
+        inputEl.value = (data.driver_name || 'Driver') + ' (Score: ' + (data.score || 'N/A') + ')';
+    }
     window.openModal('historyActionModal');
 };
 
 window.executeCompetencyAction = function(e) {
-    e.preventDefault();
-    const actionType = document.getElementById('selectedActionType').value;
+    if (e && e.preventDefault) e.preventDefault();
+    const actionType = document.getElementById('selectedActionType') ? document.getElementById('selectedActionType').value : 'export_pdf';
     const driverName = currentSelectedDriver.driver_name || 'Driver';
-    const reportId = currentSelectedDriver.id || 1;
     const driverId = currentSelectedDriver.driver_id || 1;
 
     window.closeModal('historyActionModal');
 
     if (actionType === 'export_pdf') {
-        showToast('Generating PDF report for ' + driverName + '...', 'success');
+        if (typeof showToast === 'function') showToast('Generating PDF report for ' + driverName + '...', 'success');
         const url = "{{ route('admin.competency.history.export', ['format' => 'pdf']) }}&driver_id=" + driverId;
         window.open(url, '_blank');
     } else if (actionType === 'create_plan') {
-        showToast('Redirecting to Development Plan for ' + driverName + '...', 'success');
+        if (typeof showToast === 'function') showToast('Redirecting to Development Plan for ' + driverName + '...', 'success');
         setTimeout(function() {
             window.location.href = "{{ route('admin.competency.plans') }}";
-        }, 800);
+        }, 600);
     } else if (actionType === 'assign_module') {
-        showToast('Redirecting to Learning Module assignment for ' + driverName + '...', 'success');
+        if (typeof showToast === 'function') showToast('Redirecting to Learning Module assignment for ' + driverName + '...', 'success');
         setTimeout(function() {
             window.location.href = "{{ route('admin.learning.assignments') }}";
-        }, 800);
+        }, 600);
     } else if (actionType === 'schedule_coaching') {
-        showToast('1-on-1 Coaching Session scheduled for ' + driverName + '! Notification sent.', 'success');
+        if (typeof showToast === 'function') showToast('1-on-1 Coaching Session scheduled for ' + driverName + '! Notification sent.', 'success');
     }
 
-    document.getElementById('actionRemarks').value = '';
-    document.getElementById('selectedActionType').value = 'export_pdf';
+    const remarksEl = document.getElementById('actionRemarks');
+    if (remarksEl) remarksEl.value = '';
 };
+
+document.addEventListener('DOMContentLoaded', function() {
+    const chartDefaults = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { font: { family: "'Poppins', sans-serif" } } } }
+    };
+
+    const timelineEl = document.getElementById('compTimelineChart');
+    if (timelineEl && typeof Chart !== 'undefined') {
+        new Chart(timelineEl, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($timelineData->pluck('month_num')->toArray()) !!},
+                datasets: [{
+                    label: 'Competency Score',
+                    data: {!! json_encode($timelineData->pluck('total')->toArray()) !!},
+                    borderColor: '#F44336',
+                    backgroundColor: 'rgba(244,67,54,0.1)',
+                    fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#F44336'
+                }]
+            },
+            options: { ...chartDefaults, plugins: { legend: { display: false } } }
+        });
+    }
+
+    const historyEl = document.getElementById('compHistoryChart');
+    if (historyEl && typeof Chart !== 'undefined') {
+        new Chart(historyEl, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($trendData->pluck('month_num')->toArray()) !!},
+                datasets: [{
+                    label: 'Historical Score',
+                    data: {!! json_encode($trendData->pluck('avg_score')->toArray()) !!},
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59,130,246,0.1)',
+                    fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#3b82f6'
+                }]
+            },
+            options: { ...chartDefaults, plugins: { legend: { display: false } } }
+        });
+    }
+});
 </script>
+
 @endsection
