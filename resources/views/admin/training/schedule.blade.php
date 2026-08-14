@@ -119,7 +119,7 @@
                         </td>
                         <td style="text-align:right;">
                             <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
-                                <button class="btn btn-sm btn-secondary" title="View Training Details" style="color:#dc2626;border-color:#fca5a5;" onclick="openViewTrainingModal({{ json_encode([
+                                <button type="button" class="btn btn-sm btn-secondary" title="View Training Details" style="color:#dc2626;border-color:#fca5a5;" onclick="if(window.openViewTrainingModal){ window.openViewTrainingModal({{ json_encode([
                                     'id' => '#TRN-' . str_pad($training->id, 5, '0', STR_PAD_LEFT),
                                     'title' => $training->title,
                                     'category' => ucfirst($training->category),
@@ -128,9 +128,9 @@
                                     'schedule' => $training->start_datetime ? $training->start_datetime->format('M d, Y h:i A') : 'TBD',
                                     'slots' => $training->capacity,
                                     'status' => ucfirst($training->status)
-                                ]) }})"><i class="fas fa-eye"></i></button>
+                                ]) }}); } else { const m = document.getElementById('viewTrainingModal'); if(m){ m.style.display='flex'; m.style.visibility='visible'; m.style.opacity='1'; } }"><i class="fas fa-eye"></i></button>
 
-                                <button class="btn btn-sm btn-primary" title="Edit Training Session" style="background:#ef4444;border-color:#ef4444;" onclick="openEditTrainingModal({{ json_encode([
+                                <button type="button" class="btn btn-sm btn-primary" title="Edit Training Session" style="background:#ef4444;border-color:#ef4444;" onclick="if(window.openEditTrainingModal){ window.openEditTrainingModal({{ json_encode([
                                     'id' => $training->id,
                                     'title' => $training->title,
                                     'category' => $training->category,
@@ -138,7 +138,7 @@
                                     'venue' => $training->venue,
                                     'capacity' => $training->capacity,
                                     'status' => $training->status
-                                ]) }})"><i class="fas fa-edit"></i></button>
+                                ]) }}); } else { const m = document.getElementById('editTrainingModal'); if(m){ m.style.display='flex'; m.style.visibility='visible'; m.style.opacity='1'; } }"><i class="fas fa-edit"></i></button>
 
                                 <form action="{{ route('admin.training.schedule.cancel', $training->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Cancel this training schedule for {{ $training->title }}?');">
                                     @csrf
