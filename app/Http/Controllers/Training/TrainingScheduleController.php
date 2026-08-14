@@ -62,4 +62,38 @@ class TrainingScheduleController extends Controller
 
         return view('admin.training.schedule', compact('trainings', 'stats', 'scheduleData', 'statusData'));
     }
+
+    public function update(Request $request, $id)
+    {
+        $training = Training::findOrFail($id);
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'category' => 'required|string',
+            'instructor' => 'required|string',
+            'venue' => 'nullable|string',
+            'capacity' => 'required|integer|min:1',
+            'status' => 'required|string',
+        ]);
+
+        $training->update($request->only(['title', 'category', 'instructor', 'venue', 'capacity', 'status']));
+
+        return back()->with('success', 'Training session updated successfully.');
+    }
+
+    public function cancel($id)
+    {
+        $training = Training::findOrFail($id);
+        $training->status = 'cancelled';
+        $training->save();
+
+        return back()->with('success', 'Training schedule cancelled.');
+    }
+
+    public function destroy($id)
+    {
+        $training = Training::findOrFail($id);
+        $training->delete();
+
+        return back()->with('success', 'Training session record archived/deleted successfully.');
+    }
 }

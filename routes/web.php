@@ -267,6 +267,10 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
         })->name('index');
 
         Route::get('/schedule', [App\Http\Controllers\Training\TrainingScheduleController::class, 'index'])->name('schedule');
+        Route::post('/schedule', [App\Http\Controllers\Training\TrainingScheduleController::class, 'store'])->name('schedule.store');
+        Route::put('/schedule/{id}', [App\Http\Controllers\Training\TrainingScheduleController::class, 'update'])->name('schedule.update');
+        Route::post('/schedule/{id}/cancel', [App\Http\Controllers\Training\TrainingScheduleController::class, 'cancel'])->name('schedule.cancel');
+        Route::delete('/schedule/{id}', [App\Http\Controllers\Training\TrainingScheduleController::class, 'destroy'])->name('schedule.destroy');
         Route::get('/attendance', [App\Http\Controllers\Training\TrainingAttendanceController::class, 'index'])->name('attendance');
         Route::get('/evaluations', [App\Http\Controllers\Training\TrainingEvaluationController::class, 'index'])->name('evaluations');
         Route::get('/reports', [App\Http\Controllers\Training\TrainingReportsController::class, 'index'])->name('reports');

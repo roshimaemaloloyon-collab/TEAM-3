@@ -118,11 +118,38 @@
                             </span>
                         </td>
                         <td style="text-align:right;">
-                            <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                                <button class="btn btn-sm btn-secondary" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Edit"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger" title="Cancel"><i class="fas fa-times"></i></button>
-                                <button class="btn btn-sm btn-danger" title="Archive"><i class="fas fa-archive"></i></button>
+                            <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
+                                <button class="btn btn-sm btn-secondary" title="View Training Details" style="color:#dc2626;border-color:#fca5a5;" onclick="openViewTrainingModal({{ json_encode([
+                                    'id' => '#TRN-' . str_pad($training->id, 5, '0', STR_PAD_LEFT),
+                                    'title' => $training->title,
+                                    'category' => ucfirst($training->category),
+                                    'instructor' => $training->instructor,
+                                    'venue' => $training->venue ?? 'Main Training Garage Center',
+                                    'schedule' => $training->start_datetime ? $training->start_datetime->format('M d, Y h:i A') : 'TBD',
+                                    'slots' => $training->capacity,
+                                    'status' => ucfirst($training->status)
+                                ]) }})"><i class="fas fa-eye"></i></button>
+
+                                <button class="btn btn-sm btn-primary" title="Edit Training Session" style="background:#ef4444;border-color:#ef4444;" onclick="openEditTrainingModal({{ json_encode([
+                                    'id' => $training->id,
+                                    'title' => $training->title,
+                                    'category' => $training->category,
+                                    'instructor' => $training->instructor,
+                                    'venue' => $training->venue,
+                                    'capacity' => $training->capacity,
+                                    'status' => $training->status
+                                ]) }})"><i class="fas fa-edit"></i></button>
+
+                                <form action="{{ route('admin.training.schedule.cancel', $training->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Cancel this training schedule for {{ $training->title }}?');">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-secondary" style="background:#f1f5f9;border-color:#cbd5e1;color:#475569;" title="Cancel Session"><i class="fas fa-times"></i></button>
+                                </form>
+
+                                <form action="{{ route('admin.training.schedule.destroy', $training->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Archive/delete this training session record?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger" style="background:#dc2626;border-color:#dc2626;" title="Archive / Delete Record"><i class="fas fa-trash"></i></button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -136,6 +163,151 @@
         {{ $trainings->links() }}
     </div>
 </div>
+
+<!-- View Training Details Modal -->
+<div id="viewTrainingModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:550px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <div class="modal-header" style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#fff7ed;border-top-left-radius:1rem;border-top-right-radius:1rem;">
+            <h2 style="font-size:1.2rem;color:#c2410c;font-family:'Poppins',sans-serif;margin:0;font-weight:700;"><i class="fas fa-calendar-alt" style="margin-right:0.5rem;"></i> Training Session Details</h2>
+            <button type="button" onclick="closeModal('viewTrainingModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:1.5rem;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;background:#f8fafc;padding:1rem;border-radius:0.5rem;border:1px solid #e2e8f0;">
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Training ID</span>
+                    <strong id="trnModalId" style="font-size:0.95rem;color:var(--primary);">#TRN-00001</strong>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Category</span>
+                    <span id="trnModalCategory" class="item-badge badge-info">Technical</span>
+                </div>
+                <div style="grid-column:span 2;">
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Training Title</span>
+                    <strong id="trnModalTitle" style="font-size:1rem;color:#c2410c;">Title Here</strong>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Instructor / Trainer</span>
+                    <span id="trnModalTrainer" style="font-size:0.9rem;font-weight:600;">Trainer Name</span>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Venue</span>
+                    <span id="trnModalVenue" style="font-size:0.85rem;">Main Garage</span>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Schedule Date & Time</span>
+                    <span id="trnModalSchedule" style="font-size:0.85rem;font-weight:600;">Nov 11, 2026</span>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Available Capacity</span>
+                    <span id="trnModalSlots" style="font-size:0.9rem;font-weight:700;color:#059669;">30 Slots</span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('viewTrainingModal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Training Modal -->
+<div id="editTrainingModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <form id="editTrainingForm" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="modal-header" style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Edit Training Schedule</h2>
+                <button type="button" onclick="closeModal('editTrainingModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Training Title</label>
+                    <input type="text" name="title" id="editTrnTitle" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Category</label>
+                        <select name="category" id="editTrnCategory" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                            <option value="technical">Technical</option>
+                            <option value="safety">Safety</option>
+                            <option value="compliance">Compliance</option>
+                            <option value="leadership">Leadership</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Trainer</label>
+                        <input type="text" name="instructor" id="editTrnInstructor" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Venue</label>
+                        <input type="text" name="venue" id="editTrnVenue" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Capacity Slots</label>
+                        <input type="number" name="capacity" id="editTrnCapacity" min="1" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                    </div>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Status</label>
+                    <select name="status" id="editTrnStatus" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                        <option value="upcoming">Upcoming</option>
+                        <option value="ongoing">Ongoing</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('editTrainingModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background:#ef4444;border-color:#ef4444;"><i class="fas fa-check"></i> Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+window.openModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.style.display = 'flex';
+        el.style.visibility = 'visible';
+        el.style.opacity = '1';
+        document.body.style.overflow = 'hidden';
+    }
+};
+
+window.closeModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+};
+
+window.openViewTrainingModal = function(data) {
+    document.getElementById('trnModalId').innerText = data.id;
+    document.getElementById('trnModalTitle').innerText = data.title;
+    document.getElementById('trnModalCategory').innerText = data.category;
+    document.getElementById('trnModalTrainer').innerText = data.instructor;
+    document.getElementById('trnModalVenue').innerText = data.venue;
+    document.getElementById('trnModalSchedule').innerText = data.schedule;
+    document.getElementById('trnModalSlots').innerText = data.slots + ' Available Slots';
+    window.openModal('viewTrainingModal');
+};
+
+window.openEditTrainingModal = function(data) {
+    document.getElementById('editTrainingForm').action = '/admin/training/schedule/' + data.id;
+    document.getElementById('editTrnTitle').value = data.title;
+    document.getElementById('editTrnCategory').value = data.category;
+    document.getElementById('editTrnInstructor').value = data.instructor;
+    document.getElementById('editTrnVenue').value = data.venue || '';
+    document.getElementById('editTrnCapacity').value = data.capacity;
+    document.getElementById('editTrnStatus').value = data.status;
+    window.openModal('editTrainingModal');
+};
+</script>
 
 <!-- Calendar View -->
 <div class="table-card" style="margin-top:1.5rem;">
