@@ -112,6 +112,10 @@ class CompetencyHistoryController extends Controller
         if ($recordType) {
             $query->where('record_type', $recordType);
         }
+        $driverId = $request->input('driver_id');
+        if ($driverId) {
+            $query->where('driver_id', $driverId);
+        }
         $histories = $query->get();
 
         if ($format === 'pdf') {

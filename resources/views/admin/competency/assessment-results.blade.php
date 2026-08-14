@@ -144,9 +144,9 @@
                         </td>
                         <td style="text-align:right;">
                             <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
-                                <a href="{{ route('admin.competency.assessments.driver.pdf', $result->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" title="View Assessment Document"><i class="fas fa-eye"></i></a>
-                                <button type="button" class="btn btn-sm btn-primary edit-result-btn" title="Edit Assessment" data-id="{{ $result->id }}" data-name="{{ $result->driver_name }}" data-score="{{ $result->score ?? 85 }}" data-status="{{ $result->status }}"><i class="fas fa-edit"></i></button>
-                                <a href="{{ route('admin.competency.assessments.driver.pdf', $result->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" title="Print Driver PDF"><i class="fas fa-print"></i></a>
+                                <button type="button" class="btn btn-sm btn-secondary view-result-btn" title="View Assessment Breakdown" style="color:#dc2626;border-color:#fca5a5;" data-name="{{ $result->driver_name }}" data-score="{{ number_format($result->score, 2) }}%" data-status="{{ ucfirst($result->status) }}" data-date="{{ $result->assessed_at ? \Carbon\Carbon::parse($result->assessed_at)->format('M d, Y') : 'N/A' }}"><i class="fas fa-eye"></i></button>
+                                <a href="{{ route('admin.competency.assessments.driver.pdf', $result->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" style="color:#dc2626;border-color:#fca5a5;" title="Print / Download PDF"><i class="fas fa-file-pdf"></i></a>
+                                <button type="button" class="btn btn-sm btn-primary edit-result-btn" title="Edit Assessment / Execute Action" style="background:#ef4444;border-color:#ef4444;" data-id="{{ $result->id }}" data-name="{{ $result->driver_name }}" data-score="{{ $result->score ?? 85 }}" data-status="{{ $result->status }}"><i class="fas fa-external-link-alt"></i></button>
                             </div>
                         </td>
                     </tr>
@@ -215,6 +215,17 @@
 
 <script>
 document.addEventListener('click', function(e) {
+    const viewBtn = e.target.closest('.view-result-btn');
+    if (viewBtn) {
+        e.preventDefault();
+        const name = viewBtn.getAttribute('data-name');
+        const score = viewBtn.getAttribute('data-score');
+        const status = viewBtn.getAttribute('data-status');
+        const date = viewBtn.getAttribute('data-date');
+        showToast('Driver: ' + name + ' | Score: ' + score + ' | Status: ' + status + ' (' + date + ')', 'success');
+        return;
+    }
+
     const btn = e.target.closest('.edit-result-btn');
     if (!btn) return;
     e.preventDefault();
