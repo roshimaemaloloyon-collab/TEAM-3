@@ -17,8 +17,17 @@ class TrainingEvaluationController extends Controller
         $query = TrainingEvaluation::with(['driver', 'training'])->orderByDesc('created_at');
 
         if ($search) {
-            $query->whereHas('driver', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
+            $query->where(function ($mainQ) use ($search) {
+                $mainQ->whereHas('driver', function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhere('driver_id', 'like', "%{$search}%");
+                    if (\Illuminate\Support\Facades\Schema::hasColumn('drivers', 'name')) {
+                        $q->orWhere('name', 'like', "%{$search}%");
+                    }
+                })->orWhereHas('training', function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%");
+                });
             });
         }
 

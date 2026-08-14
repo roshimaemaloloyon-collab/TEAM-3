@@ -57,7 +57,10 @@
     <form method="GET" action="{{ route('admin.training.evaluations') }}" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
         <div style="flex:1;min-width:200px;">
             <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Search Driver</label>
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name..." style="width:100%;padding:0.6rem 1rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;background:var(--white);color:var(--text-dark);font-family:'Inter',sans-serif;">
+            <div style="position:relative;">
+                <input type="text" id="driverSearchInput" name="search" value="{{ request('search') }}" placeholder="Search driver name, ID, or training..." style="width:100%;padding:0.6rem 2.2rem 0.6rem 1rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;background:var(--white);color:var(--text-dark);font-family:'Inter',sans-serif;">
+                <button type="button" id="clearSearchBtn" onclick="document.getElementById('driverSearchInput').value='';this.form.submit();" style="position:absolute;right:0.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;display:{{ request('search') ? 'block' : 'none' }};"><i class="fas fa-times"></i></button>
+            </div>
         </div>
         <div style="min-width:180px;">
             <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Status</label>
@@ -67,7 +70,10 @@
                 <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
             </select>
         </div>
-        <button type="submit" class="btn btn-secondary"><i class="fas fa-search"></i> Filter</button>
+        <button type="submit" class="btn btn-secondary" style="background:#ef4444;border-color:#ef4444;color:#fff;"><i class="fas fa-search"></i> Filter</button>
+        @if(request('search') || request('status'))
+            <a href="{{ route('admin.training.evaluations') }}" class="btn btn-secondary" style="background:#f1f5f9;color:#475569;border-color:#cbd5e1;"><i class="fas fa-undo"></i> Reset</a>
+        @endif
     </form>
 </div>
 
