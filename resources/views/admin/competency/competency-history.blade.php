@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function openModal(id) {
+window.openModal = function(id) {
     const el = document.getElementById(id);
     if (el) {
         el.style.display = 'flex';
@@ -298,22 +298,21 @@ function openModal(id) {
         el.style.opacity = '1';
         document.body.style.overflow = 'hidden';
     }
-}
+};
 
-function closeModal(id) {
+window.closeModal = function(id) {
     const el = document.getElementById(id);
     if (el) {
         el.style.display = 'none';
         document.body.style.overflow = '';
     }
-}
+};
 
-function openAssessmentDetailModal(data) {
+window.openAssessmentDetailModal = function(data) {
     document.getElementById('detailDriverName').innerText = data.driver_name;
     document.getElementById('detailDate').innerText = data.date;
     document.getElementById('detailAssessedBy').innerText = data.assessed_by;
 
-    // Update status badge with correct class
     const statusEl = document.getElementById('detailStatus');
     statusEl.innerText = data.status;
     statusEl.className = 'item-badge';
@@ -328,7 +327,6 @@ function openAssessmentDetailModal(data) {
 
     document.getElementById('detailScore').innerText = data.score;
 
-    // Populate dynamic competency breakdown bars
     const container = document.getElementById('breakdownContainer');
     const areas = [
         { label: 'Defensive Driving & Road Safety', key: 'driving', color: '#059669' },
@@ -352,26 +350,25 @@ function openAssessmentDetailModal(data) {
     });
     container.innerHTML = html;
 
-    openModal('assessmentDetailModal');
-}
+    window.openModal('assessmentDetailModal');
+};
 
 let currentSelectedDriver = {};
 
-function openHistoryActionModal(data) {
+window.openHistoryActionModal = function(data) {
     currentSelectedDriver = data;
     document.getElementById('actionDriverName').value = data.driver_name + ' (Score: ' + data.score + ')';
-    openModal('historyActionModal');
-}
+    window.openModal('historyActionModal');
+};
 
-function executeCompetencyAction(e) {
+window.executeCompetencyAction = function(e) {
     e.preventDefault();
     const actionType = document.getElementById('selectedActionType').value;
     const driverName = currentSelectedDriver.driver_name || 'Driver';
     const reportId = currentSelectedDriver.id || 1;
     const driverId = currentSelectedDriver.driver_id || 1;
-    const remarks = document.getElementById('actionRemarks').value;
 
-    closeModal('historyActionModal');
+    window.closeModal('historyActionModal');
 
     if (actionType === 'export_pdf') {
         showToast('Generating PDF report for ' + driverName + '...', 'success');
@@ -391,9 +388,8 @@ function executeCompetencyAction(e) {
         showToast('1-on-1 Coaching Session scheduled for ' + driverName + '! Notification sent.', 'success');
     }
 
-    // Reset form fields
     document.getElementById('actionRemarks').value = '';
     document.getElementById('selectedActionType').value = 'export_pdf';
-}
+};
 </script>
 @endsection
