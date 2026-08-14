@@ -292,12 +292,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function openModal(id) {
     const el = document.getElementById(id);
-    if (el) el.style.display = 'flex';
+    if (el) {
+        el.style.display = 'flex';
+        el.style.visibility = 'visible';
+        el.style.opacity = '1';
+        document.body.style.overflow = 'hidden';
+    }
 }
 
 function closeModal(id) {
     const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
+    if (el) {
+        el.style.display = 'none';
+        document.body.style.overflow = '';
+    }
 }
 
 function openAssessmentDetailModal(data) {
