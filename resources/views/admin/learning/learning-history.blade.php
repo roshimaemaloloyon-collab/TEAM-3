@@ -117,10 +117,19 @@
                             </span>
                         </td>
                         <td style="text-align:right;">
-                            <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                                <button class="btn btn-sm btn-secondary" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Archive"><i class="fas fa-archive"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Restore"><i class="fas fa-undo"></i></button>
+                            <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
+                                <a href="{{ route('admin.learning.history.export', ['id' => $history->id]) }}" target="_blank" class="btn btn-sm btn-secondary" title="View / Print PDF Report" style="color:#dc2626;border-color:#fca5a5;"><i class="fas fa-eye"></i></a>
+
+                                <form action="{{ route('admin.learning.history.destroy', $history->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Archive this learning history record?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-primary" style="background:#ef4444;border-color:#ef4444;" title="Archive Record"><i class="fas fa-trash"></i></button>
+                                </form>
+
+                                <form action="{{ route('admin.learning.history.restore', $history->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Restore this learning record to Completion status?');">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-primary" style="background:#ef4444;border-color:#ef4444;" title="Restore Record"><i class="fas fa-undo"></i></button>
+                                </form>
                             </div>
                         </td>
                     </tr>

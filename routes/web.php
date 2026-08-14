@@ -255,6 +255,9 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
         Route::get('/reports', [App\Http\Controllers\Learning\LearningReportsController::class, 'index'])->name('reports');
         Route::get('/analytics', [App\Http\Controllers\Learning\LearningAnalyticsController::class, 'index'])->name('analytics');
         Route::get('/history', [App\Http\Controllers\Learning\LearningHistoryController::class, 'index'])->name('history');
+        Route::get('/history/export', [App\Http\Controllers\Learning\LearningHistoryController::class, 'export'])->name('history.export');
+        Route::post('/history/{id}/restore', [App\Http\Controllers\Learning\LearningHistoryController::class, 'restore'])->name('history.restore');
+        Route::delete('/history/{id}', [App\Http\Controllers\Learning\LearningHistoryController::class, 'destroy'])->name('history.destroy');
     });
 
     // Training Management
