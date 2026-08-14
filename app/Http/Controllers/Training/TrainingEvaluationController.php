@@ -27,17 +27,19 @@ class TrainingEvaluationController extends Controller
             });
         }
 
-        if ($status) {
+        if ($status && \Illuminate\Support\Facades\Schema::hasColumn('training_evaluations', 'status')) {
             $query->where('status', $status);
         }
 
         $evaluations = $query->paginate($perPage)->withQueryString();
 
+        $hasStatusCol = \Illuminate\Support\Facades\Schema::hasColumn('training_evaluations', 'status');
+
         $stats = [
             'avg_score' => TrainingEvaluation::avg('overall_rating') ? number_format(TrainingEvaluation::avg('overall_rating'), 2) : '0.00',
             'satisfaction' => TrainingEvaluation::avg('overall_rating') ? number_format(TrainingEvaluation::avg('overall_rating'), 2) . '/5' : '0/5',
-            'completed' => TrainingEvaluation::whereNotNull('overall_rating')->count(),
-            'pending' => TrainingEvaluation::whereNull('overall_rating')->count(),
+            'completed' => $hasStatusCol ? TrainingEvaluation::where('status', 'completed')->count() : TrainingEvaluation::whereNotNull('overall_rating')->count(),
+            'pending' => $hasStatusCol ? TrainingEvaluation::where('status', 'pending')->count() : TrainingEvaluation::whereNull('overall_rating')->count(),
         ];
 
         $driver = config('database.default');

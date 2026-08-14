@@ -42,6 +42,7 @@ class TrainingEvaluationFactory extends Factory
             'driver_feedback' => fake()->randomElement($englishFeedback),
             'recommendations' => fake()->randomElement($englishRecommendations),
             'remarks' => 'Evaluated and logged under standard fleet compliance guidelines.',
+            'status' => fake()->randomElement(['completed', 'completed', 'completed', 'pending']),
             'evaluated_by' => User::factory(),
         ];
     }

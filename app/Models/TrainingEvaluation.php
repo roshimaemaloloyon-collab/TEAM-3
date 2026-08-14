@@ -21,6 +21,7 @@ class TrainingEvaluation extends Model
         'driver_feedback',
         'recommendations',
         'remarks',
+        'status',
         'evaluated_by',
     ];
 

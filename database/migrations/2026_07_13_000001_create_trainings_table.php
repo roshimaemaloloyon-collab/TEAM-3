@@ -65,6 +65,7 @@ return new class extends Migration
             $table->text('driver_feedback')->nullable();
             $table->text('recommendations')->nullable();
             $table->text('remarks')->nullable();
+            $table->string('status')->default('completed');
             $table->foreignId('evaluated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
 
