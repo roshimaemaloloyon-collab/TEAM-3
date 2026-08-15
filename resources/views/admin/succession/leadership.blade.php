@@ -19,43 +19,34 @@
         <p>Evaluate leadership capability and future leadership potential of every driver.</p>
     </div>
     <div class="flex gap-2">
-        <button class="btn btn-primary" onclick="showToast('Add Assessment modal coming soon')"><i class="fas fa-plus"></i> Add Assessment</button>
-        <button class="btn btn-secondary" onclick="showToast('Exporting PDF...')"><i class="fas fa-file-pdf"></i> Export PDF</button>
-        <button class="btn btn-secondary" onclick="showToast('Exporting Excel...')"><i class="fas fa-file-excel"></i> Export Excel</button>
+        <button class="btn btn-primary" style="background:#ef4444;border-color:#ef4444;" onclick="openAddLeadershipModal()"><i class="fas fa-plus"></i> Add Assessment</button>
+        <a href="{{ route('admin.succession.leadership.export', ['format' => 'pdf']) }}" target="_blank" class="btn btn-secondary" style="color:#dc2626;border-color:#fca5a5;"><i class="fas fa-file-pdf"></i> Export PDF</a>
+        <a href="{{ route('admin.succession.leadership.export', ['format' => 'excel']) }}" target="_blank" class="btn btn-secondary" style="color:#16a34a;border-color:#86efac;"><i class="fas fa-file-excel"></i> Export Excel</a>
     </div>
 </div>
 
 <!-- Filter Toolbar -->
 <div class="table-card" style="margin-bottom: 1.5rem;">
-    <div class="filter-bar" style="margin-bottom: 0; flex-wrap: wrap;">
-        <input type="text" id="searchDriver" placeholder="Search driver..." style="padding: 0.5rem 0.85rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.85rem; background: var(--white); color: var(--text-dark); font-family: 'Inter', sans-serif; min-width: 180px;">
-        <select id="filterStatus" style="padding: 0.5rem 0.85rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.85rem; background: var(--white); color: var(--text-dark); font-family: 'Inter', sans-serif; min-width: 160px;">
+    <form method="GET" action="{{ route('admin.succession.leadership') }}" class="filter-bar" style="margin-bottom: 0; flex-wrap: wrap;">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search driver name or ID..." style="padding: 0.5rem 0.85rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.85rem; background: var(--white); color: var(--text-dark); font-family: 'Inter', sans-serif; min-width: 180px;">
+        <select name="status" style="padding: 0.5rem 0.85rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.85rem; background: var(--white); color: var(--text-dark); font-family: 'Inter', sans-serif; min-width: 160px;">
             <option value="">All Status</option>
-            <option value="ready">Ready Now</option>
-            <option value="1-2">1-2 Years</option>
-            <option value="2-3">2-3 Years</option>
-            <option value="not-ready">Not Ready</option>
+            <option value="ready" {{ request('status') === 'ready' ? 'selected' : '' }}>High Potential (Ready)</option>
+            <option value="developing" {{ request('status') === 'developing' ? 'selected' : '' }}>Developing</option>
         </select>
-        <select id="filterCompetency" style="padding: 0.5rem 0.85rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.85rem; background: var(--white); color: var(--text-dark); font-family: 'Inter', sans-serif; min-width: 160px;">
-            <option value="">All Competencies</option>
-            <option value="decision-making">Decision Making</option>
-            <option value="communication">Communication</option>
-            <option value="team-building">Team Building</option>
-            <option value="coaching">Coaching</option>
-            <option value="problem-solving">Problem Solving</option>
-        </select>
-        <select id="filterBranch" style="padding: 0.5rem 0.85rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.85rem; background: var(--white); color: var(--text-dark); font-family: 'Inter', sans-serif; min-width: 140px;">
+        <select name="branch" style="padding: 0.5rem 0.85rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.85rem; background: var(--white); color: var(--text-dark); font-family: 'Inter', sans-serif; min-width: 140px;">
             <option value="">All Branches</option>
-            <option value="north">North Branch</option>
-            <option value="south">South Branch</option>
-            <option value="east">East Branch</option>
-            <option value="west">West Branch</option>
+            <option value="Central" {{ request('branch') === 'Central' ? 'selected' : '' }}>Central Branch</option>
+            <option value="North" {{ request('branch') === 'North' ? 'selected' : '' }}>North Branch</option>
+            <option value="South" {{ request('branch') === 'South' ? 'selected' : '' }}>South Branch</option>
+            <option value="East" {{ request('branch') === 'East' ? 'selected' : '' }}>East Branch</option>
+            <option value="West" {{ request('branch') === 'West' ? 'selected' : '' }}>West Branch</option>
         </select>
         <div style="margin-left: auto; display: flex; gap: 0.5rem;">
-            <button class="btn btn-primary" onclick="applyFilters()" style="padding: 0.5rem 1rem; font-size: 0.85rem;"><i class="fas fa-search"></i> Search</button>
-            <button class="btn btn-secondary" onclick="resetFilters()" style="padding: 0.5rem 1rem; font-size: 0.85rem;"><i class="fas fa-undo"></i> Reset</button>
+            <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; background:#ef4444; border-color:#ef4444;"><i class="fas fa-search"></i> Search</button>
+            <a href="{{ route('admin.succession.leadership') }}" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem; color:#475569;"><i class="fas fa-undo"></i> Reset</a>
         </div>
-    </div>
+    </form>
 </div>
 
 <!-- Statistics Cards -->
@@ -63,7 +54,7 @@
     <div class="summary-card">
         <div class="card-icon blue"><i class="fas fa-chart-line"></i></div>
         <div class="card-info">
-            <h3>4.3/5</h3>
+            <h3>{{ $stats['avg_score'] }}/5</h3>
             <p>Average Leadership Score</p>
             <span style="font-size: 0.75rem; font-weight: 600; color: var(--success);"><i class="fas fa-arrow-up"></i> +0.3 this quarter</span>
         </div>
@@ -71,25 +62,25 @@
     <div class="summary-card">
         <div class="card-icon green"><i class="fas fa-user-check"></i></div>
         <div class="card-info">
-            <h3>8</h3>
+            <h3>{{ $stats['high_potential'] }}</h3>
             <p>High Potential Drivers</p>
-            <span style="font-size: 0.75rem; font-weight: 600; color: var(--success);"><i class="fas fa-arrow-up"></i> +2 this quarter</span>
+            <span style="font-size: 0.75rem; font-weight: 600; color: var(--success);"><i class="fas fa-arrow-up"></i> Active Leadership Pipeline</span>
         </div>
     </div>
     <div class="summary-card">
         <div class="card-icon orange"><i class="fas fa-user-edit"></i></div>
         <div class="card-info">
-            <h3>15</h3>
-            <p>Requiring Leadership Development</p>
-            <span style="font-size: 0.75rem; font-weight: 600; color: var(--warning);"><i class="fas fa-minus"></i> No change</span>
+            <h3>{{ $stats['developing'] }}</h3>
+            <p>Developing Candidates</p>
+            <span style="font-size: 0.75rem; font-weight: 600; color: var(--warning);"><i class="fas fa-minus"></i> Under Coaching</span>
         </div>
     </div>
     <div class="summary-card">
         <div class="card-icon purple"><i class="fas fa-clipboard-check"></i></div>
         <div class="card-info">
-            <h3>42</h3>
-            <p>Assessments Completed</p>
-            <span style="font-size: 0.75rem; font-weight: 600; color: var(--success);"><i class="fas fa-arrow-up"></i> +8 this quarter</span>
+            <h3>{{ $stats['total_assessments'] }}</h3>
+            <p>Assessments Logged</p>
+            <span style="font-size: 0.75rem; font-weight: 600; color: var(--success);"><i class="fas fa-arrow-up"></i> 100% Evaluated</span>
         </div>
     </div>
 </div>
@@ -135,7 +126,7 @@
             <tbody>
                 @forelse($candidates as $c)
                 <tr>
-                    <td><strong>#DRV-2026-{{ sprintf('%04d', $c['driver']->id ?? 1) }}</strong></td>
+                    <td><strong>{{ $c['driver']->formatted_id ?? ('#DRV-2026-' . sprintf('%04d', $c['driver']->id)) }}</strong></td>
                     <td><strong>{{ $c['driver']->full_name ?? 'Driver' }}</strong></td>
                     <td><strong>{{ $c['performance_score'] }}/5</strong></td>
                     <td>{{ $c['competency_score'] }}% Average</td>
@@ -143,10 +134,28 @@
                     <td><span class="status-badge {{ $c['readiness'] === 'High Potential' ? 'badge-success' : 'status-pending' }}">{{ $c['readiness'] }}</span></td>
                     <td><span class="status-badge status-active">Active</span></td>
                     <td style="text-align: center;">
-                        <div style="display: flex; gap: 0.4rem; justify-content: center;">
-                            <button class="icon-btn" title="View" onclick="showToast('View leadership assessment for {{ $c['driver']->full_name }}')"><i class="fas fa-eye"></i></button>
-                            <button class="icon-btn" title="Edit" onclick="showToast('Edit assessment')"><i class="fas fa-edit"></i></button>
-                            <button class="icon-btn" title="Archive" onclick="showToast('Archive assessment')"><i class="fas fa-archive"></i></button>
+                        <div style="display: flex; gap: 0.35rem; justify-content: center;">
+                            <button type="button" class="btn btn-sm btn-secondary" title="View Assessment Details" style="color:#dc2626;border-color:#fca5a5;" onclick="openViewLeadershipModal({{ json_encode([
+                                'id' => $c['driver']->formatted_id ?? ('#DRV-2026-' . sprintf('%04d', $c['driver']->id)),
+                                'name' => $c['driver']->full_name ?? 'Driver',
+                                'score' => $c['performance_score'] . '/5 Stars',
+                                'competency' => $c['competency_score'] . '% Average Score',
+                                'role' => $c['recommended_role'],
+                                'readiness' => $c['readiness'],
+                                'branch' => $c['driver']->branch ?? 'Central Branch'
+                            ]) }})"><i class="fas fa-eye"></i></button>
+
+                            <button type="button" class="btn btn-sm btn-primary" title="Edit Assessment" style="background:#ef4444;border-color:#ef4444;" onclick="openEditLeadershipModal({{ json_encode([
+                                'id' => $c['driver']->id,
+                                'name' => $c['driver']->full_name ?? 'Driver',
+                                'role' => $c['recommended_role']
+                            ]) }})"><i class="fas fa-edit"></i></button>
+
+                            <form action="{{ route('admin.succession.leadership.destroy', $c['driver']->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Archive leadership assessment for {{ $c['driver']->full_name }}?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger" style="background:#dc2626;border-color:#dc2626;" title="Archive Record"><i class="fas fa-trash"></i></button>
+                            </form>
                         </div>
                     </td>
                 </tr>
@@ -158,43 +167,175 @@
             </tbody>
         </table>
     </div>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
-        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
-            <span>Rows per page:</span>
-            <select style="padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.85rem;">
-                <option>10</option>
-                <option>25</option>
-                <option>50</option>
-            </select>
+</div>
+
+<!-- Add Leadership Assessment Modal -->
+<div id="addLeadershipModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <form action="{{ route('admin.succession.leadership.store') }}" method="POST">
+            @csrf
+            <div class="modal-header" style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#fff7ed;border-top-left-radius:1rem;border-top-right-radius:1rem;">
+                <h2 style="font-size:1.2rem;color:#c2410c;font-family:'Poppins',sans-serif;margin:0;font-weight:700;"><i class="fas fa-user-tie" style="margin-right:0.5rem;"></i> Add Leadership Assessment</h2>
+                <button type="button" onclick="closeModal('addLeadershipModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Select Driver</label>
+                    <select name="driver_id" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                        @foreach($allDrivers as $d)
+                            <option value="{{ $d->id }}">{{ $d->full_name }} ({{ $d->driver_id }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Recommended Leadership Role</label>
+                    <select name="recommended_role" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                        <option value="Senior Team Lead / Trainer">Senior Team Lead / Trainer</option>
+                        <option value="Assistant Fleet Supervisor">Assistant Fleet Supervisor</option>
+                        <option value="Dispatch Operations Lead">Dispatch Operations Lead</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Assessment Notes & Recommendations</label>
+                    <textarea name="notes" rows="3" placeholder="Enter evaluation notes..." style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('addLeadershipModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background:#ef4444;border-color:#ef4444;"><i class="fas fa-check"></i> Save Assessment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View Leadership Details Modal -->
+<div id="viewLeadershipModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:550px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <div class="modal-header" style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#fff7ed;border-top-left-radius:1rem;border-top-right-radius:1rem;">
+            <h2 style="font-size:1.2rem;color:#c2410c;font-family:'Poppins',sans-serif;margin:0;font-weight:700;"><i class="fas fa-award" style="margin-right:0.5rem;"></i> Leadership Candidate Details</h2>
+            <button type="button" onclick="closeModal('viewLeadershipModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;"><i class="fas fa-times"></i></button>
         </div>
-        <div style="display: flex; gap: 0.4rem; align-items: center;">
-            <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Previous</button>
-            <button class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; min-width: 36px;">1</button>
-            <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; min-width: 36px;">2</button>
-            <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; min-width: 36px;">3</button>
-            <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Next</button>
+        <div class="modal-body" style="padding:1.5rem;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;background:#f8fafc;padding:1rem;border-radius:0.5rem;border:1px solid #e2e8f0;">
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Driver ID</span>
+                    <strong id="leadModalId" style="font-size:0.95rem;color:var(--primary);">#DRV-00001</strong>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Readiness Level</span>
+                    <span id="leadModalReadiness" class="status-badge badge-success">High Potential</span>
+                </div>
+                <div style="grid-column:span 2;">
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Driver Name</span>
+                    <strong id="leadModalName" style="font-size:1rem;color:#c2410c;">Juan Dela Cruz</strong>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Leadership Score</span>
+                    <span id="leadModalScore" style="font-size:0.9rem;font-weight:700;color:#059669;">4.50 / 5</span>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Competency Score</span>
+                    <span id="leadModalCompetency" style="font-size:0.9rem;font-weight:700;color:#2563eb;">88.5%</span>
+                </div>
+                <div style="grid-column:span 2;">
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Recommended Role Pathway</span>
+                    <span id="leadModalRole" style="font-size:0.95rem;font-weight:600;">Senior Team Lead / Trainer</span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('viewLeadershipModal')">Close</button>
         </div>
     </div>
 </div>
-@endsection
 
-@section('scripts')
+<!-- Edit Leadership Modal -->
+<div id="editLeadershipModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <form action="{{ route('admin.succession.leadership.store') }}" method="POST">
+            @csrf
+            <div class="modal-header" style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Edit Leadership Assessment</h2>
+                <button type="button" onclick="closeModal('editLeadershipModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Driver Name</label>
+                    <input type="text" id="editLeadName" readonly style="width:100%;padding:0.6rem;background:#f1f5f9;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Recommended Role</label>
+                    <select name="recommended_role" id="editLeadRole" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                        <option value="Senior Team Lead / Trainer">Senior Team Lead / Trainer</option>
+                        <option value="Assistant Fleet Supervisor">Assistant Fleet Supervisor</option>
+                        <option value="Dispatch Operations Lead">Dispatch Operations Lead</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('editLeadershipModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background:#ef4444;border-color:#ef4444;"><i class="fas fa-check"></i> Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-function applyFilters() {
-    showToast('Filters applied.');
-}
+window.openModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.style.display = 'flex';
+        el.style.visibility = 'visible';
+        el.style.opacity = '1';
+        document.body.style.overflow = 'hidden';
+    }
+};
 
-function resetFilters() {
-    document.getElementById('searchDriver').value = '';
-    document.getElementById('filterStatus').value = '';
-    document.getElementById('filterCompetency').value = '';
-    document.getElementById('filterBranch').value = '';
-    showToast('Filters reset.');
-}
+window.closeModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+};
+
+window.openAddLeadershipModal = function() {
+    window.openModal('addLeadershipModal');
+};
+
+window.openViewLeadershipModal = function(data) {
+    if (!data) return;
+    const idEl = document.getElementById('leadModalId');
+    const nameEl = document.getElementById('leadModalName');
+    const scoreEl = document.getElementById('leadModalScore');
+    const compEl = document.getElementById('leadModalCompetency');
+    const roleEl = document.getElementById('leadModalRole');
+    const readEl = document.getElementById('leadModalReadiness');
+
+    if (idEl) idEl.innerText = data.id || 'N/A';
+    if (nameEl) nameEl.innerText = data.name || 'Driver';
+    if (scoreEl) scoreEl.innerText = data.score || 'N/A';
+    if (compEl) compEl.innerText = data.competency || 'N/A';
+    if (roleEl) roleEl.innerText = data.role || 'N/A';
+    if (readEl) readEl.innerText = data.readiness || 'High Potential';
+
+    window.openModal('viewLeadershipModal');
+};
+
+window.openEditLeadershipModal = function(data) {
+    if (!data) return;
+    const nameEl = document.getElementById('editLeadName');
+    const roleEl = document.getElementById('editLeadRole');
+
+    if (nameEl) nameEl.value = data.name || '';
+    if (roleEl) roleEl.value = data.role || 'Senior Team Lead / Trainer';
+
+    window.openModal('editLeadershipModal');
+};
 
 document.addEventListener('DOMContentLoaded', function() {
     const scoreCtx = document.getElementById('leadershipScoreChart');
-    if (scoreCtx) {
+    if (scoreCtx && typeof Chart !== 'undefined') {
         new Chart(scoreCtx, {
             type: 'bar',
             data: {
@@ -219,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const trendCtx = document.getElementById('leadershipTrendChart');
-    if (trendCtx) {
+    if (trendCtx && typeof Chart !== 'undefined') {
         new Chart(trendCtx, {
             type: 'line',
             data: {
@@ -248,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const candidatesCtx = document.getElementById('topCandidatesChart');
-    if (candidatesCtx) {
+    if (candidatesCtx && typeof Chart !== 'undefined') {
         new Chart(candidatesCtx, {
             type: 'doughnut',
             data: {

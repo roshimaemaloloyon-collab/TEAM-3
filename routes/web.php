@@ -285,6 +285,9 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
     // Succession Planning
     Route::prefix('succession')->name('succession.')->group(function () {
         Route::get('/leadership', [SuccessionController::class, 'leadership'])->name('leadership');
+        Route::post('/leadership', [SuccessionController::class, 'storeLeadership'])->name('leadership.store');
+        Route::get('/leadership/export', [SuccessionController::class, 'exportLeadership'])->name('leadership.export');
+        Route::delete('/leadership/{id}', [SuccessionController::class, 'destroyLeadership'])->name('leadership.destroy');
         Route::get('/career-path', [SuccessionController::class, 'careerPath'])->name('career-path');
         Route::get('/development-plan', [SuccessionController::class, 'developmentPlan'])->name('development-plan');
         Route::get('/promotion-readiness', [SuccessionController::class, 'promotionReadiness'])->name('promotion-readiness');
