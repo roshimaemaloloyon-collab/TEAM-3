@@ -117,8 +117,23 @@
                         <span class="status-badge {{ $statusColors[$announcement->status] ?? 'status-pending' }}">{{ ucfirst($announcement->status) }}</span>
                     </td>
                     <td style="text-align:center;">
-                        <button class="icon-btn" title="View" onclick="showToast('View announcement')"><i class="fas fa-eye"></i></button>
-                        <button class="icon-btn" title="Edit" onclick="showToast('Edit announcement')"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="icon-btn" title="View Details" style="color:#ef4444;" onclick="openViewAnnouncementModal({{ json_encode([
+                            'id' => '#ANN-' . str_pad($announcement->id, 6, '0', STR_PAD_LEFT),
+                            'title' => $announcement->title,
+                            'category' => ucfirst(str_replace('_', ' ', $announcement->type)),
+                            'content' => $announcement->message ?? $announcement->title,
+                            'publish_date' => $announcement->created_at->format('M d, Y'),
+                            'expiry_date' => $announcement->expires_at ? $announcement->expires_at->format('M d, Y') : 'No Expiry',
+                            'status' => ucfirst($announcement->status)
+                        ]) }})"><i class="fas fa-eye"></i></button>
+
+                        <button type="button" class="icon-btn" title="Edit Announcement" style="color:#3b82f6;" onclick="openEditAnnouncementModal({{ json_encode([
+                            'id' => $announcement->id,
+                            'title' => $announcement->title,
+                            'message' => $announcement->message ?? $announcement->title,
+                            'type' => $announcement->type
+                        ]) }})"><i class="fas fa-edit"></i></button>
+
                         @if($announcement->status !== 'published')
                             <button class="icon-btn" title="Publish" onclick="publishAnnouncement({{ $announcement->id }})" style="color:var(--success);"><i class="fas fa-check"></i></button>
                         @endif
@@ -136,6 +151,75 @@
     </div>
     <div style="margin-top:1rem;display:flex;justify-content:center;">
         {{ $announcements->links() }}
+    </div>
+</div>
+
+<!-- View Announcement Modal -->
+<div id="viewAnnouncementModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:550px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <div class="modal-header" style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#fff7ed;border-top-left-radius:1rem;border-top-right-radius:1rem;">
+            <h2 style="font-size:1.2rem;color:#c2410c;font-family:'Poppins',sans-serif;margin:0;font-weight:700;"><i class="fas fa-bullhorn" style="margin-right:0.5rem;"></i> System Announcement Details</h2>
+            <button type="button" onclick="closeModal('viewAnnouncementModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:1.5rem;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;background:#f8fafc;padding:1rem;border-radius:0.5rem;border:1px solid #e2e8f0;">
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Announcement ID</span>
+                    <strong id="vAnnId" style="font-size:0.95rem;color:var(--primary);">#ANN-000050</strong>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Status</span>
+                    <span id="vAnnStatus" class="status-badge status-active">Published</span>
+                </div>
+                <div style="grid-column:span 2;">
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Title</span>
+                    <strong id="vAnnTitle" style="font-size:1rem;color:#c2410c;">Announcement Title</strong>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Category</span>
+                    <span id="vAnnCategory" class="status-badge status-pending">Training</span>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Expiration Date</span>
+                    <span id="vAnnExpiry" style="font-size:0.85rem;font-weight:600;">No Expiry</span>
+                </div>
+                <div style="grid-column:span 2;">
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Announcement Content</span>
+                    <p id="vAnnContent" style="font-size:0.9rem;margin:0.25rem 0 0;color:var(--text-dark);line-height:1.5;background:#ffffff;padding:0.75rem;border-radius:0.4rem;border:1px solid #cbd5e1;">Content text...</p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('viewAnnouncementModal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Announcement Modal -->
+<div id="editAnnouncementModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <form id="editAnnouncementForm" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="modal-header" style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Edit System Announcement</h2>
+                <button type="button" onclick="closeModal('editAnnouncementModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Title</label>
+                    <input type="text" name="title" id="editAnnTitle" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Message</label>
+                    <textarea name="message" id="editAnnMessage" rows="3" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('editAnnouncementModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background:#ef4444;border-color:#ef4444;"><i class="fas fa-check"></i> Save Changes</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -196,12 +280,55 @@
 
 @push('scripts')
 <script>
-function openModal(id) {
-    document.getElementById(id).style.display = 'flex';
-}
-function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
-}
+window.openModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.style.display = 'flex';
+        el.style.visibility = 'visible';
+        el.style.opacity = '1';
+    }
+};
+
+window.closeModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.style.display = 'none';
+    }
+};
+
+window.openViewAnnouncementModal = function(data) {
+    if (!data) return;
+    const idEl = document.getElementById('vAnnId');
+    const titleEl = document.getElementById('vAnnTitle');
+    const catEl = document.getElementById('vAnnCategory');
+    const contentEl = document.getElementById('vAnnContent');
+    const expEl = document.getElementById('vAnnExpiry');
+    const statEl = document.getElementById('vAnnStatus');
+
+    if (idEl) idEl.innerText = data.id || 'N/A';
+    if (titleEl) titleEl.innerText = data.title || 'Announcement';
+    if (catEl) catEl.innerText = data.category || 'System';
+    if (contentEl) contentEl.innerText = data.content || '';
+    if (expEl) expEl.innerText = data.expiry_date || 'No Expiry';
+    if (statEl) statEl.innerText = data.status || 'Published';
+
+    window.openModal('viewAnnouncementModal');
+};
+
+window.openEditAnnouncementModal = function(data) {
+    if (!data) return;
+    const form = document.getElementById('editAnnouncementForm');
+    if (form) form.action = "{{ route('admin.notifications.announcements') }}/" + data.id;
+
+    const titleEl = document.getElementById('editAnnTitle');
+    const msgEl = document.getElementById('editAnnMessage');
+
+    if (titleEl) titleEl.value = data.title || '';
+    if (msgEl) msgEl.value = data.message || '';
+
+    window.openModal('editAnnouncementModal');
+};
+
 function publishAnnouncement(id) {
     if (confirm('Publish this announcement?')) {
         const form = document.createElement('form');
