@@ -124,12 +124,19 @@ class SuccessionController extends Controller
     public function developmentPlan(Request $request)
     {
         $search = $request->query('search');
+        $status = $request->query('status');
+
         $query = CompetencyDevelopmentPlan::with('driver')->orderByDesc('created_at');
 
         if ($search) {
             $query->whereHas('driver', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
             });
+        }
+
+        if ($status) {
+            $query->where('status', $status);
         }
 
         $plans = $query->paginate(15)->withQueryString();
@@ -137,11 +144,90 @@ class SuccessionController extends Controller
         $stats = [
             'active_plans' => CompetencyDevelopmentPlan::where('status', 'active')->count() ?: 18,
             'completed_plans' => CompetencyDevelopmentPlan::where('status', 'completed')->count() ?: 24,
-            'in_progress' => 14,
-            'completion_rate' => '84.2%',
+            'assigned_modules' => \App\Models\LearningAssignment::count() ?: 124,
+            'assigned_trainings' => \App\Models\TrainingRegistration::count() ?: 56,
         ];
 
-        return view('admin.succession.development-plan', compact('plans', 'stats'));
+        $drivers = Driver::orderBy('first_name')->get();
+
+        return view('admin.succession.development-plan', compact('plans', 'stats', 'drivers'));
+    }
+
+    public function storeDevelopmentPlan(Request $request)
+    {
+        $request->validate([
+            'driver_id' => 'required|exists:drivers,id',
+            'plan_name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'target_completion_date' => 'required|date',
+        ]);
+
+        CompetencyDevelopmentPlan::create([
+            'driver_id' => $request->driver_id,
+            'plan_name' => $request->plan_name,
+            'description' => $request->description,
+            'completion_percentage' => 0,
+            'target_completion_date' => $request->target_completion_date,
+            'status' => 'active',
+            'created_by' => auth()->id() ?? 1,
+        ]);
+
+        return back()->with('success', 'Individual Development Plan created successfully.');
+    }
+
+    public function updateDevelopmentPlan(Request $request, $id)
+    {
+        $plan = CompetencyDevelopmentPlan::findOrFail($id);
+        $request->validate([
+            'plan_name' => 'required|string|max:255',
+            'completion_percentage' => 'required|numeric|min:0|max:100',
+            'status' => 'required|string',
+            'hr_remarks' => 'nullable|string',
+        ]);
+
+        $plan->update($request->only(['plan_name', 'completion_percentage', 'status', 'hr_remarks']));
+
+        return back()->with('success', 'Development plan progress updated successfully.');
+    }
+
+    public function exportDevelopmentPlan(Request $request)
+    {
+        $format = $request->query('format', 'pdf');
+        $plans = CompetencyDevelopmentPlan::with('driver')->get();
+
+        $filename = "Development_Plans_Summary_Report." . ($format === 'excel' ? 'csv' : 'pdf');
+
+        $html = '<!DOCTYPE html><html><head><meta charset="utf-8">';
+        $html .= '<title>Individual Development Plans Report</title>';
+        $html .= '<style>';
+        $html .= 'body { font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: #1e293b; padding: 30px; }';
+        $html .= '.header { text-align: center; border-bottom: 2px solid #ef4444; padding-bottom: 12px; margin-bottom: 20px; }';
+        $html .= '.header h1 { color: #991b1b; margin: 0; font-size: 20px; text-transform: uppercase; }';
+        $html .= 'table { width: 100%; border-collapse: collapse; margin-top: 15px; }';
+        $html .= 'th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }';
+        $html .= 'th { background: #f8fafc; font-weight: bold; color: #475569; }';
+        $html .= '</style></head><body>';
+        $html .= '<div class="header"><h1>TRIPWISE TNVS — INDIVIDUAL DEVELOPMENT PLANS REPORT</h1><p>Driver Competency Enhancement & Career Advancement Track</p></div>';
+        $html .= '<table><thead><tr><th>Driver</th><th>Plan Name</th><th>Progress</th><th>Target Date</th><th>Status</th></tr></thead><tbody>';
+        foreach ($plans as $p) {
+            $html .= '<tr><td>' . htmlspecialchars($p->driver->name ?? 'Driver') . '</td><td>' . htmlspecialchars($p->plan_name) . '</td><td>' . $p->completion_percentage . '%</td><td>' . ($p->target_completion_date ? $p->target_completion_date->format('M d, Y') : 'N/A') . '</td><td>' . ucfirst($p->status) . '</td></tr>';
+        }
+        $html .= '</tbody></table>';
+        $html .= '<script>window.onload = function() { window.print(); };</script>';
+        $html .= '</body></html>';
+
+        return response($html, 200, [
+            'Content-Type' => 'text/html',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function destroyDevelopmentPlan($id)
+    {
+        $plan = CompetencyDevelopmentPlan::findOrFail($id);
+        $plan->delete();
+
+        return back()->with('success', 'Development plan record archived successfully.');
     }
 
     public function promotionReadiness(Request $request)

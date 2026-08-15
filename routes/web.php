@@ -290,6 +290,10 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
         Route::delete('/leadership/{id}', [SuccessionController::class, 'destroyLeadership'])->name('leadership.destroy');
         Route::get('/career-path', [SuccessionController::class, 'careerPath'])->name('career-path');
         Route::get('/development-plan', [SuccessionController::class, 'developmentPlan'])->name('development-plan');
+        Route::post('/development-plan', [SuccessionController::class, 'storeDevelopmentPlan'])->name('development-plan.store');
+        Route::put('/development-plan/{id}', [SuccessionController::class, 'updateDevelopmentPlan'])->name('development-plan.update');
+        Route::get('/development-plan/export', [SuccessionController::class, 'exportDevelopmentPlan'])->name('development-plan.export');
+        Route::delete('/development-plan/{id}', [SuccessionController::class, 'destroyDevelopmentPlan'])->name('development-plan.destroy');
         Route::get('/promotion-readiness', [SuccessionController::class, 'promotionReadiness'])->name('promotion-readiness');
         Route::get('/succession-history', [SuccessionController::class, 'successionHistory'])->name('succession-history');
         Route::get('/talent-pool', [SuccessionController::class, 'talentPool'])->name('talent-pool');
