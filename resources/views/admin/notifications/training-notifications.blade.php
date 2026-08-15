@@ -118,7 +118,14 @@
                     <td>{{ $notification->created_at->format('M d, Y H:i') }}</td>
                     <td><span class="status-badge status-{{ $notification->status === 'unread' ? 'pending' : ($notification->status === 'read' ? 'success' : 'review') }}">{{ ucfirst($notification->status) }}</span></td>
                     <td style="text-align:center;">
-                        <button class="icon-btn" title="View" onclick="showToast('View notification')"><i class="fas fa-eye"></i></button>
+                        <button type="button" class="icon-btn" title="View Details" style="color:#ef4444;" onclick="openViewNotificationModal({{ json_encode([
+                            'id' => '#NTF-' . str_pad($notification->id, 6, '0', STR_PAD_LEFT),
+                            'driver' => $notification->user->name ?? 'All Drivers',
+                            'type' => ucfirst(str_replace('_', ' ', $notification->type)),
+                            'message' => $notification->message,
+                            'date' => $notification->created_at->format('M d, Y H:i'),
+                            'status' => ucfirst($notification->status)
+                        ]) }})"><i class="fas fa-eye"></i></button>
                         @if($notification->status === 'unread')
                             <button class="icon-btn" title="Mark as Read" onclick="markAsRead({{ $notification->id }})" style="color:var(--success);"><i class="fas fa-check"></i></button>
                         @endif
@@ -136,6 +143,47 @@
     </div>
     <div style="margin-top:1rem;display:flex;justify-content:center;">
         {{ $notifications->links() }}
+    </div>
+</div>
+
+<!-- View Notification Modal -->
+<div id="viewNotificationModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:550px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <div class="modal-header" style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#fff7ed;border-top-left-radius:1rem;border-top-right-radius:1rem;">
+            <h2 style="font-size:1.2rem;color:#c2410c;font-family:'Poppins',sans-serif;margin:0;font-weight:700;"><i class="fas fa-bell" style="margin-right:0.5rem;"></i> Training Notification Details</h2>
+            <button type="button" onclick="closeModal('viewNotificationModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:1.5rem;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;background:#f8fafc;padding:1rem;border-radius:0.5rem;border:1px solid #e2e8f0;">
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Notification ID</span>
+                    <strong id="vNtfId" style="font-size:0.95rem;color:var(--primary);">#NTF-000001</strong>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Status</span>
+                    <span id="vNtfStatus" class="status-badge status-active">Read</span>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Target Recipient</span>
+                    <strong id="vNtfDriver" style="font-size:0.95rem;color:#c2410c;">All Drivers</strong>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Type</span>
+                    <span id="vNtfType" class="status-badge status-pending">Training</span>
+                </div>
+                <div style="grid-column:span 2;">
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Date & Time</span>
+                    <span id="vNtfDate" style="font-size:0.85rem;font-weight:600;">Aug 15, 2026 19:30</span>
+                </div>
+                <div style="grid-column:span 2;">
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Notification Message</span>
+                    <p id="vNtfMessage" style="font-size:0.9rem;margin:0.25rem 0 0;color:var(--text-dark);line-height:1.5;background:#ffffff;padding:0.75rem;border-radius:0.4rem;border:1px solid #cbd5e1;">Notification message text...</p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('viewNotificationModal')">Close</button>
+        </div>
     </div>
 </div>
 
@@ -205,12 +253,41 @@
 
 @push('scripts')
 <script>
-function openModal(id) {
-    document.getElementById(id).style.display = 'flex';
-}
-function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
-}
+window.openModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.style.display = 'flex';
+        el.style.visibility = 'visible';
+        el.style.opacity = '1';
+    }
+};
+
+window.closeModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.style.display = 'none';
+    }
+};
+
+window.openViewNotificationModal = function(data) {
+    if (!data) return;
+    const idEl = document.getElementById('vNtfId');
+    const driverEl = document.getElementById('vNtfDriver');
+    const typeEl = document.getElementById('vNtfType');
+    const msgEl = document.getElementById('vNtfMessage');
+    const dateEl = document.getElementById('vNtfDate');
+    const statEl = document.getElementById('vNtfStatus');
+
+    if (idEl) idEl.innerText = data.id || 'N/A';
+    if (driverEl) driverEl.innerText = data.driver || 'All Drivers';
+    if (typeEl) typeEl.innerText = data.type || 'Training';
+    if (msgEl) msgEl.innerText = data.message || '';
+    if (dateEl) dateEl.innerText = data.date || 'N/A';
+    if (statEl) statEl.innerText = data.status || 'Read';
+
+    window.openModal('viewNotificationModal');
+};
+
 function markAsRead(id) {
     if (confirm('Mark this notification as read?')) {
         const form = document.createElement('form');
