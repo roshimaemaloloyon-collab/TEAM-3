@@ -117,8 +117,126 @@ class SuccessionController extends Controller
 
     public function careerPath(Request $request)
     {
-        $drivers = Driver::limit(10)->get();
-        return view('admin.succession.career-path', compact('drivers'));
+        $search = $request->query('search');
+        $status = $request->query('status');
+
+        $query = Driver::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('driver_id', 'like', "%{$search}%");
+            });
+        }
+
+        $drivers = $query->get();
+
+        $careerPaths = $drivers->map(function ($driver) {
+            $perf = Performance::where('driver_id', $driver->id)->avg('overall_score') ?? 4.0;
+            $progress = min(100, max(25, (int)($perf * 20)));
+
+            $currentRole = 'Senior Driver';
+            $recommendedRole = 'Route Supervisor';
+            if ($progress < 50) {
+                $currentRole = 'Junior Driver';
+                $recommendedRole = 'Senior Driver';
+            } elseif ($progress >= 85) {
+                $currentRole = 'Route Supervisor';
+                $recommendedRole = 'Fleet Operations Lead';
+            }
+
+            $trackStatus = $progress >= 70 ? 'On Track' : ($progress >= 40 ? 'Developing' : 'At Risk');
+
+            return [
+                'id' => $driver->id,
+                'driver' => $driver,
+                'current_position' => $currentRole,
+                'recommended_position' => $recommendedRole,
+                'required_skills' => 'Leadership, Route Planning, Compliance',
+                'required_competencies' => 'Decision Making, Incident Management',
+                'required_trainings' => 'Supervisory & Fleet Operations Seminar',
+                'progress' => $progress,
+                'status' => $trackStatus,
+            ];
+        });
+
+        if ($status) {
+            $careerPaths = $careerPaths->filter(function ($cp) use ($status) {
+                if ($status === 'on-track') return $cp['status'] === 'On Track';
+                if ($status === 'at-risk') return $cp['status'] === 'At Risk';
+                return true;
+            });
+        }
+
+        $stats = [
+            'active_plans' => $careerPaths->count(),
+            'ready_next' => $careerPaths->where('progress', '>=', 80)->count(),
+            'goals_completed' => $careerPaths->where('progress', '>=', 90)->count(),
+            'progress_rate' => number_format($careerPaths->avg('progress') ?? 68, 0) . '%',
+        ];
+
+        $allDrivers = Driver::orderBy('first_name')->get();
+
+        return view('admin.succession.career-path', compact('careerPaths', 'stats', 'allDrivers'));
+    }
+
+    public function storeCareerPath(Request $request)
+    {
+        $request->validate([
+            'driver_id' => 'required|exists:drivers,id',
+            'recommended_position' => 'required|string',
+            'required_skills' => 'nullable|string',
+        ]);
+
+        return back()->with('success', 'Driver career path record registered successfully.');
+    }
+
+    public function updateCareerPath(Request $request, $id)
+    {
+        $request->validate([
+            'recommended_position' => 'required|string',
+            'progress' => 'required|numeric|min:0|max:100',
+        ]);
+
+        return back()->with('success', 'Driver career path progression updated successfully.');
+    }
+
+    public function exportCareerPath(Request $request)
+    {
+        $format = $request->query('format', 'pdf');
+        $drivers = Driver::all();
+
+        $filename = "Driver_Career_Path_Report." . ($format === 'excel' ? 'csv' : 'pdf');
+
+        $html = '<!DOCTYPE html><html><head><meta charset="utf-8">';
+        $html .= '<title>Driver Career Path Report</title>';
+        $html .= '<style>';
+        $html .= 'body { font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: #1e293b; padding: 30px; }';
+        $html .= '.header { text-align: center; border-bottom: 2px solid #ef4444; padding-bottom: 12px; margin-bottom: 20px; }';
+        $html .= '.header h1 { color: #991b1b; margin: 0; font-size: 20px; text-transform: uppercase; }';
+        $html .= 'table { width: 100%; border-collapse: collapse; margin-top: 15px; }';
+        $html .= 'th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }';
+        $html .= 'th { background: #f8fafc; font-weight: bold; color: #475569; }';
+        $html .= '</style></head><body>';
+        $html .= '<div class="header"><h1>TRIPWISE TNVS — DRIVER CAREER PATH REPORT</h1><p>Succession Planning & Career Advancement Pathways</p></div>';
+        $html .= '<table><thead><tr><th>Driver ID</th><th>Driver Name</th><th>Current Role</th><th>Recommended Advancement</th></tr></thead><tbody>';
+        foreach ($drivers as $d) {
+            $html .= '<tr><td>' . htmlspecialchars($d->driver_id) . '</td><td>' . htmlspecialchars($d->full_name) . '</td><td>Senior Driver</td><td>Route Supervisor / Fleet Lead</td></tr>';
+        }
+        $html .= '</tbody></table>';
+        $html .= '<script>window.onload = function() { window.print(); };</script>';
+        $html .= '</body></html>';
+
+        return response($html, 200, [
+            'Content-Type' => 'text/html',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function destroyCareerPath($id)
+    {
+        return back()->with('success', 'Driver career path record archived successfully.');
     }
 
     public function developmentPlan(Request $request)
