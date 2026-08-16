@@ -94,8 +94,7 @@
                     <th>Vehicle Model</th>
                     <th>Type</th>
                     <th>Assigned Driver</th>
-                    <th>Branch Zone</th>
-                    <th>Route</th>
+                    <th>Operational Zone</th>
                     <th>Vehicle Status</th>
                     <th style="text-align:center;">Actions</th>
                 </tr>
@@ -114,7 +113,6 @@
                         </a>
                     </td>
                     <td>{{ $driver->branch ?? 'North Branch' }}</td>
-                    <td>{{ $driver->route_assignment ?? 'Main Route' }}</td>
                     <td>
                         @if($index % 7 == 0)
                             <span class="status-badge" style="background:#ffedd5;color:#c2410c;cursor:pointer;" onclick="openMaintenanceModal({{ json_encode($driver) }})" title="Click to review maintenance status"><i class="fas fa-tools"></i> Under Maintenance</span>
@@ -132,7 +130,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9" style="text-align:center;padding:2rem;">No vehicle records found.</td>
+                    <td colspan="8" style="text-align:center;padding:2rem;">No vehicle records found.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -171,7 +169,7 @@
                     </div>
                     <div>
                         <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Maintenance Remarks & Diagnostic Findings</label>
-                        <textarea id="maintRemarks" rows="3" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;" placeholder="Engine oil change, tire alignment, and brake pad inspection completed. Vehicle is cleared for route dispatch."></textarea>
+                        <textarea id="maintRemarks" rows="3" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;" placeholder="Engine oil change, tire alignment, and brake pad inspection completed. Vehicle is cleared for dispatch."></textarea>
                     </div>
                 </div>
             </div>
@@ -220,23 +218,13 @@
                         <input type="text" required name="plate_number" placeholder="ABC-1234" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
                     </div>
                     <div>
-                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Branch Zone *</label>
+                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Operational Zone *</label>
                         <select name="branch" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
-                            <option value="North Branch">North Branch</option>
-                            <option value="South Branch">South Branch</option>
-                            <option value="East Branch">East Branch</option>
-                            <option value="West Branch">West Branch</option>
-                            <option value="Central Branch">Central Branch</option>
-                        </select>
-                    </div>
-                    <div style="grid-column:span 2;">
-                        <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Assigned Route *</label>
-                        <select name="route" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
-                            <option value="North Route">North Route</option>
-                            <option value="South Route">South Route</option>
-                            <option value="East Route">East Route</option>
-                            <option value="West Route">West Route</option>
-                            <option value="Central Route">Central Route</option>
+                            <option value="North Branch">North Zone</option>
+                            <option value="South Branch">South Zone</option>
+                            <option value="East Branch">East Zone</option>
+                            <option value="West Branch">West Zone</option>
+                            <option value="Central Branch">Central Zone</option>
                         </select>
                     </div>
                 </div>
