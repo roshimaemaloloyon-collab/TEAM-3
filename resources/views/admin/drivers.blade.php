@@ -56,7 +56,7 @@
     <form action="{{ route('admin.drivers.index') }}" method="GET" class="filter-bar" style="margin-bottom: 0;">
         <div class="search-box" style="flex: 1; min-width: 250px;">
             <i class="fas fa-search"></i>
-            <input type="text" name="search" id="searchDriver" value="{{ request('search') }}" placeholder="Search Driver Name, Driver ID, Contact Number..." style="width: 100%;">
+            <input type="text" name="search" id="searchDriver" value="{{ request('search') }}" placeholder="Search Driver Name, Driver ID, Gcash Number..." style="width: 100%;">
         </div>
         <select name="status" id="filterStatus">
             <option value="">All Status</option>
@@ -65,14 +65,6 @@
             <option value="review" {{ request('status') == 'review' ? 'selected' : '' }}>Under Review</option>
             <option value="suspended" {{ request('status') == 'suspended' ? 'selected' : '' }}>Suspended</option>
             <option value="archived" {{ request('status') == 'archived' ? 'selected' : '' }}>📦 Archived Drivers</option>
-        </select>
-        <select name="branch" id="filterBranch">
-            <option value="">All Branches</option>
-            <option value="North Branch" {{ request('branch') == 'North Branch' ? 'selected' : '' }}>North Branch</option>
-            <option value="South Branch" {{ request('branch') == 'South Branch' ? 'selected' : '' }}>South Branch</option>
-            <option value="East Branch" {{ request('branch') == 'East Branch' ? 'selected' : '' }}>East Branch</option>
-            <option value="West Branch" {{ request('branch') == 'West Branch' ? 'selected' : '' }}>West Branch</option>
-            <option value="Central Branch" {{ request('branch') == 'Central Branch' ? 'selected' : '' }}>Central Branch</option>
         </select>
         <select name="vehicle_type" id="filterVehicle">
             <option value="">All Vehicle Types</option>
@@ -103,11 +95,9 @@
                     <th>Driver Photo</th>
                     <th>Driver ID</th>
                     <th>Full Name</th>
-                    <th>Contact Number</th>
+                    <th>Gcash Number</th>
                     <th>Assigned Vehicle</th>
                     <th>Vehicle Type</th>
-                    <th>Route</th>
-                    <th>Branch</th>
                     <th>Status</th>
                     <th>Performance</th>
                     <th>Documents</th>
@@ -127,8 +117,6 @@
                     <td>{{ $driver->contact_number }}</td>
                     <td>{{ $driver->vehicle_assignment ?? 'Unassigned' }}</td>
                     <td>{{ $driver->vehicle_type ?? 'N/A' }}</td>
-                    <td>{{ $driver->route_assignment ?? 'N/A' }}</td>
-                    <td>{{ $driver->branch ?? 'N/A' }}</td>
                     <td>
                         @if($driver->status === 'active')
                             <span class="status-badge status-active">Active</span>
@@ -143,25 +131,19 @@
                     <td>
                         <div style="display:flex;align-items:center;gap:0.5rem;">
                             <i class="fas fa-star" style="color:#f59e0b;font-size:0.85rem;"></i>
-                            <span>{{ number_format($driver->performance_score, 1) }}</span>
+                            <span style="font-weight:600;font-size:0.9rem;">{{ number_format($driver->performance_score ?? 4.0, 1) }}</span>
                         </div>
                     </td>
                     <td>
-                        <a href="{{ route('admin.drivers.profile', $driver->id) }}" class="icon-btn" title="View Documents">
+                        <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-documents']) }}" class="btn btn-secondary" style="padding:0.25rem 0.6rem;font-size:0.85rem;" title="View {{ $driver->first_name }}'s compliance documents">
                             <i class="fas fa-file-alt"></i>
                         </a>
                     </td>
                     <td style="text-align:center;">
-                        <div style="display:flex;gap:0.4rem;justify-content:center;flex-wrap:wrap;">
-                            <a href="{{ route('admin.drivers.profile', $driver->id) }}" class="icon-btn" title="View Profile">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <button class="icon-btn" title="Edit Driver" onclick="editDriver({{ json_encode($driver) }})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="icon-btn" title="Activate/Deactivate" onclick="openStatusModal({{ $driver->id }}, '{{ ucfirst($driver->status) }}')">
-                                <i class="fas fa-power-off"></i>
-                            </button>
+                        <div style="display:flex;gap:0.35rem;justify-content:center;">
+                            <a href="{{ route('admin.drivers.profile', $driver->id) }}" class="icon-btn" title="View Profile"><i class="fas fa-eye"></i></a>
+                            <button class="icon-btn" title="Edit Driver" onclick="editDriver({{ json_encode($driver) }})"><i class="fas fa-edit"></i></button>
+                            <button class="icon-btn" title="Toggle Status" style="color:{{ $driver->status === 'active' ? '#ef4444' : '#10b981' }};" onclick="openStatusModal({{ $driver->id }}, '{{ $driver->status }}')"><i class="fas fa-power-off"></i></button>
                             @if($driver->status === 'archived')
                                 <button class="icon-btn" title="Restore Driver" onclick="openStatusModal({{ $driver->id }}, 'inactive')" style="color:var(--success);">
                                     <i class="fas fa-undo"></i>
@@ -176,7 +158,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="12" style="text-align:center;padding:2rem;color:var(--text-muted);">
+                    <td colspan="10" style="text-align:center;padding:2rem;color:var(--text-muted);">
                         <i class="fas fa-info-circle" style="font-size:1.5rem;margin-bottom:0.5rem;"></i>
                         <p>No drivers found matching criteria.</p>
                     </td>
@@ -193,7 +175,10 @@
         </div>
         <div>
             {{ $drivers->links() }}
+        </div>
+    </div>
 </div>
+
 <!-- Add New Driver Modal -->
 <div class="modal-overlay" id="addDriverModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;padding:2rem;">
     <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:800px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
@@ -227,7 +212,7 @@
                         <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Gender</label><select name="gender" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"><option value="Male">Male</option><option value="Female">Female</option></select></div>
                         <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Civil Status</label><select name="civil_status" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"><option value="Single">Single</option><option value="Married">Married</option><option value="Widowed">Widowed</option></select></div>
                         <div style="grid-column:span 2;"><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Address</label><input type="text" name="address" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"></div>
-                        <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Contact Number</label><input type="tel" name="contact_number" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"></div>
+                        <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Gcash Number</label><input type="tel" name="contact_number" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"></div>
                         <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Email Address</label><input type="email" name="email" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"></div>
                         <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Emergency Contact Person</label><input type="text" name="emergency_contact_person" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"></div>
                         <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Emergency Contact Number</label><input type="tel" name="emergency_contact_number" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"></div>
@@ -237,10 +222,8 @@
                 <div id="employmentTab" class="tab-content" style="display:none;">
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
                         <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Date Hired</label><input type="date" name="date_hired" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"></div>
-                        <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Branch</label><select name="branch" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"><option value="North Branch">North Branch</option><option value="South Branch">South Branch</option><option value="East Branch">East Branch</option><option value="West Branch">West Branch</option><option value="Central Branch">Central Branch</option></select></div>
                         <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Vehicle Assignment</label><input type="text" name="vehicle_assignment" placeholder="e.g. Toyota Fortuner" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"></div>
                         <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Vehicle Type</label><select name="vehicle_type" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"><option value="Sedan">Sedan</option><option value="SUV">SUV</option><option value="Van">Van</option><option value="Motorcycle">Motorcycle</option></select></div>
-                        <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Route Assignment</label><select name="route_assignment" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"><option value="North Route">North Route</option><option value="South Route">South Route</option><option value="East Route">East Route</option><option value="West Route">West Route</option><option value="Central Route">Central Route</option></select></div>
                         <div style="grid-column:span 2;"><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Employment Status</label><select name="status" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"><option value="active">Active</option><option value="inactive">Inactive</option><option value="review">Under Review</option><option value="suspended">Suspended</option></select></div>
                     </div>
                 </div>
@@ -286,15 +269,13 @@
                 </div>
                 <div id="editContactTab" class="tab-content" style="display:none;">
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-                        <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Contact Number</label><input type="tel" name="contact_number" id="edit_contact_number" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"></div>
+                        <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Gcash Number</label><input type="tel" name="contact_number" id="edit_contact_number" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"></div>
                         <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Email Address</label><input type="email" name="email" id="edit_email" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"></div>
                     </div>
                 </div>
                 <div id="editEmploymentTab" class="tab-content" style="display:none;">
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-                        <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Branch</label><input type="text" name="branch" id="edit_branch" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"></div>
                         <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Vehicle Assignment</label><input type="text" name="vehicle_assignment" id="edit_vehicle_assignment" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"></div>
-                        <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Route</label><input type="text" name="route_assignment" id="edit_route_assignment" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"></div>
                         <div><label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Status</label><select name="status" id="edit_status" style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;"><option value="active">Active</option><option value="inactive">Inactive</option><option value="review">Under Review</option><option value="suspended">Suspended</option></select></div>
                     </div>
                 </div>
