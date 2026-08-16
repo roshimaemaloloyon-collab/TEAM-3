@@ -112,7 +112,7 @@
                             <span>{{ $driver->full_name }}</span>
                         </a>
                     </td>
-                    <td>{{ $driver->branch ?? 'North Branch' }}</td>
+                    <td>{{ str_replace(['Branch', 'branch'], 'Zone', $driver->branch ?? 'North Zone') }}</td>
                     <td>
                         @if($index % 7 == 0)
                             <span class="status-badge" style="background:#ffedd5;color:#c2410c;cursor:pointer;" onclick="openMaintenanceModal({{ json_encode($driver) }})" title="Click to review maintenance status"><i class="fas fa-tools"></i> Under Maintenance</span>
@@ -220,11 +220,11 @@
                     <div>
                         <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Operational Zone *</label>
                         <select name="branch" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
-                            <option value="North Branch">North Zone</option>
-                            <option value="South Branch">South Zone</option>
-                            <option value="East Branch">East Zone</option>
-                            <option value="West Branch">West Zone</option>
-                            <option value="Central Branch">Central Zone</option>
+                            <option value="North Zone">North Zone</option>
+                            <option value="South Zone">South Zone</option>
+                            <option value="East Zone">East Zone</option>
+                            <option value="West Zone">West Zone</option>
+                            <option value="Central Zone">Central Zone</option>
                         </select>
                     </div>
                 </div>
