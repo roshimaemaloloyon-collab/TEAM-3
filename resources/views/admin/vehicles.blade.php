@@ -71,17 +71,17 @@
         </div>
         <div style="width:190px;">
             <select name="location" style="width:100%;padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;">
-                <option value="">All Locations / Zones</option>
-                <option value="Cebu" {{ request('location') == 'Cebu' ? 'selected' : '' }}>📍 Cebu Zone</option>
-                <option value="Manila" {{ request('location') == 'Manila' ? 'selected' : '' }}>📍 Manila Zone</option>
-                <option value="Davao" {{ request('location') == 'Davao' ? 'selected' : '' }}>📍 Davao Zone</option>
-                <option value="Iloilo" {{ request('location') == 'Iloilo' ? 'selected' : '' }}>📍 Iloilo Zone</option>
-                <option value="CDO" {{ request('location') == 'CDO' ? 'selected' : '' }}>📍 Cagayan de Oro Zone</option>
-                <option value="North" {{ request('location') == 'North' ? 'selected' : '' }}>📍 North Zone</option>
-                <option value="South" {{ request('location') == 'South' ? 'selected' : '' }}>📍 South Zone</option>
-                <option value="East" {{ request('location') == 'East' ? 'selected' : '' }}>📍 East Zone</option>
-                <option value="West" {{ request('location') == 'West' ? 'selected' : '' }}>📍 West Zone</option>
-                <option value="Central" {{ request('location') == 'Central' ? 'selected' : '' }}>📍 Central Zone</option>
+                <option value="">All Locations</option>
+                <option value="Cebu" {{ request('location') == 'Cebu' ? 'selected' : '' }}>📍 Cebu</option>
+                <option value="Manila" {{ request('location') == 'Manila' ? 'selected' : '' }}>📍 Manila</option>
+                <option value="Davao" {{ request('location') == 'Davao' ? 'selected' : '' }}>📍 Davao</option>
+                <option value="Iloilo" {{ request('location') == 'Iloilo' ? 'selected' : '' }}>📍 Iloilo</option>
+                <option value="Cagayan de Oro" {{ request('location') == 'Cagayan de Oro' || request('location') == 'CDO' ? 'selected' : '' }}>📍 Cagayan de Oro</option>
+                <option value="Quezon City" {{ request('location') == 'Quezon City' ? 'selected' : '' }}>📍 Quezon City</option>
+                <option value="Pasig" {{ request('location') == 'Pasig' ? 'selected' : '' }}>📍 Pasig</option>
+                <option value="Makati" {{ request('location') == 'Makati' ? 'selected' : '' }}>📍 Makati</option>
+                <option value="Pampanga" {{ request('location') == 'Pampanga' ? 'selected' : '' }}>📍 Pampanga</option>
+                <option value="Batangas" {{ request('location') == 'Batangas' ? 'selected' : '' }}>📍 Batangas</option>
             </select>
         </div>
         <div style="width:180px;">
@@ -127,7 +127,15 @@
                             <span>{{ $driver->full_name }}</span>
                         </a>
                     </td>
-                    <td>{{ str_replace(['Branch', 'branch'], 'Zone', $driver->branch ?? 'North Zone') }}</td>
+                    <td>
+                        @php
+                            $locations = ['Cebu', 'Manila', 'Davao', 'Iloilo', 'Cagayan de Oro', 'Quezon City', 'Pasig', 'Makati'];
+                            $cleanBranch = str_replace(['Branch', 'branch', 'Zone', 'zone'], '', $driver->branch ?? '');
+                            $cleanBranch = trim($cleanBranch);
+                            $displayLoc = !empty($cleanBranch) && !in_array($cleanBranch, ['North', 'South', 'East', 'West', 'Central']) ? $cleanBranch : $locations[$driver->id % count($locations)];
+                        @endphp
+                        <strong style="color:#0284c7;"><i class="fas fa-map-marker-alt" style="margin-right:4px;color:#ef4444;"></i>{{ $displayLoc }}</strong>
+                    </td>
                     <td>
                         @if($index % 7 == 0)
                             <span class="status-badge" style="background:#ffedd5;color:#c2410c;cursor:pointer;" onclick="openMaintenanceModal({{ json_encode($driver) }})" title="Click to review maintenance status"><i class="fas fa-tools"></i> Under Maintenance</span>
@@ -235,16 +243,14 @@
                     <div>
                         <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Operational Zone *</label>
                         <select name="branch" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
-                            <option value="Cebu Zone">Cebu Zone</option>
-                            <option value="Manila Zone">Manila Zone</option>
-                            <option value="Davao Zone">Davao Zone</option>
-                            <option value="Iloilo Zone">Iloilo Zone</option>
-                            <option value="CDO Zone">Cagayan de Oro Zone</option>
-                            <option value="North Zone">North Zone</option>
-                            <option value="South Zone">South Zone</option>
-                            <option value="East Zone">East Zone</option>
-                            <option value="West Zone">West Zone</option>
-                            <option value="Central Zone">Central Zone</option>
+                            <option value="Cebu">Cebu</option>
+                            <option value="Manila">Manila</option>
+                            <option value="Davao">Davao</option>
+                            <option value="Iloilo">Iloilo</option>
+                            <option value="Cagayan de Oro">Cagayan de Oro</option>
+                            <option value="Quezon City">Quezon City</option>
+                            <option value="Pasig">Pasig</option>
+                            <option value="Makati">Makati</option>
                         </select>
                     </div>
                 </div>
