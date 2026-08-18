@@ -70,7 +70,7 @@
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Search driver name, vehicle model, plate number..." style="width:100%;padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;">
         </div>
         <div style="width:190px;">
-            <select name="location" style="width:100%;padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;">
+            <select name="location" onchange="this.form.submit()" style="width:100%;padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;cursor:pointer;">
                 <option value="">All Locations</option>
                 <option value="Cebu" {{ request('location') == 'Cebu' ? 'selected' : '' }}>📍 Cebu</option>
                 <option value="Manila" {{ request('location') == 'Manila' ? 'selected' : '' }}>📍 Manila</option>
@@ -85,7 +85,7 @@
             </select>
         </div>
         <div style="width:180px;">
-            <select name="type" style="width:100%;padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;">
+            <select name="type" onchange="this.form.submit()" style="width:100%;padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;cursor:pointer;">
                 <option value="">All Vehicle Types</option>
                 <option value="Sedan" {{ request('type') == 'Sedan' ? 'selected' : '' }}>Sedan</option>
                 <option value="SUV" {{ request('type') == 'SUV' ? 'selected' : '' }}>SUV</option>

@@ -150,7 +150,15 @@ class DriverController extends Controller
         }
 
         if ($location = $request->input('location')) {
-            $query->where('branch', 'like', "%{$location}%");
+            $query->where(function ($q) use ($location) {
+                $q->where('branch', 'like', "%{$location}%");
+                // Also match drivers mapped dynamically by ID mod
+                $locations = ['Cebu', 'Manila', 'Davao', 'Iloilo', 'Cagayan de Oro', 'Quezon City', 'Pasig', 'Makati'];
+                $locIndex = array_search($location, $locations);
+                if ($locIndex !== false) {
+                    $q->orWhereRaw("MOD(id, 8) = ?", [$locIndex]);
+                }
+            });
         }
 
         if ($type = $request->input('type')) {
