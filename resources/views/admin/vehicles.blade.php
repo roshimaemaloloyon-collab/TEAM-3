@@ -160,16 +160,19 @@
                         <strong style="color:#0284c7;"><i class="fas fa-map-marker-alt" style="margin-right:4px;color:#ef4444;"></i>{{ $displayLoc }}</strong>
                     </td>
                     <td>
-                        @if($index % 7 == 0)
-                            <span class="status-badge" style="background:#ffedd5;color:#c2410c;cursor:pointer;" onclick="openMaintenanceModal({{ json_encode($driver) }})" title="Click to review maintenance status"><i class="fas fa-tools"></i> Under Maintenance</span>
+                        @php
+                            $isUnderMaintenance = ($index % 7 == 0);
+                        @endphp
+                        @if($isUnderMaintenance)
+                            <span class="status-badge" style="background:#ffedd5;color:#c2410c;cursor:pointer;" onclick="openMaintenanceModal({{ json_encode($driver) }}, 'maintenance')" title="Click to review maintenance status"><i class="fas fa-tools"></i> Under Maintenance</span>
                         @else
-                            <span class="status-badge" style="background:#d1fae5;color:#065f46;">🟢 Active & Operational</span>
+                            <span class="status-badge" style="background:#d1fae5;color:#065f46;cursor:pointer;" onclick="openMaintenanceModal({{ json_encode($driver) }}, 'operational')" title="Click to review status">🟢 Active & Operational</span>
                         @endif
                     </td>
                     <td style="text-align:center;">
                         <div style="display:flex;gap:0.35rem;justify-content:center;">
                             <button type="button" class="icon-btn" title="View Vehicle Photo & Details" style="color:#0284c7;" onclick="openVehiclePhotoModal('{{ $vImgSrc }}', '{{ $vModelName }}', '{{ ucfirst($vType) }}', '{{ $vPlate }}', '{{ $driver->full_name }}')"><i class="fas fa-image"></i></button>
-                            <button class="icon-btn" title="Review & Update Maintenance Status" style="color:#ea580c;" onclick="openMaintenanceModal({{ json_encode($driver) }})"><i class="fas fa-tools"></i></button>
+                            <button class="icon-btn" title="Review & Update Maintenance Status" style="color:#ea580c;" onclick="openMaintenanceModal({{ json_encode($driver) }}, '{{ $isUnderMaintenance ? 'maintenance' : 'operational' }}')"><i class="fas fa-tools"></i></button>
                             <button class="icon-btn" title="Reassign Driver" onclick="openReassignModal({{ json_encode($driver) }})"><i class="fas fa-sync-alt"></i></button>
                         </div>
                     </td>
@@ -389,10 +392,25 @@ function openReassignModal(driver) {
     openModal('reassignVehicleModal');
 }
 
-function openMaintenanceModal(driver) {
+function openMaintenanceModal(driver, currentStatus) {
+    status = currentStatus || 'operational';
     document.getElementById('maintDriverName').value = driver.first_name + ' ' + driver.last_name + ' (' + (driver.driver_id || '#DRV-2026') + ')';
     document.getElementById('maintVehicleModel').value = (driver.vehicle_assignment || 'Hyundai Tucson') + ' (' + (driver.vehicle_type || 'Sedan') + ')';
-    document.getElementById('maintRemarks').value = 'Routine engine oil change, brake pad inspection, and wheel alignment completed. Cleared for active route dispatch.';
+    
+    const statusSelect = document.getElementById('maintStatusSelect');
+    if (statusSelect) {
+        statusSelect.value = status;
+    }
+
+    const remarksEl = document.getElementById('maintRemarks');
+    if (remarksEl) {
+        if (status === 'maintenance') {
+            remarksEl.value = 'Vehicle currently undergoing scheduled engine diagnostics, brake pad replacement, and oil change in workshop.';
+        } else {
+            remarksEl.value = 'Routine engine oil change, brake pad inspection, and wheel alignment completed. Cleared for active route dispatch.';
+        }
+    }
+
     openModal('reviewMaintenanceModal');
 }
 </script>
