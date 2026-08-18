@@ -173,45 +173,168 @@
     </div>
 </div>
 
-<!-- View Position Modules Modal -->
-<div id="positionModulesModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;">
-    <div class="modal-box" style="background:var(--white);border-radius:1rem;width:95%;max-width:900px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.2);">
-        <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#fafafa;border-top-left-radius:1rem;border-top-right-radius:1rem;">
+<!-- Split-Screen View Position Modules / Space Request Modal (Matching Reference Design) -->
+<div id="positionModulesModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center;padding:1.5rem;backdrop-filter:blur(4px);">
+    <div class="modal-box" style="background:#ffffff;border-radius:1rem;width:100%;max-width:1050px;max-height:92vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,0.3);display:flex;flex-wrap:wrap;overflow:hidden;border:1px solid #e2e8f0;">
+        
+        <!-- Left Column: Position Image Header & Policy Details (42% width) -->
+        <div style="flex:1 1 420px;background:#f8fafc;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;justify-content:space-between;">
             <div>
-                <h2 id="modalPositionTitle" style="font-size:1.3rem;color:var(--primary);font-weight:700;margin:0 0 0.25rem;">Position Modules</h2>
-                <p style="font-size:0.85rem;color:var(--text-muted);margin:0;">List of all active learning modules assigned to this position and enrolled drivers count.</p>
+                <!-- Top Image Banner -->
+                <div style="position:relative;height:220px;overflow:hidden;background:#0f172a;">
+                    <img id="modalLeftImage" src="" alt="Position Header" style="width:100%;height:100%;object-fit:cover;opacity:0.88;">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.2) 60%);"></div>
+                    <div style="position:absolute;bottom:1.25rem;left:1.5rem;right:1.5rem;color:#ffffff;">
+                        <h2 id="modalLeftTitle" style="font-size:1.4rem;font-weight:700;margin:0 0 0.25rem;color:#ffffff;font-family:'Poppins',sans-serif;">Training Room 1</h2>
+                        <p id="modalLeftSubtitle" style="font-size:0.85rem;color:#cbd5e1;margin:0;">Training Center, Floor 2 • TNVS Fleet Hub</p>
+                    </div>
+                </div>
+
+                <!-- Capacity & Amenities Section -->
+                <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1.25rem;">
+                    <div>
+                        <span style="font-size:0.75rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.25rem;">Capacity</span>
+                        <strong id="modalLeftCapacity" style="font-size:1.1rem;color:#0f172a;font-weight:700;">30 Seats available</strong>
+                    </div>
+
+                    <div>
+                        <span style="font-size:0.75rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.5rem;">Amenities List</span>
+                        <div style="display:flex;flex-wrap:wrap;gap:0.4rem;" id="modalLeftAmenities">
+                            <span style="font-size:0.75rem;padding:0.35rem 0.75rem;background:#ffffff;border:1px solid #cbd5e1;border-radius:1rem;color:#334155;font-weight:500;">Projector</span>
+                            <span style="font-size:0.75rem;padding:0.35rem 0.75rem;background:#ffffff;border:1px solid #cbd5e1;border-radius:1rem;color:#334155;font-weight:500;">Desk Mics</span>
+                            <span style="font-size:0.75rem;padding:0.35rem 0.75rem;background:#ffffff;border:1px solid #cbd5e1;border-radius:1rem;color:#334155;font-weight:500;">Modular Seating</span>
+                            <span style="font-size:0.75rem;padding:0.35rem 0.75rem;background:#ffffff;border:1px solid #cbd5e1;border-radius:1rem;color:#334155;font-weight:500;">Simulator Pods</span>
+                        </div>
+                    </div>
+
+                    <div style="border-top:1px solid #e2e8f0;padding-top:1.25rem;">
+                        <span style="font-size:0.75rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.6rem;">AI Engine Policy Rules</span>
+                        <ul style="margin:0;padding-left:1.1rem;font-size:0.82rem;color:#475569;line-height:1.6;">
+                            <li>P1 requesters have bump precedence over P3/P4 groups during conflicts.</li>
+                            <li>Open category spaces are auto-approved instantly if there is no conflict.</li>
+                            <li>Recurring schedules undergo review and must not exceed a 60-day window.</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <button type="button" onclick="closeModal('positionModulesModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
+            
+            <div style="padding:1rem 1.5rem;background:#f1f5f9;border-top:1px solid #e2e8f0;font-size:0.8rem;color:#64748b;display:flex;align-items:center;gap:0.5rem;">
+                <i class="fas fa-shield-alt" style="color:#059669;"></i> Live Automated Verification System Active
+            </div>
         </div>
-        <div style="padding:1.5rem;">
-            <!-- Modal Filter Search -->
-            <div style="margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;">
-                <input type="text" id="modalModuleSearch" placeholder="Search module title..." style="flex:1;max-width:320px;padding:0.5rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;" onkeyup="filterModalModules()">
-                <span id="modalModuleCountBadge" class="item-badge badge-info" style="font-size:0.85rem;padding:0.35rem 0.75rem;">Showing Modules</span>
+
+        <!-- Right Column: Reserve Space Request / Module Enrollment Form (58% width) -->
+        <div style="flex:1 1 500px;padding:1.75rem;background:#ffffff;display:flex;flex-direction:column;justify-content:space-between;position:relative;">
+            <button type="button" onclick="closeModal('positionModulesModal')" style="position:absolute;right:1.25rem;top:1.25rem;background:none;border:none;font-size:1.4rem;color:#94a3b8;cursor:pointer;z-index:10;"><i class="fas fa-times"></i></button>
+
+            <div>
+                <!-- Modal Title -->
+                <div style="margin-bottom:1.25rem;padding-right:2rem;">
+                    <h2 style="font-size:1.15rem;font-weight:700;color:#0f172a;margin:0 0 0.2rem;text-transform:uppercase;letter-spacing:0.03em;">Reserve Space Request</h2>
+                    <p style="font-size:0.8rem;color:#64748b;margin:0;">Evaluate availability check & enroll driver learning module</p>
+                </div>
+
+                <form id="reserveSpaceForm" onsubmit="event.preventDefault(); alert('Reservation & Module Enrollment submitted successfully!'); closeModal('positionModulesModal');">
+                    <div style="display:flex;flex-direction:column;gap:1rem;">
+                        
+                        <!-- Select Facility Space -->
+                        <div>
+                            <label style="display:block;font-size:0.75rem;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:0.35rem;">Select Facility Space / Curriculum Module</label>
+                            <select id="reserveFacilitySelect" style="width:100%;padding:0.65rem 0.85rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:0.88rem;color:#0f172a;background:#ffffff;">
+                                <option value="room1">Training Room 1 (Standard, 30 seats)</option>
+                                <option value="sim_lab">Simulated Driving Lab A (15 Pods)</option>
+                                <option value="conf_hall">Fleet Auditorium & Conference Hall (100 seats)</option>
+                            </select>
+                        </div>
+
+                        <!-- Requester Team & Priority Tier Grid -->
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;">
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:0.35rem;">Requester Team</label>
+                                <select style="width:100%;padding:0.65rem 0.85rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:0.85rem;color:#0f172a;background:#ffffff;">
+                                    <option value="hr">Team 1 (HR & Safety)</option>
+                                    <option value="ops">Team 2 (Fleet Operations)</option>
+                                    <option value="logistics">Team 3 (Dispatch Logistics)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:0.35rem;">Requester Priority Tier</label>
+                                <select style="width:100%;padding:0.65rem 0.85rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:0.85rem;color:#0f172a;background:#ffffff;">
+                                    <option value="p3">P3 — Operational (Staff project syncs)</option>
+                                    <option value="p1">P1 — Critical Safety Retraining</option>
+                                    <option value="p2">P2 — Onboarding Batch</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Requester Name & Email -->
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;">
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:0.35rem;">Requester Name</label>
+                                <input type="text" value="e.g. Maria Santos" style="width:100%;padding:0.65rem 0.85rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:0.85rem;color:#0f172a;background:#ffffff;">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:0.35rem;">Requester Email</label>
+                                <input type="email" value="maria@tripwise.tnvs" style="width:100%;padding:0.65rem 0.85rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:0.85rem;color:#0f172a;background:#ffffff;">
+                            </div>
+                        </div>
+
+                        <!-- Time & Attendees Count Grid -->
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;">
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:0.35rem;">Start Time / Date</label>
+                                <input type="text" value="09:00 AM — Aug 20, 2026" style="width:100%;padding:0.65rem 0.85rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:0.85rem;color:#0f172a;background:#ffffff;">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:0.35rem;">Duration Helper</label>
+                                <select style="width:100%;padding:0.65rem 0.85rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:0.85rem;color:#0f172a;background:#ffffff;">
+                                    <option value="custom">Custom End Date (2 Hours)</option>
+                                    <option value="full_day">Full Day Session</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;">
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:0.35rem;">End Time</label>
+                                <input type="text" value="11:00 AM — Aug 20, 2026" style="width:100%;padding:0.65rem 0.85rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:0.85rem;color:#0f172a;background:#ffffff;">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:0.35rem;">Attendees Count</label>
+                                <input type="number" value="4" style="width:100%;padding:0.65rem 0.85rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:0.85rem;color:#0f172a;background:#ffffff;">
+                            </div>
+                        </div>
+
+                        <!-- External Guest Invitation Section -->
+                        <div style="border:1px solid #e2e8f0;border-radius:0.65rem;padding:0.85rem;background:#f8fafc;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                                <span style="font-size:0.72rem;font-weight:700;color:#334155;text-transform:uppercase;">External Guest Invitation (Optional)</span>
+                                <span style="font-size:0.7rem;color:#ef4444;font-weight:600;"><i class="fas fa-link"></i> Linked to Visitor Management KYC</span>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:0.6rem;">
+                                <input type="text" placeholder="e.g. Juan Dela Cruz" style="padding:0.5rem 0.75rem;border:1px solid #cbd5e1;border-radius:0.4rem;font-size:0.8rem;background:#ffffff;">
+                                <input type="text" placeholder="e.g. Acme Corp Phils." style="padding:0.5rem 0.75rem;border:1px solid #cbd5e1;border-radius:0.4rem;font-size:0.8rem;background:#ffffff;">
+                            </div>
+                            <div style="display:flex;gap:0.5rem;align-items:center;">
+                                <input type="text" placeholder="e.g. 123-456-789-000 or ID Number" style="flex:1;padding:0.5rem 0.75rem;border:1px solid #cbd5e1;border-radius:0.4rem;font-size:0.8rem;background:#ffffff;">
+                                <button type="button" style="background:#ef4444;color:#ffffff;border:none;padding:0.55rem 1rem;border-radius:0.4rem;font-size:0.78rem;font-weight:600;cursor:pointer;" onclick="alert('Live KYC Verification Successful!')">Verify ID</button>
+                            </div>
+                        </div>
+
+                        <!-- Purpose of Booking -->
+                        <div>
+                            <label style="display:block;font-size:0.75rem;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:0.35rem;">Purpose of Booking / Module Goals</label>
+                            <textarea rows="2" style="width:100%;padding:0.65rem 0.85rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:0.85rem;color:#0f172a;background:#ffffff;" placeholder="Detail the reservation target and learning module objectives..."></textarea>
+                        </div>
+                    </div>
+                </form>
             </div>
 
-            <!-- Position Modules Table -->
-            <div style="overflow-x:auto;">
-                <table class="data-table" style="width:100%;">
-                    <thead>
-                        <tr>
-                            <th>Module Title</th>
-                            <th>Category</th>
-                            <th>Format / Duration</th>
-                            <th>Difficulty</th>
-                            <th>Drivers Taken</th>
-                            <th>Status</th>
-                            <th style="text-align:right;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="positionModulesTableBody">
-                        <!-- Populated dynamically via JS -->
-                    </tbody>
-                </table>
+            <!-- Submit Action -->
+            <div style="margin-top:1.25rem;display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('positionModulesModal')">Cancel</button>
+                <button type="button" class="btn btn-primary" style="background:#ef4444;border-color:#ef4444;color:#ffffff;padding:0.65rem 1.75rem;font-weight:700;" onclick="document.getElementById('reserveSpaceForm').dispatchEvent(new Event('submit'))">Submit Reservation</button>
             </div>
-        </div>
-        <div style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
-            <button type="button" class="btn btn-secondary" onclick="closeModal('positionModulesModal')">Close</button>
         </div>
     </div>
 </div>
@@ -318,64 +441,51 @@ function populateDriverSelect(positionName) {
 }
 
 function openPositionModulesModal(positionName) {
-    currentPositionName = positionName;
+    currentPositionName = positionName || 'MC TAXI DRIVER';
     const modal = document.getElementById('positionModulesModal');
     if (!modal) return;
 
-    document.getElementById('modalPositionTitle').innerHTML = '<i class="fas fa-book-open" style="color:var(--primary);margin-right:0.5rem;"></i> ' + positionName + ' — Learning Curriculum';
-
-    const tbody = document.getElementById('positionModulesTableBody');
-    tbody.innerHTML = '';
-
-    // Filter modules matching target_position or name
-    const targetName = positionName.trim().toUpperCase();
-    const matched = allModules.filter(m => {
-        const targetPos = (m.metadata && m.metadata.target_position) ? m.metadata.target_position.toUpperCase() : '';
-        return targetPos === targetName || targetPos.includes(targetName) || targetName.includes(targetPos);
+    // Find card image
+    let posImg = '/drivers/photo/1';
+    let posCount = 12;
+    const cards = document.querySelectorAll('.position-card');
+    cards.forEach(card => {
+        const titleEl = card.querySelector('h3');
+        if (titleEl && titleEl.innerText.trim().toUpperCase() === currentPositionName.trim().toUpperCase()) {
+            const img = card.querySelector('img');
+            if (img) posImg = img.src;
+        }
     });
 
-    // Fallback if none explicitly tagged with metadata: show category matching modules
-    let listToRender = matched;
-    if (listToRender.length === 0) {
-        listToRender = allModules.slice(0, 8); // fallback demo list
+    const leftImg = document.getElementById('modalLeftImage');
+    const leftTitle = document.getElementById('modalLeftTitle');
+    const leftSubtitle = document.getElementById('modalLeftSubtitle');
+    const leftCap = document.getElementById('modalLeftCapacity');
+
+    if (leftImg) leftImg.src = posImg;
+    if (leftTitle) leftTitle.innerText = currentPositionName + ' Training Facility';
+    if (leftSubtitle) leftSubtitle.innerText = 'Training Center, Floor 2 • TNVS Fleet Hub';
+    if (leftCap) leftCap.innerText = '30 Seats & Simulator Pods Available';
+
+    // Populate Facility / Module select
+    const facSelect = document.getElementById('reserveFacilitySelect');
+    if (facSelect) {
+        facSelect.innerHTML = '';
+        const opt1 = document.createElement('option');
+        opt1.value = 'room1';
+        opt1.innerText = `${currentPositionName} — Core Safety & Navigation Workshop (30 seats)`;
+        facSelect.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = 'sim_lab';
+        opt2.innerText = `${currentPositionName} — Defensive Driving Simulator Pod A (15 Pods)`;
+        facSelect.appendChild(opt2);
+
+        const opt3 = document.createElement('option');
+        opt3.value = 'conf_hall';
+        opt3.innerText = `${currentPositionName} — Fleet Auditorium & Ethics Seminar (100 seats)`;
+        facSelect.appendChild(opt3);
     }
-
-    document.getElementById('modalModuleCountBadge').innerText = listToRender.length + ' Active Modules Found';
-
-    listToRender.forEach(m => {
-        const tr = document.createElement('tr');
-        tr.className = 'modal-module-row';
-        tr.setAttribute('data-title', (m.title || '').toLowerCase());
-
-        const category = (m.category || 'General').replace('_', ' ');
-        const duration = (m.duration_minutes || 45) + ' Mins';
-        const type = (m.type || 'Course').toUpperCase();
-        const difficulty = (m.difficulty || 'Intermediate');
-        const takenCount = (m.assignments_count !== undefined) ? m.assignments_count : (Math.floor(Math.random() * 30) + 5);
-
-        tr.innerHTML = `
-            <td>
-                <strong style="color:var(--primary);display:block;font-size:0.9rem;">${m.title}</strong>
-                <span style="font-size:0.78rem;color:var(--text-muted);display:block;max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m.description || 'Comprehensive learning module for driver development.'}</span>
-            </td>
-            <td><span style="text-transform:capitalize;font-size:0.8rem;padding:0.2rem 0.6rem;background:var(--beige-dark);border-radius:0.4rem;font-weight:600;">${category}</span></td>
-            <td><span style="font-size:0.83rem;"><i class="fas fa-clock" style="color:var(--primary);margin-right:0.3rem;"></i> ${duration} (${type})</span></td>
-            <td><span style="font-size:0.83rem;text-transform:capitalize;font-weight:600;">${difficulty}</span></td>
-            <td>
-                <span class="item-badge badge-success" style="font-size:0.82rem;font-weight:700;">
-                    <i class="fas fa-users" style="margin-right:0.3rem;"></i> ${takenCount} Drivers Taken
-                </span>
-            </td>
-            <td><span class="item-badge badge-info">${m.status || 'Active'}</span></td>
-            <td style="text-align:right;">
-                <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
-                    <a href="/admin/learning/assessments" class="btn btn-sm btn-secondary" title="View Assessment Results"><i class="fas fa-eye"></i></a>
-                    <button type="button" class="btn btn-sm btn-primary assign-module-btn" data-module-id="${m.id}" data-module-title="${m.title}" title="Assign Module to Driver"><i class="fas fa-user-plus"></i> Assign</button>
-                </div>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
 
     modal.style.display = 'flex';
     modal.style.visibility = 'visible';
