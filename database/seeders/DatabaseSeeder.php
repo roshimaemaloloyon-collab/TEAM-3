@@ -422,12 +422,21 @@ class DatabaseSeeder extends Seeder
                     'assessed_at' => fake()->dateTimeBetween('-6 months', 'now'),
                 ]);
 
+                $englishNotes = [
+                    'Passed annual TNVS competency evaluation with high rating.',
+                    'Quarterly performance & road safety review completed.',
+                    '1-on-1 coaching session for defensive driving in heavy weather.',
+                    'Competency development plan milestone successfully achieved.',
+                    'Route navigation & eco-driving competency assessment.',
+                    'Mid-year driver performance and customer rating audit.'
+                ];
+
                 CompetencyHistory::create([
                     'driver_id' => $dUser->id,
                     'competency_id' => $competency->id,
                     'score' => fake()->randomFloat(1, 40.0, 100.0),
                     'record_type' => fake()->randomElement(['assessment', 'plan_update', 'coaching', 'review']),
-                    'notes' => fake()->optional()->sentence(),
+                    'notes' => fake()->randomElement($englishNotes),
                     'recorded_at' => fake()->dateTimeBetween('-6 months', 'now'),
                     'recorded_by' => $adminUser->id,
                 ]);
