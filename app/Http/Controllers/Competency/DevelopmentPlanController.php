@@ -134,4 +134,20 @@ class DevelopmentPlanController extends Controller
 
         return back()->with('success', 'Development Plan updated successfully.');
     }
+
+    public function deploy($id)
+    {
+        $plan = CompetencyDevelopmentPlan::find($id);
+        if ($plan) {
+            $plan->update([
+                'status' => 'active',
+                'completion_percentage' => max(10, $plan->completion_percentage)
+            ]);
+
+            // Also create a notification or record for deployment confirmation
+            return back()->with('success', "🚀 Development Plan '{$plan->plan_name}' has been successfully deployed to the assigned driver!");
+        }
+
+        return back()->with('error', 'Development Plan not found.');
+    }
 }

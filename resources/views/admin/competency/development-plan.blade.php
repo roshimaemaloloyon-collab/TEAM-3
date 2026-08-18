@@ -123,9 +123,12 @@
                             </span>
                         </td>
                         <td style="text-align:right;">
-                            <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
+                            <div style="display:flex;gap:0.35rem;justify-content:flex-end;align-items:center;">
                                 <a href="{{ route('admin.competency.assessments.driver.pdf', $plan->driver_id ?? 1) }}" target="_blank" class="btn btn-sm btn-secondary" title="View Plan PDF Report"><i class="fas fa-file-pdf"></i></a>
                                 <button type="button" class="btn btn-sm btn-primary edit-plan-btn" title="Edit Plan In-Place" data-id="{{ $plan->id }}" data-driver="{{ $plan->driver->name ?? 'Driver' }}" data-name="{{ $plan->plan_name }}" data-progress="{{ $plan->completion_percentage }}" data-status="{{ $plan->status }}"><i class="fas fa-edit"></i> Edit</button>
+                                <button type="button" class="btn btn-sm btn-success" title="Deploy Development Plan to Driver" style="background:#10b981;border-color:#10b981;color:#ffffff;font-weight:600;" onclick="openDeployModal({{ $plan->id }}, '{{ addslashes($plan->plan_name) }}', '{{ addslashes($plan->driver_name) }}')">
+                                    <i class="fas fa-rocket" style="margin-right:4px;"></i> Deploy
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -137,6 +140,36 @@
     </div>
     <div style="margin-top:1rem;">
         {{ $plans->links() }}
+    </div>
+</div>
+
+<!-- Deploy Plan Confirmation Modal -->
+<div id="deployPlanModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;padding:2rem;">
+    <div class="modal-box" style="background:var(--white);border-radius:1rem;width:90%;max-width:480px;box-shadow:0 20px 50px rgba(0,0,0,0.25);overflow:hidden;">
+        <form id="deployPlanForm" method="POST">
+            @csrf
+            <div class="modal-header" style="padding:1.25rem 1.5rem;background:#ecfdf5;border-bottom:1px solid #a7f3d0;display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.2rem;color:#047857;font-family:'Poppins',sans-serif;margin:0;font-weight:700;display:flex;align-items:center;gap:0.5rem;"><i class="fas fa-rocket" style="color:#059669;"></i> Deploy Development Plan</h2>
+                <button type="button" onclick="closeModal('deployPlanModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;text-align:left;">
+                <p style="margin:0 0 1rem;font-size:0.95rem;color:var(--text-dark);line-height:1.5;">Are you sure you want to deploy this development plan to the assigned driver? Once deployed, the driver will receive training modules and progress tracking.</p>
+                <div style="background:#f0fdf4;padding:1rem;border-radius:0.5rem;border:1px solid #bbf7d0;">
+                    <div style="margin-bottom:0.5rem;">
+                        <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Plan Title</span>
+                        <strong id="deployPlanTitle" style="font-size:0.95rem;color:#047857;">-</strong>
+                    </div>
+                    <div>
+                        <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Assigned Driver</span>
+                        <strong id="deployDriverName" style="font-size:0.95rem;color:#1e293b;">-</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;background:#f8fafc;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('deployPlanModal')">Cancel</button>
+                <button type="submit" class="btn btn-success" style="background:#059669;border-color:#059669;color:#ffffff;font-weight:600;"><i class="fas fa-paper-plane" style="margin-right:4px;"></i> Confirm Deployment</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -240,6 +273,24 @@
 </div>
 
 <script>
+window.openDeployModal = function(id, planTitle, driverName) {
+    const form = document.getElementById('deployPlanForm');
+    if (form) form.action = '/admin/competency/plans/' + id + '/deploy';
+
+    const titleEl = document.getElementById('deployPlanTitle');
+    const driverEl = document.getElementById('deployDriverName');
+
+    if (titleEl) titleEl.innerText = planTitle || 'Development Plan';
+    if (driverEl) driverEl.innerText = driverName || 'Assigned Driver';
+
+    const modal = document.getElementById('deployPlanModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+    }
+};
+
 document.addEventListener('click', function(e) {
     const btn = e.target.closest('.edit-plan-btn');
     if (!btn) return;

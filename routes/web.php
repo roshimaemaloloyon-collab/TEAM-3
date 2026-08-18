@@ -230,6 +230,7 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
         Route::get('/plans', [App\Http\Controllers\Competency\DevelopmentPlanController::class, 'index'])->name('plans');
         Route::post('/plans', [App\Http\Controllers\Competency\DevelopmentPlanController::class, 'store'])->name('plans.store');
         Route::put('/plans/{id}', [App\Http\Controllers\Competency\DevelopmentPlanController::class, 'update'])->name('plans.update');
+        Route::post('/plans/{id}/deploy', [App\Http\Controllers\Competency\DevelopmentPlanController::class, 'deploy'])->name('plans.deploy');
 
         Route::get('/reports', [App\Http\Controllers\Competency\CompetencyReportsController::class, 'index'])->name('reports');
         Route::get('/reports/export', [App\Http\Controllers\Competency\CompetencyReportsController::class, 'export'])->name('reports.export');
