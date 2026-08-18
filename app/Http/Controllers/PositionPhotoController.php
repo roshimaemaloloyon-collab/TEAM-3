@@ -44,15 +44,15 @@ class PositionPhotoController extends Controller
             '4-WHEEL CAR DRIVER'     => $publicDir . '4wheel_car_driver.jpg',
             'OPERATIONS MANAGER'     => $publicDir . 'operations_manager.jpg',
             'OFFICE STAFF'           => $publicDir . 'office_staff.jpg',
-            'HR MANAGER'             => $publicDir . 'position_hr_manager.png',
-            'FACILITIES COORDINATOR' => $publicDir . 'position_facilities_coordinator.png',
-            'VEHICLE DISPATCHER'     => $publicDir . 'position_operations_manager.png',
-            'FINANCE OFFICER'        => $publicDir . 'position_office_staff.png',
-            'RECRUITMENT SPECIALIST' => $publicDir . 'position_hr_manager.png',
+            'HR MANAGER'             => $publicDir . 'hr_manager.jpg',
+            'FACILITIES COORDINATOR' => $publicDir . 'facilities_coordinator.jpg',
+            'VEHICLE DISPATCHER'     => $publicDir . 'vehicle_dispatcher.jpg',
+            'FINANCE OFFICER'        => $publicDir . 'finance_officer.jpg',
+            'RECRUITMENT SPECIALIST' => $publicDir . 'hr_manager.jpg',
         ];
 
         if (isset($imageMap[$roleKey]) && file_exists($imageMap[$roleKey])) {
-            return response()->file($imageMap[$roleKey], ['Content-Type' => 'image/png']);
+            return response()->file($imageMap[$roleKey], ['Content-Type' => 'image/jpeg']);
         }
 
         // --- DYNAMIC GD IMAGE GENERATOR ---
