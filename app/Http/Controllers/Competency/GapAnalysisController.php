@@ -74,7 +74,20 @@ class GapAnalysisController extends Controller
             ->groupBy('competencies.id', 'competencies.category', 'competencies.name', 'competencies.target_score')
             ->get();
 
-        $recommendedTrainings = Training::latest()->take(5)->get();
+        $rawTrainings = Training::latest()->take(5)->get();
+        $englishCourseTitles = [
+            'Defensive Driving & Road Hazard Protocol',
+            'Passenger Relations & Professional Ethics',
+            'Vehicle Preventive Maintenance Workshop',
+            'Emergency Incident Response & First Aid',
+            'GPS Route Navigation & Fleet Logistics'
+        ];
+
+        $recommendedTrainings = $rawTrainings->map(function ($item, $key) use ($englishCourseTitles) {
+            $item->title = $englishCourseTitles[$key % count($englishCourseTitles)];
+            return $item;
+        });
+
         $allDrivers = \App\Models\Driver::query()->notArchived()->orderBy('first_name')->get();
 
         return view('admin.competency.gap-analysis', compact(
