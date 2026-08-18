@@ -111,7 +111,7 @@
                         <td>{{ $training->instructor }}</td>
                         <td>{{ $training->venue ?? 'N/A' }}</td>
                         <td>{{ $training->start_datetime->format('M d, Y h:i A') }}</td>
-                        <td style="font-weight:700;color:#0284c7;"><span id="slots_cell_{{ $training->id }}">{{ $training->capacity }}</span> Available Slots</td>
+                        <td style="font-weight:700;color:#0284c7;"><span id="slots_cell_{{ $training->id }}" style="background:#e0f2fe;padding:4px 12px;border-radius:6px;font-size:0.95rem;">{{ $training->capacity }}</span></td>
                         <td>
                             <span class="item-badge {{ $training->status === 'upcoming' ? 'badge-info' : ($training->status === 'ongoing' ? 'badge-success' : ($training->status === 'completed' ? 'badge-success' : 'badge-danger')) }}">
                                 {{ ucfirst($training->status) }}
@@ -121,6 +121,7 @@
                             <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
                                 <button type="button" class="btn btn-sm btn-secondary" title="View Training Details" style="color:#dc2626;border-color:#fca5a5;" onclick="if(window.openViewTrainingModal){ window.openViewTrainingModal({{ json_encode([
                                     'id' => '#TRN-' . str_pad($training->id, 5, '0', STR_PAD_LEFT),
+                                    'raw_id' => $training->id,
                                     'title' => $training->title,
                                     'category' => ucfirst($training->category),
                                     'instructor' => $training->instructor,
@@ -296,13 +297,16 @@ window.openViewTrainingModal = function(data) {
     const schedEl = document.getElementById('trnModalSchedule');
     const slotsEl = document.getElementById('trnModalSlots');
 
+    const storedCap = data.raw_id ? localStorage.getItem('trn_capacity_' + data.raw_id) : null;
+    const finalSlots = storedCap || data.slots || '30';
+
     if (idEl) idEl.innerText = data.id || '#TRN-00001';
     if (titleEl) titleEl.innerText = data.title || 'Training Session';
     if (catEl) catEl.innerText = data.category || 'General';
     if (trainerEl) trainerEl.innerText = data.instructor || 'Staff Trainer';
     if (venueEl) venueEl.innerText = data.venue || 'Main Training Facility';
     if (schedEl) schedEl.innerText = data.schedule || 'Scheduled';
-    if (slotsEl) slotsEl.innerText = (data.slots || '30') + ' Available Slots';
+    if (slotsEl) slotsEl.innerText = finalSlots;
 
     window.openModal('viewTrainingModal');
 };
