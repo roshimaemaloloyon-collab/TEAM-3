@@ -67,7 +67,22 @@
 <div class="table-card" style="margin-bottom:1.5rem;">
     <form method="GET" action="{{ route('admin.drivers.vehicles') }}" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;">
         <div style="flex:1;min-width:240px;">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search driver name, vehicle model, plate number, route..." style="width:100%;padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search driver name, vehicle model, plate number..." style="width:100%;padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;">
+        </div>
+        <div style="width:190px;">
+            <select name="location" style="width:100%;padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;">
+                <option value="">All Locations / Zones</option>
+                <option value="Cebu" {{ request('location') == 'Cebu' ? 'selected' : '' }}>📍 Cebu Zone</option>
+                <option value="Manila" {{ request('location') == 'Manila' ? 'selected' : '' }}>📍 Manila Zone</option>
+                <option value="Davao" {{ request('location') == 'Davao' ? 'selected' : '' }}>📍 Davao Zone</option>
+                <option value="Iloilo" {{ request('location') == 'Iloilo' ? 'selected' : '' }}>📍 Iloilo Zone</option>
+                <option value="CDO" {{ request('location') == 'CDO' ? 'selected' : '' }}>📍 Cagayan de Oro Zone</option>
+                <option value="North" {{ request('location') == 'North' ? 'selected' : '' }}>📍 North Zone</option>
+                <option value="South" {{ request('location') == 'South' ? 'selected' : '' }}>📍 South Zone</option>
+                <option value="East" {{ request('location') == 'East' ? 'selected' : '' }}>📍 East Zone</option>
+                <option value="West" {{ request('location') == 'West' ? 'selected' : '' }}>📍 West Zone</option>
+                <option value="Central" {{ request('location') == 'Central' ? 'selected' : '' }}>📍 Central Zone</option>
+            </select>
         </div>
         <div style="width:180px;">
             <select name="type" style="width:100%;padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;">
@@ -220,6 +235,11 @@
                     <div>
                         <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">Operational Zone *</label>
                         <select name="branch" required style="width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.9rem;">
+                            <option value="Cebu Zone">Cebu Zone</option>
+                            <option value="Manila Zone">Manila Zone</option>
+                            <option value="Davao Zone">Davao Zone</option>
+                            <option value="Iloilo Zone">Iloilo Zone</option>
+                            <option value="CDO Zone">Cagayan de Oro Zone</option>
                             <option value="North Zone">North Zone</option>
                             <option value="South Zone">South Zone</option>
                             <option value="East Zone">East Zone</option>

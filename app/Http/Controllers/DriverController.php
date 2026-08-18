@@ -149,6 +149,14 @@ class DriverController extends Controller
             });
         }
 
+        if ($location = $request->input('location')) {
+            $query->where('branch', 'like', "%{$location}%");
+        }
+
+        if ($type = $request->input('type')) {
+            $query->where('vehicle_type', 'like', "%{$type}%");
+        }
+
         $drivers = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
         return view('admin.vehicles', compact('drivers'));
     }
