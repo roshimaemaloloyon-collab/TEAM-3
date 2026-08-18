@@ -14,8 +14,17 @@ class CompetencyHistoryController extends Controller
         $recordType = $request->query('record_type');
         $perPage = (int) ($request->query('per_page', 15));
 
-        // Auto-seed realistic Competency History records if table is empty in DB
-        if (CompetencyHistory::count() === 0) {
+        // Clean up any old records with latin lorem text and ensure English notes
+        $hasLorem = CompetencyHistory::where('notes', 'like', '%praesentium%')
+            ->orWhere('notes', 'like', '%asperiores%')
+            ->orWhere('notes', 'like', '%perferendis%')
+            ->orWhere('notes', 'like', '%mollitia%')
+            ->orWhere('notes', 'like', '%nesciunt%')
+            ->exists();
+
+        if (CompetencyHistory::count() === 0 || $hasLorem) {
+            CompetencyHistory::query()->delete();
+
             $adminUser = \App\Models\User::where('role', 'admin')->first() ?? \App\Models\User::first();
             $driversList = \App\Models\Driver::query()->notArchived()->orderBy('id')->get();
             $firstComp = \App\Models\Competency::first();
@@ -23,11 +32,11 @@ class CompetencyHistoryController extends Controller
 
             $historyTypes = [
                 ['type' => 'assessment', 'score' => 89.70, 'notes' => 'Passed annual TNVS competency evaluation with high rating.'],
-                ['type' => 'review', 'score' => 81.90, 'notes' => 'Quarterly performance & road safety review.'],
-                ['type' => 'coaching', 'score' => 78.50, 'notes' => '1-on-1 coaching for defensive driving in heavy rain.'],
-                ['type' => 'plan_update', 'score' => 92.40, 'notes' => 'Competency development plan milestone achieved.'],
+                ['type' => 'review', 'score' => 81.90, 'notes' => 'Quarterly performance & road safety review completed.'],
+                ['type' => 'coaching', 'score' => 78.50, 'notes' => '1-on-1 coaching session for defensive driving in heavy weather.'],
+                ['type' => 'plan_update', 'score' => 92.40, 'notes' => 'Competency development plan milestone successfully achieved.'],
                 ['type' => 'assessment', 'score' => 85.00, 'notes' => 'Route navigation & eco-driving competency assessment.'],
-                ['type' => 'review', 'score' => 90.20, 'notes' => 'Mid-year driver rating audit.'],
+                ['type' => 'review', 'score' => 90.20, 'notes' => 'Mid-year driver performance and customer rating audit.'],
             ];
 
             foreach ($driversList as $idx => $driver) {
