@@ -105,7 +105,6 @@
             <thead>
                 <tr>
                     <th style="text-align:center;">Vehicle Photo</th>
-                    <th>Vehicle Code</th>
                     <th>Plate Number</th>
                     <th>Vehicle Model</th>
                     <th>Type</th>
@@ -135,7 +134,6 @@
                             <img src="{{ $vImgSrc }}" alt="{{ $vModelName }}" style="width:100%;height:100%;object-fit:cover;">
                         </div>
                     </td>
-                    <td><strong>VH-2026-{{ str_pad($driver->id, 3, '0', STR_PAD_LEFT) }}</strong></td>
                     <td><span style="font-family:monospace;font-weight:700;letter-spacing:1px;background:#f1f5f9;padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;">{{ $vPlate }}</span></td>
                     <td>
                         <div style="display:flex;align-items:center;gap:0.5rem;">
@@ -178,7 +176,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9" style="text-align:center;padding:2rem;">No vehicle records found.</td>
+                    <td colspan="8" style="text-align:center;padding:2rem;">No vehicle records found.</td>
                 </tr>
                 @endforelse
             </tbody>
