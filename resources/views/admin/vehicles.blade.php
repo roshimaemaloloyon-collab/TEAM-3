@@ -161,18 +161,24 @@
                     </td>
                     <td>
                         @php
-                            $isUnderMaintenance = ($index % 7 == 0);
+                            $savedStatusKey = 'v_status_' . $driver->id;
+                            $defaultStatus = ($index % 7 == 0) ? 'maintenance' : 'operational';
+                            $currentStatus = session($savedStatusKey) ?? $defaultStatus;
                         @endphp
-                        @if($isUnderMaintenance)
-                            <span class="status-badge" style="background:#ffedd5;color:#c2410c;cursor:pointer;" onclick="openMaintenanceModal({{ json_encode($driver) }}, 'maintenance')" title="Click to review maintenance status"><i class="fas fa-tools"></i> Under Maintenance</span>
-                        @else
-                            <span class="status-badge" style="background:#d1fae5;color:#065f46;cursor:pointer;" onclick="openMaintenanceModal({{ json_encode($driver) }}, 'operational')" title="Click to review status">🟢 Active & Operational</span>
-                        @endif
+                        <span id="status_badge_{{ $driver->id }}" class="status-badge" style="cursor:pointer; {{ $currentStatus === 'maintenance' ? 'background:#ffedd5;color:#c2410c;' : ($currentStatus === 'out_of_service' ? 'background:#fee2e2;color:#dc2626;' : 'background:#d1fae5;color:#065f46;') }}" onclick="openMaintenanceModal({{ json_encode($driver) }}, getDriverStatus({{ $driver->id }}, '{{ $currentStatus }}'))" title="Click to review maintenance status">
+                            @if($currentStatus === 'maintenance')
+                                <i class="fas fa-tools"></i> Under Maintenance
+                            @elseif($currentStatus === 'out_of_service')
+                                🚨 Out of Service
+                            @else
+                                🟢 Active & Operational
+                            @endif
+                        </span>
                     </td>
                     <td style="text-align:center;">
                         <div style="display:flex;gap:0.35rem;justify-content:center;">
                             <button type="button" class="icon-btn" title="View Vehicle Photo & Details" style="color:#0284c7;" onclick="openVehiclePhotoModal('{{ $vImgSrc }}', '{{ $vModelName }}', '{{ ucfirst($vType) }}', '{{ $vPlate }}', '{{ $driver->full_name }}')"><i class="fas fa-image"></i></button>
-                            <button class="icon-btn" title="Review & Update Maintenance Status" style="color:#ea580c;" onclick="openMaintenanceModal({{ json_encode($driver) }}, '{{ $isUnderMaintenance ? 'maintenance' : 'operational' }}')"><i class="fas fa-tools"></i></button>
+                            <button class="icon-btn" title="Review & Update Maintenance Status" style="color:#ea580c;" onclick="openMaintenanceModal({{ json_encode($driver) }}, getDriverStatus({{ $driver->id }}, '{{ $currentStatus }}'))"><i class="fas fa-tools"></i></button>
                             <button class="icon-btn" title="Reassign Driver" onclick="openReassignModal({{ json_encode($driver) }})"><i class="fas fa-sync-alt"></i></button>
                         </div>
                     </td>
@@ -193,7 +199,8 @@
 <!-- Review & Update Vehicle Maintenance Modal -->
 <div class="modal-overlay" id="reviewMaintenanceModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2200;align-items:center;justify-content:center;padding:2rem;">
     <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:550px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
-        <form id="maintenanceForm" onsubmit="event.preventDefault(); alert('Vehicle maintenance status updated to Active & Operational!'); closeModal('reviewMaintenanceModal'); location.reload();">
+        <form id="maintenanceForm" onsubmit="saveVehicleStatus(event)">
+            <input type="hidden" id="maintDriverId" name="driver_id">
             <div class="modal-header" style="padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#fff7ed;border-top-left-radius:1rem;border-top-right-radius:1rem;">
                 <h2 style="font-size:1.2rem;color:#c2410c;font-family:'Poppins',sans-serif;margin:0;font-weight:700;"><i class="fas fa-tools" style="margin-right:0.5rem;"></i> Vehicle Maintenance Review</h2>
                 <button type="button" onclick="closeModal('reviewMaintenanceModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
@@ -392,20 +399,30 @@ function openReassignModal(driver) {
     openModal('reassignVehicleModal');
 }
 
+function getDriverStatus(driverId, fallbackStatus) {
+    const key = 'v_status_' + driverId;
+    return localStorage.getItem(key) || fallbackStatus || 'operational';
+}
+
 function openMaintenanceModal(driver, currentStatus) {
-    status = currentStatus || 'operational';
+    const driverId = driver.id;
+    document.getElementById('maintDriverId').value = driverId;
+    const actualStatus = getDriverStatus(driverId, currentStatus);
+
     document.getElementById('maintDriverName').value = driver.first_name + ' ' + driver.last_name + ' (' + (driver.driver_id || '#DRV-2026') + ')';
     document.getElementById('maintVehicleModel').value = (driver.vehicle_assignment || 'Hyundai Tucson') + ' (' + (driver.vehicle_type || 'Sedan') + ')';
     
     const statusSelect = document.getElementById('maintStatusSelect');
     if (statusSelect) {
-        statusSelect.value = status;
+        statusSelect.value = actualStatus;
     }
 
     const remarksEl = document.getElementById('maintRemarks');
     if (remarksEl) {
-        if (status === 'maintenance') {
+        if (actualStatus === 'maintenance') {
             remarksEl.value = 'Vehicle currently undergoing scheduled engine diagnostics, brake pad replacement, and oil change in workshop.';
+        } else if (actualStatus === 'out_of_service') {
+            remarksEl.value = 'Vehicle is out of service awaiting essential spare parts replacement.';
         } else {
             remarksEl.value = 'Routine engine oil change, brake pad inspection, and wheel alignment completed. Cleared for active route dispatch.';
         }
@@ -413,5 +430,64 @@ function openMaintenanceModal(driver, currentStatus) {
 
     openModal('reviewMaintenanceModal');
 }
+
+function saveVehicleStatus(e) {
+    e.preventDefault();
+    const driverId = document.getElementById('maintDriverId').value;
+    const newStatus = document.getElementById('maintStatusSelect').value;
+    if (!driverId) return;
+
+    localStorage.setItem('v_status_' + driverId, newStatus);
+
+    const badge = document.getElementById('status_badge_' + driverId);
+    if (badge) {
+        if (newStatus === 'maintenance') {
+            badge.style.background = '#ffedd5';
+            badge.style.color = '#c2410c';
+            badge.innerHTML = '<i class="fas fa-tools"></i> Under Maintenance';
+        } else if (newStatus === 'out_of_service') {
+            badge.style.background = '#fee2e2';
+            badge.style.color = '#dc2626';
+            badge.innerHTML = '🚨 Out of Service';
+        } else {
+            badge.style.background = '#d1fae5';
+            badge.style.color = '#065f46';
+            badge.innerHTML = '🟢 Active & Operational';
+        }
+    }
+
+    closeModal('reviewMaintenanceModal');
+
+    // Show toast message
+    const statusLabels = {
+        'operational': 'Active & Operational',
+        'maintenance': 'Under Maintenance',
+        'out_of_service': 'Out of Service'
+    };
+    alert('Vehicle status successfully updated to ' + (statusLabels[newStatus] || newStatus) + '!');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Restore status badges from localStorage on page load
+    document.querySelectorAll('[id^="status_badge_"]').forEach(function(badge) {
+        const driverId = badge.id.replace('status_badge_', '');
+        const saved = localStorage.getItem('v_status_' + driverId);
+        if (saved) {
+            if (saved === 'maintenance') {
+                badge.style.background = '#ffedd5';
+                badge.style.color = '#c2410c';
+                badge.innerHTML = '<i class="fas fa-tools"></i> Under Maintenance';
+            } else if (saved === 'out_of_service') {
+                badge.style.background = '#fee2e2';
+                badge.style.color = '#dc2626';
+                badge.innerHTML = '🚨 Out of Service';
+            } else {
+                badge.style.background = '#d1fae5';
+                badge.style.color = '#065f46';
+                badge.innerHTML = '🟢 Active & Operational';
+            }
+        }
+    });
+});
 </script>
 @endsection
