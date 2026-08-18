@@ -104,6 +104,7 @@
         <table>
             <thead>
                 <tr>
+                    <th style="text-align:center;">Vehicle Photo</th>
                     <th>Vehicle Code</th>
                     <th>Plate Number</th>
                     <th>Vehicle Model</th>
@@ -116,11 +117,35 @@
             </thead>
             <tbody>
                 @forelse($drivers as $index => $driver)
+                @php
+                    $vType = strtolower($driver->vehicle_type ?? 'sedan');
+                    $vImageMap = [
+                        'sedan' => asset('vehicles/sedan.jpg'),
+                        'suv' => asset('vehicles/suv.jpg'),
+                        'van' => asset('vehicles/van.jpg'),
+                        'motorcycle' => asset('vehicles/motorcycle.jpg'),
+                    ];
+                    $vImgSrc = $vImageMap[$vType] ?? asset('vehicles/sedan.jpg');
+                    $vModelName = $driver->vehicle_assignment ?? 'Fleet Vehicle';
+                    $vPlate = strtoupper(substr($driver->last_name ?? 'ABC', 0, 3)) . '-' . (1000 + $driver->id);
+                @endphp
                 <tr>
+                    <td style="text-align:center;">
+                        <div style="width:50px;height:40px;margin:0 auto;border-radius:6px;overflow:hidden;border:1px solid #cbd5e1;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.1);" onclick="openVehiclePhotoModal('{{ $vImgSrc }}', '{{ $vModelName }}', '{{ ucfirst($vType) }}', '{{ $vPlate }}', '{{ $driver->full_name }}')" title="Click to view vehicle photo">
+                            <img src="{{ $vImgSrc }}" alt="{{ $vModelName }}" style="width:100%;height:100%;object-fit:cover;">
+                        </div>
+                    </td>
                     <td><strong>VH-2026-{{ str_pad($driver->id, 3, '0', STR_PAD_LEFT) }}</strong></td>
-                    <td><span style="font-family:monospace;font-weight:700;letter-spacing:1px;background:#f1f5f9;padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;">{{ strtoupper(substr($driver->last_name ?? 'ABC', 0, 3)) }}-{{ 1000 + $driver->id }}</span></td>
-                    <td><strong>{{ $driver->vehicle_assignment ?? 'Toyota Hiace' }}</strong></td>
-                    <td>{{ $driver->vehicle_type ?? 'Van' }}</td>
+                    <td><span style="font-family:monospace;font-weight:700;letter-spacing:1px;background:#f1f5f9;padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;">{{ $vPlate }}</span></td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:0.5rem;">
+                            <strong>{{ $vModelName }}</strong>
+                            <button type="button" style="background:none;border:none;color:#0284c7;cursor:pointer;padding:0;" onclick="openVehiclePhotoModal('{{ $vImgSrc }}', '{{ $vModelName }}', '{{ ucfirst($vType) }}', '{{ $vPlate }}', '{{ $driver->full_name }}')" title="View {{ $vModelName }} photo">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td><span class="status-badge" style="background:#e0f2fe;color:#0369a1;font-weight:600;"><i class="fas {{ $vType == 'motorcycle' ? 'fa-motorcycle' : 'fa-car' }}" style="margin-right:4px;"></i>{{ ucfirst($driver->vehicle_type ?? 'Van') }}</span></td>
                     <td>
                         <a href="{{ route('admin.drivers.profile', $driver->id) }}" style="display:flex;align-items:center;gap:0.5rem;color:inherit;text-decoration:none;">
                             <img src="{{ $driver->photo ?: asset('drivers/photo/' . $driver->id) }}" alt="{{ $driver->first_name }}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
@@ -145,7 +170,7 @@
                     </td>
                     <td style="text-align:center;">
                         <div style="display:flex;gap:0.35rem;justify-content:center;">
-                            <a href="{{ route('admin.drivers.profile', ['id' => $driver->id, 'tab' => 'tab-vehicle']) }}" class="icon-btn" title="Vehicle Details"><i class="fas fa-eye"></i></a>
+                            <button type="button" class="icon-btn" title="View Vehicle Photo & Details" style="color:#0284c7;" onclick="openVehiclePhotoModal('{{ $vImgSrc }}', '{{ $vModelName }}', '{{ ucfirst($vType) }}', '{{ $vPlate }}', '{{ $driver->full_name }}')"><i class="fas fa-image"></i></button>
                             <button class="icon-btn" title="Review & Update Maintenance Status" style="color:#ea580c;" onclick="openMaintenanceModal({{ json_encode($driver) }})"><i class="fas fa-tools"></i></button>
                             <button class="icon-btn" title="Reassign Driver" onclick="openReassignModal({{ json_encode($driver) }})"><i class="fas fa-sync-alt"></i></button>
                         </div>
@@ -153,7 +178,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" style="text-align:center;padding:2rem;">No vehicle records found.</td>
+                    <td colspan="9" style="text-align:center;padding:2rem;">No vehicle records found.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -300,6 +325,38 @@
     </div>
 </div>
 
+<!-- View Vehicle Photo Modal -->
+<div class="modal-overlay" id="viewVehiclePhotoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:2300;align-items:center;justify-content:center;padding:2rem;backdrop-filter:blur(4px);">
+    <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:650px;box-shadow:0 25px 70px rgba(0,0,0,0.3);overflow:hidden;">
+        <div class="modal-header" style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#1e293b;color:#ffffff;">
+            <h2 id="vModalTitle" style="font-size:1.2rem;font-family:'Poppins',sans-serif;margin:0;font-weight:700;display:flex;align-items:center;gap:0.5rem;color:#ffffff;"><i class="fas fa-car" style="color:#38bdf8;"></i> Vehicle Photo Preview</h2>
+            <button type="button" onclick="closeModal('viewVehiclePhotoModal')" style="background:none;border:none;font-size:1.5rem;color:#94a3b8;cursor:pointer;"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:1.5rem;text-align:center;background:#f8fafc;">
+            <div style="width:100%;max-height:360px;border-radius:0.75rem;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,0.15);border:1px solid #cbd5e1;margin-bottom:1.25rem;background:#ffffff;">
+                <img id="vModalImg" src="" alt="Vehicle Photo" style="width:100%;height:320px;object-fit:cover;display:block;">
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:1rem;background:#ffffff;padding:1rem;border-radius:0.75rem;border:1px solid #e2e8f0;text-align:left;">
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Vehicle Type</span>
+                    <strong id="vModalType" style="font-size:0.95rem;color:#0284c7;">Sedan</strong>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Plate Registration</span>
+                    <strong id="vModalPlate" style="font-size:0.95rem;font-family:monospace;letter-spacing:1px;color:#1e293b;">ABC-1001</strong>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;display:block;">Assigned Driver</span>
+                    <strong id="vModalDriver" style="font-size:0.95rem;color:#059669;">Driver Name</strong>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;background:#ffffff;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('viewVehiclePhotoModal')">Close Preview</button>
+        </div>
+    </div>
+</div>
+
 <script>
 function openModal(id) {
     const el = document.getElementById(id);
@@ -309,6 +366,22 @@ function openModal(id) {
 function closeModal(id) {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
+}
+
+function openVehiclePhotoModal(imgSrc, model, type, plate, driver) {
+    const imgEl = document.getElementById('vModalImg');
+    const titleEl = document.getElementById('vModalTitle');
+    const typeEl = document.getElementById('vModalType');
+    const plateEl = document.getElementById('vModalPlate');
+    const driverEl = document.getElementById('vModalDriver');
+
+    if (imgEl) imgEl.src = imgSrc;
+    if (titleEl) titleEl.innerHTML = '<i class="fas fa-camera" style="color:#38bdf8;margin-right:8px;"></i> ' + model + ' (' + type + ')';
+    if (typeEl) typeEl.innerText = type;
+    if (plateEl) plateEl.innerText = plate;
+    if (driverEl) driverEl.innerText = driver;
+
+    openModal('viewVehiclePhotoModal');
 }
 
 function openReassignModal(driver) {
