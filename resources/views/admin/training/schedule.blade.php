@@ -111,7 +111,7 @@
                         <td>{{ $training->instructor }}</td>
                         <td>{{ $training->venue ?? 'N/A' }}</td>
                         <td>{{ $training->start_datetime->format('M d, Y h:i A') }}</td>
-                        <td>{{ $training->capacity }}</td>
+                        <td style="font-weight:700;color:#0284c7;"><span id="slots_cell_{{ $training->id }}">{{ $training->capacity }}</span> Available Slots</td>
                         <td>
                             <span class="item-badge {{ $training->status === 'upcoming' ? 'badge-info' : ($training->status === 'ongoing' ? 'badge-success' : ($training->status === 'completed' ? 'badge-success' : 'badge-danger')) }}">
                                 {{ ucfirst($training->status) }}
@@ -310,7 +310,10 @@ window.openViewTrainingModal = function(data) {
 window.openEditTrainingModal = function(data) {
     if (!data) return;
     const form = document.getElementById('editTrainingForm');
-    if (form) form.action = '/admin/training/schedule/' + data.id;
+    if (form) {
+        form.action = '/admin/training/schedule/' + data.id;
+        form.setAttribute('data-training-id', data.id);
+    }
 
     const titleEl = document.getElementById('editTrnTitle');
     const catEl = document.getElementById('editTrnCategory');
@@ -330,6 +333,28 @@ window.openEditTrainingModal = function(data) {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Restore modified capacity slots from localStorage
+    document.querySelectorAll('[id^="slots_cell_"]').forEach(function(cell) {
+        const id = cell.id.replace('slots_cell_', '');
+        const saved = localStorage.getItem('trn_capacity_' + id);
+        if (saved) {
+            cell.innerText = saved;
+        }
+    });
+
+    const editForm = document.getElementById('editTrainingForm');
+    if (editForm) {
+        editForm.addEventListener('submit', function(e) {
+            const trnId = editForm.getAttribute('data-training-id');
+            const newCap = document.getElementById('editTrnCapacity').value;
+            if (trnId && newCap) {
+                localStorage.setItem('trn_capacity_' + trnId, newCap);
+                const cell = document.getElementById('slots_cell_' + trnId);
+                if (cell) cell.innerText = newCap;
+            }
+        });
+    }
+
     const chartDefaults = {
         responsive: true,
         maintainAspectRatio: false,
