@@ -19,7 +19,7 @@
         <p>Fleet vehicle assignments, plate registration records, maintenance status, and vehicle route distribution.</p>
     </div>
     <div style="display:flex;gap:0.75rem;">
-        <button class="btn btn-primary" onclick="openModal('assignVehicleModal')"><i class="fas fa-car"></i> Assign New Vehicle</button>
+        <button class="btn btn-primary" onclick="openModal('assignVehicleModal')"><i class="fas fa-car"></i> Make Vehicle</button>
     </div>
 </div>
 
@@ -240,9 +240,10 @@
 <!-- Assign New Vehicle Modal -->
 <div class="modal-overlay" id="assignVehicleModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;padding:2rem;">
     <div class="modal-container" style="background:var(--white);border-radius:1rem;width:100%;max-width:650px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
-        <form id="assignVehicleForm" onsubmit="event.preventDefault(); alert('Vehicle assignment saved successfully!'); closeModal('assignVehicleModal'); location.reload();">
+        <form id="assignVehicleForm" action="{{ route('admin.drivers.vehicles.assign') }}" method="POST">
+            @csrf
             <div class="modal-header" style="padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;">Assign New Fleet Vehicle</h2>
+                <h2 style="font-size:1.25rem;color:var(--primary);font-family:'Poppins',sans-serif;margin:0;"><i class="fas fa-car" style="margin-right:0.5rem;"></i> Make New Fleet Vehicle</h2>
                 <button type="button" onclick="closeModal('assignVehicleModal')" style="background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;padding:0.25rem;"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body" style="padding:1.5rem;">
@@ -290,7 +291,7 @@
             </div>
             <div class="modal-footer" style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;">
                 <button type="button" class="btn btn-secondary" onclick="closeModal('assignVehicleModal')">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save Assignment</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check-circle"></i> Save & Make Vehicle</button>
             </div>
         </form>
     </div>

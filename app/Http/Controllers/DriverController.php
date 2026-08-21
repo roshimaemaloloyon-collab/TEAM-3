@@ -169,6 +169,27 @@ class DriverController extends Controller
         return view('admin.vehicles', compact('drivers'));
     }
 
+    public function assignVehicle(Request $request)
+    {
+        $validated = $request->validate([
+            'driver_id' => 'required|exists:drivers,id',
+            'vehicle_model' => 'required|string|max:255',
+            'vehicle_type' => 'required|string|max:255',
+            'plate_number' => 'required|string|max:255',
+            'branch' => 'required|string|max:255',
+        ]);
+
+        $driver = Driver::findOrFail($validated['driver_id']);
+        $driver->update([
+            'vehicle_assignment' => $validated['vehicle_model'],
+            'vehicle_type'       => $validated['vehicle_type'],
+            'branch'             => $validated['branch'],
+            'status'             => 'active',
+        ]);
+
+        return redirect()->route('admin.drivers.vehicles')->with('success', "🚀 Vehicle successfully registered and assigned to Driver {$driver->full_name}!");
+    }
+
     public function index(Request $request)
     {
         $status = $request->input('status');

@@ -184,6 +184,7 @@ Route::middleware(['web', 'admin'])->prefix('admin')->name('admin.')->group(func
     Route::get('/drivers/documents/{id}/download', [App\Http\Controllers\DriverController::class, 'downloadDocument'])->name('drivers.documents.download');
     Route::post('/drivers/documents/{id}/verify', [App\Http\Controllers\DriverController::class, 'verifyDocument'])->name('drivers.documents.verify');
     Route::get('/drivers/vehicles', [App\Http\Controllers\DriverController::class, 'vehicles'])->name('drivers.vehicles');
+    Route::post('/drivers/vehicles/assign', [App\Http\Controllers\DriverController::class, 'assignVehicle'])->name('drivers.vehicles.assign');
     Route::get('/drivers/profile/{id}', [App\Http\Controllers\DriverController::class, 'show'])->name('drivers.profile');
     Route::put('/drivers/{id}', [App\Http\Controllers\DriverController::class, 'update'])->name('drivers.update');
     Route::patch('/drivers/{id}/status', [App\Http\Controllers\DriverController::class, 'updateStatus'])->name('drivers.update-status');
